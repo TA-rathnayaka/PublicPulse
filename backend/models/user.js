@@ -23,7 +23,7 @@ const userSchema = new Schema({
   Verified :{type:Boolean, default: false},
   citizenship: {type: Boolean},
   phoneNo : {type: Number},
-  imgURL: {type:String}
+  imgURL: {}
 });
 
 userSchema.pre("save", async function (next) {
