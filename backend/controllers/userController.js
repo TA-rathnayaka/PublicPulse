@@ -25,10 +25,22 @@ const getUserById = async (req, res) => {
   }
 };
 
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    if (!users) {
+      return res.status(404).send();
+    }
+    res.send(users);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+};
+
 // Update user by ID
 const updateUser = async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ["email", "password", "birthdate", "district", "division", "nationalId", "Verified", "citizenship", "phoneNo"];
+  const allowedUpdates = ["name","email", "password", "birthdate", "district", "division", "nationalId", "Verified", "citizenship", "phoneNo","imgURL"];
   const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
   if (!isValidOperation) {
@@ -67,4 +79,5 @@ module.exports = {
   getUserById,
   updateUser,
   deleteUser,
+  getUsers
 };

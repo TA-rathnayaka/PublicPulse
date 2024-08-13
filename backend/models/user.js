@@ -20,9 +20,10 @@ const userSchema = new Schema({
   district: { type: String, required: true }, 
   division: { type: String, required: true },
   nationalId: { type: String, required: true },
-  Verified :{type:Boolean},
+  Verified :{type:Boolean, default: false},
   citizenship: {type: Boolean},
-  phoneNo : {type: Number}
+  phoneNo : {type: Number},
+  imgURL: {type:String}
 });
 
 userSchema.pre("save", async function (next) {
