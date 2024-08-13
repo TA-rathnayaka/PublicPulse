@@ -1,125 +1,202 @@
 import 'package:flutter/material.dart';
+import 'poll.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(PublicPulseApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // This widget is the root of your application.
+class PublicPulseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Public Pulse',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        colorScheme: ColorScheme.fromSwatch(
+          primarySwatch: Colors.deepPurple,
+        ).copyWith(
+          secondary: Colors.deepPurpleAccent,
+        ),
+        textTheme: TextTheme(
+          titleLarge: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+          bodyMedium: TextStyle(fontSize: 16.0),
+        ),
+        fontFamily: 'Poppins',
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: PollManagementScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
+class PollManagementScreen extends StatefulWidget {
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _PollManagementScreenState createState() => _PollManagementScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _PollManagementScreenState extends State<PollManagementScreen> {
+  final List<Poll> polls = [];
 
-  void _incrementCounter() {
+  void _createPoll(String question, List<String> options) {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      polls.add(Poll(question: question, options: options));
+    });
+  }
+
+  void _voteInPoll(int pollIndex, int optionIndex) {
+    setState(() {
+      polls[pollIndex].vote(optionIndex);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text('Public Pulse'),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: polls.isEmpty
+          ? Center(
+        child: Text(
+          'No polls yet. Create one!',
+          style: TextStyle(color: Colors.grey, fontSize: 18),
+        ),
+      )
+          : ListView.builder(
+        itemCount: polls.length,
+        itemBuilder: (context, index) {
+          return PollCard(
+            poll: polls[index],
+            onVote: (optionIndex) => _voteInPoll(index, optionIndex),
+          );
+        },
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showCreatePollDialog(context),
+        label: Text('Create Poll'),
+        icon: Icon(Icons.add),
+      ),
+    );
+  }
+
+  void _showCreatePollDialog(BuildContext context) {
+    String question = '';
+    List<String> options = ['', ''];
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Create Poll'),
+              content: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    TextField(
+                      onChanged: (value) {
+                        question = value;
+                      },
+                      decoration: InputDecoration(
+                        labelText: 'Poll Question',
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    for (int i = 0; i < options.length; i++)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 5.0),
+                        child: TextField(
+                          onChanged: (value) {
+                            options[i] = value;
+                          },
+                          decoration: InputDecoration(
+                            labelText: 'Option ${i + 1}',
+                            border: OutlineInputBorder(),
+                          ),
+                        ),
+                      ),
+                    TextButton.icon(
+                      onPressed: () {
+                        setState(() {
+                          options.add('');
+                        });
+                      },
+                      icon: Icon(Icons.add_circle_outline),
+                      label: Text('Add Option'),
+                    ),
+                  ],
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    _createPoll(question, options);
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('Create'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class PollCard extends StatelessWidget {
+  final Poll poll;
+  final Function(int) onVote;
+
+  PollCard({required this.poll, required this.onVote});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      elevation: 4.0,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
             Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+              poll.question,
+              style: Theme.of(context).textTheme.titleLarge,
             ),
+            SizedBox(height: 10.0),
+            for (int i = 0; i < poll.options.length; i++)
+              GestureDetector(
+                onTap: () => onVote(i),
+                child: Container(
+                  padding: EdgeInsets.symmetric(vertical: 10.0),
+                  margin: EdgeInsets.symmetric(vertical: 5.0),
+                  decoration: BoxDecoration(
+                    color: Colors.deepPurple.shade50,
+                    borderRadius: BorderRadius.circular(10.0),
+                    border: Border.all(color: Colors.deepPurpleAccent),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(poll.options[i]),
+                      Text('${poll.votes[i]} votes'),
+                    ],
+                  ),
+                ),
+              ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
