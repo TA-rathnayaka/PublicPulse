@@ -4,6 +4,8 @@ node_modules/
 # See https://www.dartlang.org/guides/libraries/private-files
 
 # Files and directories created by pub
+.DS_Store
+.DS_Store?
 .dart_tool/
 .packages
 build/
