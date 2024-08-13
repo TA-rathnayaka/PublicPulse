@@ -1,14 +1,14 @@
-const dotenv = require('dotenv');
-const connectDB = require('./config/db'); 
+const dotenv = require("dotenv");
+const connectDB = require("./config/db");
 
 dotenv.config();
 
-const app = require('./app'); 
+const app = require("./app");
 
-connectDB()
+connectDB();
 
-app.get('/', (req, res) => {
-  res.send('Server is running');
+app.get("/", (req, res) => {
+  res.send("Server is running");
 });
 
 // Start the server
