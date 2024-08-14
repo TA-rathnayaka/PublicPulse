@@ -23,9 +23,13 @@ const handleErrors = (err) => {
     errors.password = 'That password is incorrect';
   }
 
-  // Duplicate email error
+  // Duplicate email or nationalId error
   if (err.code === 11000) {
-    errors.email = 'That email is already registered';
+    if (err.keyValue.email) {
+      errors.email = 'That email is already registered';
+    } else if (err.keyValue.nationalId) {
+      errors.nationalId = 'That national ID is already registered';
+    }
     return errors;
   }
 
@@ -41,7 +45,17 @@ const handleErrors = (err) => {
 
 const registerUser = async (req, res) => {
   try {
-    const { email, password, birthdate, district, division, nationalId, verified, citizenship, phoneNo } = req.body;
+    const { 
+      email, 
+      password, 
+      birthdate, 
+      district, 
+      division, 
+      nationalId, 
+      citizenship, 
+      phoneNo, 
+      imgURL 
+    } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -55,9 +69,10 @@ const registerUser = async (req, res) => {
       district,
       division,
       nationalId,
-      Verified: verified,
+      Verified: false, // Automatically set to false
       citizenship,
       phoneNo,
+      imgURL
     });
 
     const savedUser = await newUser.save();
@@ -80,9 +95,11 @@ const registerUser = async (req, res) => {
 };
 
 const loginUser = async (req, res) => {
+  console.log('login called');
   const { email, password } = req.body;
   try {
     const existingUser = await User.findOne({ email });
+    console.log(existingUser);
     if (existingUser) {
       const auth = await bcrypt.compare(password, existingUser.password);
       if (auth) {
@@ -91,8 +108,7 @@ const loginUser = async (req, res) => {
         res.cookie('jwt', token, { 
           httpOnly: true, 
           maxAge: maxAge * 1000,
-          sameSite: 'Lax',
-          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'Lax'
         });
         return res.status(200).json({ user: existingUser._id });
       } else {

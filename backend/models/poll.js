@@ -13,6 +13,6 @@ const pollSchema = new Schema({
   endDate: { type: Date, default: null },
   status: {type: Boolean, default: true}
 });
-//hhnhnjnjnj
+
 const Poll = mongoose.model('Poll', pollSchema);
 module.exports = Poll;
