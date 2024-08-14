@@ -19,7 +19,7 @@ const userSchema = new Schema({
   birthdate: { type: Date },
   district: { type: String, required: true }, 
   division: { type: String, required: true },
-  nationalId: { type: String, required: true },
+  nationalId: { type: String, required: true ,unique:true},
   Verified :{type:Boolean, default: false},
   citizenship: {type: Boolean},
   phoneNo : {type: Number},
