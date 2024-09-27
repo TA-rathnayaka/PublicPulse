@@ -3,7 +3,7 @@ const Poll = require('../models/poll');
 
 const createPoll = async (req, res) => {
     try {
-      const { question, description, options, endDate, status } = req.body;
+      const { question, description, options, endDate } = req.body;
   
       const newPoll = new Poll({
         question,
@@ -16,6 +16,20 @@ const createPoll = async (req, res) => {
       res.status(201).json({ message: 'Poll created successfully', poll: savedPoll });
     } catch (error) {
       res.status(500).json({ message: 'Failed to create poll', error });
+    }
+  };
+
+  
+  const getPolls = async (req, res) => {
+  
+    try {
+      const poll = await Poll.find();
+      if (!poll) {
+        return res.status(404).json({ message: 'Poll not found' });
+      }
+      res.status(200).json({ poll });
+    } catch (error) {
+      res.status(500).json({ message: 'Failed to fetch poll', error });
     }
   };
   
@@ -57,4 +71,4 @@ const createPoll = async (req, res) => {
   */
 
 
-module.exports = { analyzeVotesByDistrict,analyzeVotesByAge  };
+module.exports = { createPoll, getPollById, deletePoll ,getPolls };
