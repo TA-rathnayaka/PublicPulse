@@ -3,7 +3,7 @@ import 'package:client/components/comment_card.dart';
 import 'package:client/components/result_card.dart';
 
 class PollScreen extends StatelessWidget {
-  static String id = '/';
+  static String id = '/poll-screen';
 
   @override
   Widget build(BuildContext context) {

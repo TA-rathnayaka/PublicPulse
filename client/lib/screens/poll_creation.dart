@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PollCreationScreen extends StatelessWidget {
-  static String id = '/poll-creation';
+  static String id = '/';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
