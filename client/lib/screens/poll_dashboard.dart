@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:client/components/poll_dashboard_item.dart'; // Assuming PollCard is located here
 
 class PollDashboardScreen extends StatelessWidget {
-  static String id = '/poll-dashboard';
+  static String id = '/';
 
   final List<Map<String, String>> pollData = [
     {
@@ -47,12 +47,6 @@ class PollDashboardScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("Poll Dashboard"),
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.of(context).pop(); // Back navigation
-          },
-        ),
         elevation: 0,
         toolbarHeight: 48,
       ),
@@ -77,14 +71,15 @@ class PollDashboardScreen extends StatelessWidget {
               child: ListView.builder(
                 itemCount: pollData.length, // Number of polls
                 itemBuilder: (context, index) {
-                  final poll = pollData[index]; // Get the poll data for this item
+                  final poll =
+                      pollData[index];
                   return PollCard(
                     title: poll['title']!,
                     subtitle: poll['subtitle']!,
                     label: poll['label']!,
                     avatarLabel: poll['avatarLabel']!,
                     imageUrl: poll['imageUrl']!,
-                  ); // Reusable PollCard with dynamic data
+                  );
                 },
               ),
             ),
