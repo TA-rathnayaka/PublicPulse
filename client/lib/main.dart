@@ -1,3 +1,4 @@
+import 'package:client/screens/poll_dashboard.dart';
 import 'package:client/screens/poll_screen.dart';
 import 'package:client/screens/settings.dart';
 import 'package:client/screens/user_profile.dart';
@@ -16,6 +17,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
+        PollDashboardScreen.id: (context) => PollDashboardScreen(),
         PollScreen.id: (context) => PollScreen(),
         PollCreationScreen.id: (context) => PollCreationScreen(),
       },

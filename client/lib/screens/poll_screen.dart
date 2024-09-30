@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:client/components/comment_card.dart';
 import 'package:client/components/result_card.dart';
+import 'package:client/components/preview_card.dart'; // Import the new PreviewCard
 
 class PollScreen extends StatelessWidget {
-  static String id = '/poll-screen';
+  static String id = '/';
 
   @override
   Widget build(BuildContext context) {
@@ -24,41 +25,15 @@ class PollScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Card for the avatar, username, and image
-              Card(
-                clipBehavior: Clip.antiAlias,
-                child: Column(
-                  children: [
-                    ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: AssetImage('images/avatar.png'),
-                        radius: 15,
-                      ),
-                      title: Text('@username', style: TextStyle(fontSize: 10)),
-                      trailing: Icon(Icons.arrow_drop_down_circle),
-                    ),
-                    // Image that takes the full width of the card
-                    Container(
-                      height: 336,
-                      width: double.infinity,
-                      child: Image.network(
-                        "https://picsum.photos/250?image=9",
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Text(
-                        'Greyhound divisively hello coldly wonderfully marginally far upon excluding.',
-                        style: TextStyle(
-                            fontSize: 14), // Adjust text style as needed
-                      ),
-                    ),
-                  ],
-                ),
+              // Use PreviewCard instead of the inline card widget
+              PreviewCard(
+                username: '@username',
+                avatarPath: 'images/avatar.png',
+                imageUrl: "https://picsum.photos/250?image=9",
+                description:
+                'Greyhound divisively hello coldly wonderfully marginally far upon excluding.',
               ),
               SizedBox(height: 12),
-              // Vote Button
               Center(
                 child: SizedBox(
                   width: double.infinity,
@@ -76,7 +51,6 @@ class PollScreen extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 28),
-              // Poll results in a grid
               Text('Poll Results:', style: TextStyle(fontSize: 18)),
               SizedBox(height: 10),
               Row(
@@ -101,13 +75,11 @@ class PollScreen extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 20),
-              // User Feedback Section
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('User Interaction:', style: TextStyle(fontSize: 18)),
                   SizedBox(height: 10),
-                  // Scrollable feedback section
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
@@ -118,21 +90,19 @@ class PollScreen extends StatelessWidget {
                           rating: 4.5,
                           avatarPath: '',
                         ),
-                        SizedBox(width: 10), // Space between cards
+                        SizedBox(width: 10),
                         CommentCard(
                           name: 'Jane Smith',
                           comment: 'This was fun, thanks for sharing!',
                           rating: 4.8,
                           avatarPath: '',
-
                         ),
-                        SizedBox(width: 10), // Space between cards
+                        SizedBox(width: 10),
                         CommentCard(
                           name: 'Mark Johnson',
                           comment: 'I found this very informative!',
                           rating: 4.7,
                           avatarPath: '',
-
                         ),
                       ],
                     ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:client/components/preview_card.dart'; // Import the PreviewCard
 
 class PollCreationScreen extends StatelessWidget {
-  static String id = '/';
+  static String id = '/poll-creation';
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +17,7 @@ class PollCreationScreen extends StatelessWidget {
               },
             ),
             SizedBox(width: 8),
-            Text("Poll Creation"),
+            Text("Poll Create"),
           ],
         ),
       ),
@@ -30,74 +32,46 @@ class PollCreationScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Poll Details',
+                    'Preview',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  // Use PreviewCard instead of the stack with avatar and image placeholders
+                  PreviewCard(
+                    username: '@username',
+                    avatarPath: 'images/avatar.png',
+                    imageUrl: 'https://picsum.photos/250?image=9',
+                    description:
+                        'This is a sample description for the poll preview.',
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Poll Topic',
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   SizedBox(height: 16),
                   TextField(
                     decoration: InputDecoration(
-                      labelText: 'Poll Title',
-                      border: OutlineInputBorder(),
+                      hintText: 'Write Here',
+                      border: InputBorder.none, // Remove border
                     ),
+                  ),
+                  SizedBox(height: 16),
+                  Text(
+                    'Poll Description',
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   SizedBox(height: 16),
                   TextField(
-                    maxLines: 5,
                     decoration: InputDecoration(
-                      labelText: 'Poll Description',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Divider(),
-                ],
-              ),
-              SizedBox(height: 28),
-              Stack(
-                children: [
-                  Container(
-                    height: 368,
-                    color: Colors.grey.shade300,
-                    alignment: Alignment.center,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 24,
-                              width: 24,
-                              color: Colors.grey,
-                            ),
-                            SizedBox(width: 8),
-                            Text('Avatar'),
-                          ],
-                        ),
-                        SizedBox(height: 12),
-                        Container(
-                          height: 336,
-                          width: double.infinity,
-                          color: Colors.grey.shade400,
-                        ),
-                      ],
+                      hintText: 'Write Here',
+                      border: InputBorder.none, // Remove border
                     ),
                   ),
                 ],
               ),
               SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 4,
-                    width: 4,
-                    color: Colors.grey,
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Text('Poll Options', style: Theme.of(context).textTheme.headlineSmall),
+              Text('Poll Results',
+                  style: Theme.of(context).textTheme.headlineSmall),
               SizedBox(height: 8),
               Wrap(
                 spacing: 4,
@@ -108,89 +82,24 @@ class PollCreationScreen extends StatelessWidget {
                 ],
               ),
               SizedBox(height: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Additional Information',
-                      style: Theme.of(context).textTheme.headlineSmall),
-                  SizedBox(height: 16),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Additional Field 1',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Additional Field 2',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  Divider(),
-                ],
-              ),
-              SizedBox(height: 26),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Other Details',
-                      style: Theme.of(context).textTheme.headlineSmall),
-                  SizedBox(height: 14),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Other Field 1',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Other Field 2',
-                      border: OutlineInputBorder(),
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Final Information',
-                      style: Theme.of(context).textTheme.headlineSmall),
-                  SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Metric 1',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width: 12),
-                      Expanded(
-                        child: TextField(
-                          decoration: InputDecoration(
-                            labelText: 'Metric 2',
-                            border: OutlineInputBorder(),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
               SizedBox(height: 20),
               Center(
-                child: ElevatedButton(
-                  onPressed: () {
-                    // Submit button logic here
-                  },
-                  child: Text('Submit Poll'),
+                child: SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Voting logic here
+                    },
+                    child: Text('Submit'),
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  ),
                 ),
               ),
+              SizedBox(height: 100),
             ],
           ),
         ),
