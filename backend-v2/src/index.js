@@ -1,21 +1,17 @@
 const express = require('express');
-const AuthRoutes = require ('../routes/AuthRoutes')
-const bcrypt = require('bcrypt');
+const AuthRoutes = require ('../routes/AuthRoutes');
+const userRoutes = require ('../routes/UserRoutes');
+const PollRoutes = require ('../routes/PollRoutes');
+const VoteRoutes = require('../routes/VoteRoutes');
+
 const app = express();
 
 app.use(express.json());
 
 app.use('/auth', AuthRoutes);
-
-app.get('/users', async (req, res) => {
-    try {
-      const result = await pool.query('SELECT * FROM Users');
-      res.status(200).json(result.rows);
-    } catch (error) {
-      res.status(500).json({ message: 'Error fetching users', error });
-    }
-  });
-  
+app.use('/polls', PollRoutes);
+app.use('/users',userRoutes);
+app.use('/votes',VoteRoutes);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
