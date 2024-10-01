@@ -6,34 +6,56 @@ import 'package:client/components/preview_card.dart';
 class PollScreen extends StatelessWidget {
   static String id = '/poll-screen';
 
+  final String username;
+  final String avatarPath;
+  final String imageUrl;
+  final String title;
+  final String subtitle;
+  final String description;
+  final Map<String, double> results; // Poll results (option => percentage)
+  final List<Map<String, String>> comments; // User comments
+
+  const PollScreen({
+    Key? key,
+    required this.username,
+    required this.avatarPath,
+    required this.imageUrl,
+    required this.title,
+    required this.subtitle,
+    required this.description,
+    required this.results,
+    required this.comments,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         toolbarHeight: 48,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text('Poll'),
+        title: const Text('Poll'),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Use PreviewCard instead of the inline card widget
+              // Poll Preview Section
               PreviewCard(
-                username: '@username',
-                avatarPath: 'images/avatar.png',
-                imageUrl: "https://picsum.photos/250?image=9",
-                description:
-                'Greyhound divisively hello coldly wonderfully marginally far upon excluding.',
+                username: username,
+                avatarPath: avatarPath,
+                imageUrl: imageUrl,
+                description: description,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
+
+              // Vote Button
               Center(
                 child: SizedBox(
                   width: double.infinity,
@@ -41,73 +63,54 @@ class PollScreen extends StatelessWidget {
                     onPressed: () {
                       // Voting logic here
                     },
-                    child: Text('Vote'),
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
                       ),
                     ),
+                    child: const Text('Vote'),
                   ),
                 ),
               ),
-              SizedBox(height: 28),
-              Text('Poll Results:', style: TextStyle(fontSize: 18)),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(children: [
-                      ResultCard(title: 'Option 1', percentage: 30),
-                      SizedBox(height: 10),
-                      ResultCard(title: 'Option 2', percentage: 50),
-                    ]),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        ResultCard(title: 'Option 3', percentage: 20),
-                        SizedBox(height: 10),
-                        ResultCard(title: 'Option 4', percentage: 10),
-                      ],
+              const SizedBox(height: 28),
+
+              // Poll Results
+              const Text('Total votes counted: 13,483,958',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 10),
+              ...results.entries.map((entry) {
+                return Column(
+                  children: [
+                    ResultCard(
+                      title: entry.key,
+                      percentage: entry.value.toInt(),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('User Interaction:', style: TextStyle(fontSize: 18)),
-                  SizedBox(height: 10),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
+                    const SizedBox(height: 10),
+                  ],
+                );
+              }).toList(),
+
+              // User Interaction Section
+              const SizedBox(height: 20),
+              const Text('User Interaction:', style: TextStyle(fontSize: 18)),
+              const SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: comments.map((commentData) {
+                    return Row(
                       children: [
                         CommentCard(
-                          name: 'John Doe',
-                          comment: 'Great poll! I really enjoyed participating.',
-                          rating: 4.5,
-                          avatarPath: '',
+                          name: commentData['name']!,
+                          comment: commentData['comment']!,
+                          rating: double.parse(commentData['rating']!),
+                          avatarPath: commentData['avatarPath']!,
                         ),
-                        SizedBox(width: 10),
-                        CommentCard(
-                          name: 'Jane Smith',
-                          comment: 'This was fun, thanks for sharing!',
-                          rating: 4.8,
-                          avatarPath: '',
-                        ),
-                        SizedBox(width: 10),
-                        CommentCard(
-                          name: 'Mark Johnson',
-                          comment: 'I found this very informative!',
-                          rating: 4.7,
-                          avatarPath: '',
-                        ),
+                        const SizedBox(width: 10),
                       ],
-                    ),
-                  ),
-                ],
+                    );
+                  }).toList(),
+                ),
               ),
             ],
           ),

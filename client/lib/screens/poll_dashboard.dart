@@ -65,12 +65,6 @@ class _PollDashboardScreenState extends State<PollDashboardScreen> {
       appBar: AppBar(
         title: Row(
           children: [
-            IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
-              onPressed: () {
-                Navigator.pop(context);
-              },
-            ),
             SizedBox(width: kAppBarTitleSpacing),
             const Text(
               "Poll Dashboard",

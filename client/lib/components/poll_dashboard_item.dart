@@ -9,7 +9,6 @@ class PollCard extends StatelessWidget {
   final Color avatarBackgroundColor;
   final String imageUrl;
 
-  // Constructor for PollCard to accept dynamic values
   PollCard({
     required this.title,
     required this.subtitle,

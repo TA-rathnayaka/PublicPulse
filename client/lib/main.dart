@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       routes: {
         PollDashboardScreen.id: (context) => PollDashboardScreen(),
-        PollScreen.id: (context) => PollScreen(),
         PollCreationScreen.id: (context) => PollCreationScreen(),
       },
     );
