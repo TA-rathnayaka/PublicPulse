@@ -1,4 +1,7 @@
+
 import 'package:flutter/material.dart';
+import '../constants/constants.dart';
+import '../components/StatelessWidget.dart';
 import 'package:client/components/preview_card.dart'; // Import the PreviewCard
 
 class PollCreationScreen extends StatelessWidget {
@@ -7,23 +10,22 @@ class PollCreationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kBackgroundColor,
       appBar: AppBar(
+        backgroundColor: kPrimaryColor,
         title: Row(
           children: [
-            IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context);
-              },
+            SizedBox(width: kAppBarTitleSpacing),
+            Text(
+              "Poll Create",
+              style: TextStyle(color: Colors.white),
             ),
-            SizedBox(width: 8),
-            Text("Poll Create"),
           ],
         ),
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.symmetric(horizontal: kPaddingHorizontal),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -31,11 +33,7 @@ class PollCreationScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Preview',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  // Use PreviewCard instead of the stack with avatar and image placeholders
+                  // Preview Card
                   PreviewCard(
                     username: '@username',
                     avatarPath: 'images/avatar.png',
@@ -43,67 +41,71 @@ class PollCreationScreen extends StatelessWidget {
                     description:
                         'This is a sample description for the poll preview.',
                   ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Poll Topic',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Write Here',
-                      border: InputBorder.none, // Remove border
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Text(
-                    'Poll Description',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  SizedBox(height: 16),
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Write Here',
-                      border: InputBorder.none, // Remove border
-                    ),
-                  ),
+                  SizedBox(height: kSizedBoxHeight),
+                  // Poll Topic
+                  PollTopicInput(label: 'Poll Topic'),
+                  SizedBox(height: kSizedBoxHeight),
+                  // Poll Description
+                  PollDescriptionInput(),
+                  SizedBox(height: kSizedBoxHeight),
+                  // Another Poll Topic Input (for multiple options)
+                  PollTopicInput(label: 'Poll Topic'),
                 ],
               ),
-              SizedBox(height: 16),
-              Text('Poll Results',
-                  style: Theme.of(context).textTheme.headlineSmall),
-              SizedBox(height: 8),
-              Wrap(
-                spacing: 4,
-                runSpacing: 4,
+              SizedBox(height: kSizedBoxHeight),
+              // Poll Results
+              PollResultsSection(),
+              SizedBox(height: kSizedBoxHeight),
+              // Pro Security Toggle (can add functionality later)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Chip(label: Text('Option 1')),
-                  Chip(label: Text('Option 2')),
+                  Text(
+                    'Pro Security',
+                    style: kHeadlineStyle,
+                  ),
+                  Switch(
+                    value: true, // Example value
+                    onChanged: (bool value) {
+                      // Handle switch change
+                    },
+                  ),
                 ],
               ),
-              SizedBox(height: 16),
-              SizedBox(height: 20),
-              Center(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Voting logic here
-                    },
-                    child: Text('Submit'),
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SizedBox(height: 100),
+              SizedBox(height: kSizedBoxHeight),
+              // Create Poll Button
+              CreatePollButton(),
+              SizedBox(height: 100), // Add extra space at the bottom
             ],
           ),
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: 'Poll',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.notifications),
+            label: 'Notification',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person),
+            label: 'Profile',
+          ),
+        ],
+
+        unselectedItemColor: Colors.black, // Color for unselected items
+        backgroundColor: Colors.black, // Background color of the BottomNavigationBar
+        onTap: (int index) {
+        },
+      ),
     );
   }
 }
+

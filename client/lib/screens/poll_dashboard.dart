@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:client/components/poll_dashboard_item.dart'; // Assuming PollCard is located here
+import '../components/Custom_BottomNavBar.dart'; // Adjusted to match your custom bottom navigation component
+import '../components/poll_card.dart'; // Adjusted to match your custom poll card component
+import '../constants/constants.dart'; // Ensure your constants file is correctly imported
 
-class PollDashboardScreen extends StatelessWidget {
+class PollDashboardScreen extends StatefulWidget {
   static String id = '/';
 
+  @override
+  _PollDashboardScreenState createState() => _PollDashboardScreenState();
+}
+
+class _PollDashboardScreenState extends State<PollDashboardScreen> {
   final List<Map<String, String>> pollData = [
     {
       "title": "Government Healthcare Policy",
@@ -42,37 +49,59 @@ class PollDashboardScreen extends StatelessWidget {
     },
   ];
 
+  int _currentIndex = 0;
+
+  void _onBottomNavTap(int index) {
+    setState(() {
+      _currentIndex = index;
+      // Add navigation logic if necessary
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: kBackgroundColor, // Use your custom background color
       appBar: AppBar(
-        title: Text("Poll Dashboard"),
+        title: Row(
+          children: [
+            IconButton(
+              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            SizedBox(width: kAppBarTitleSpacing),
+            const Text(
+              "Poll Dashboard",
+              style: TextStyle(color: Colors.white),
+            ),
+          ],
+        ),
         elevation: 0,
         toolbarHeight: 48,
+        backgroundColor: kPrimaryColor, // Use your primary color
       ),
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+        padding: const EdgeInsets.symmetric(horizontal: kPaddingHorizontal),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 28), // Spacing before title
-            Text(
-              "Vote on the Government Policies & Polls", // Main Title
+            const SizedBox(height: 28), // Spacing before the title
+            const Text(
+              "Vote on the Government Policies & Polls", // Main title
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-              textAlign: TextAlign.left,
             ),
-            Text(
+            const Text(
               "Think and vote", // Subtitle
               style: TextStyle(fontSize: 16, color: Colors.grey),
-              textAlign: TextAlign.left,
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(
               child: ListView.builder(
-                itemCount: pollData.length, // Number of polls
+                itemCount: pollData.length, // Number of polls to display
                 itemBuilder: (context, index) {
-                  final poll =
-                      pollData[index];
+                  final poll = pollData[index];
                   return PollCard(
                     title: poll['title']!,
                     subtitle: poll['subtitle']!,
@@ -85,6 +114,11 @@ class PollDashboardScreen extends StatelessWidget {
             ),
           ],
         ),
+      ),
+      // Use your custom bottom navigation bar component
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onBottomNavTap,
       ),
     );
   }
