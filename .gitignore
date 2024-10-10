@@ -55,7 +55,7 @@ migrate_working_dir/
 /build/
 
 >>>>>>> a9bff2c8c19f90119c1d161a4bd4f39c2efbd235
-# Symbolication related
+# Symbolication related 
 app.*.symbols
 
 # Obfuscation related

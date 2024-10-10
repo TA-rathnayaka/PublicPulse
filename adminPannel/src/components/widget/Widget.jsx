@@ -17,7 +17,7 @@ const Widget = ({ type }) => {
       data = {
         title: "USERS",
         isMoney: false,
-        link: "See all users",
+        link: "See user details",
         icon: (
           <PersonOutlinedIcon
             className="icon"
