@@ -52,7 +52,7 @@ const Navbar = () => {
           </div>
           <div className="item">
             <img
-              src="https://images.pexels.com/photos/775358/pexels-photo-775358.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+              src="https://images.pexels.com/photos/775358/pexels-photo-775358.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" //****fetch the imgURL to here
               alt=""
               className="avatar"
               onClick={handleImageClick} // Add click handler

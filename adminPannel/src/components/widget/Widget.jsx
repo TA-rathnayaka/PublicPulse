@@ -1,22 +1,66 @@
+import { useState, useEffect } from "react";
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import PollOutlinedIcon from "@mui/icons-material/PollOutlined";
-import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
 import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
+import CircularProgress from "@mui/material/CircularProgress"; // Material UI loader
+import { getUserCount, getPollCount, getParticipationCount } from "../../backend/widgetsController"; // Import API functions
 
 const Widget = ({ type }) => {
-  let data;
+  const [dataCount, setDataCount] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  //temporary
-  const amount = 100;
+  useEffect(() => {
+    let isMounted = true; // Track whether the component is mounted
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        let count;
+        switch (type) {
+          case "user":
+            count = await getUserCount(); // Fetch user count
+            break;
+          case "polls":
+            count = await getPollCount(); // Fetch poll count
+            break;
+          case "participation":
+            count = await getParticipationCount(); // Fetch participation count
+            break;
+          default:
+            return;
+        }
+        
+        // Only update state if the component is still mounted
+        if (isMounted) {
+          setDataCount(count);
+        }
+      } catch (err) {
+        if (isMounted) {
+          setError("Error fetching data.");
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+    fetchData();
+
+    // Cleanup function to set isMounted to false
+    return () => {
+      isMounted = false;
+    };
+  }, [type]);
+
+  let data;
   const diff = 20;
 
   switch (type) {
     case "user":
       data = {
         title: "USERS",
-        isMoney: false,
         link: "See user details",
         icon: (
           <PersonOutlinedIcon
@@ -32,7 +76,6 @@ const Widget = ({ type }) => {
     case "polls":
       data = {
         title: "POLLS",
-        isMoney: false,
         link: "View all Polls",
         icon: (
           <PollOutlinedIcon
@@ -48,28 +91,11 @@ const Widget = ({ type }) => {
     case "participation":
       data = {
         title: "PARTICIPATION",
-        isMoney: true,
         link: "View participation details",
         icon: (
           <EventAvailableOutlinedIcon
             className="icon"
             style={{ backgroundColor: "rgba(0, 128, 0, 0.2)", color: "green" }}
-          />
-        ),
-      };
-      break;
-    case "engagement":
-      data = {
-        title: "ENGAGEMENT",
-        isMoney: true,
-        link: "View engagement details",
-        icon: (
-          <PeopleAltOutlinedIcon
-            className="icon"
-            style={{
-              backgroundColor: "rgba(128, 0, 128, 0.2)",
-              color: "purple",
-            }}
           />
         ),
       };
@@ -80,20 +106,28 @@ const Widget = ({ type }) => {
 
   return (
     <div className="widget">
-      <div className="left">
-        <span className="title">{data.title}</span>
-        <span className="counter">
-          {data.isMoney && ""} {amount}
-        </span>
-        <span className="link">{data.link}</span>
-      </div>
-      <div className="right">
-        <div className="percentage positive">
-          <KeyboardArrowUpIcon />
-          {diff} %
+      {loading ? (
+        <div className="widgetLoading">
+          <CircularProgress size={30} />
         </div>
-        {data.icon}
-      </div>
+      ) : error ? (
+        <div className="error">{error}</div>
+      ) : (
+        <>
+          <div className="left">
+            <span className="title">{data.title}</span>
+            <span className="counter">{dataCount}</span>
+            <span className="link">{data.link}</span>
+          </div>
+          <div className="right">
+            <div className="percentage positive">
+              <KeyboardArrowUpIcon />
+              {diff} %
+            </div>
+            {data.icon}
+          </div>
+        </>
+      )}
     </div>
   );
 };
