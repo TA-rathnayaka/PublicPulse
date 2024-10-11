@@ -1,4 +1,7 @@
+import 'package:client/components/top_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:avatars/avatars.dart';
+import 'package:client/constants/constants.dart';
 
 void main() {
   runApp(UserProfileScreen());
@@ -9,16 +12,7 @@ class UserProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
-        appBar: AppBar(
-          title: Text('User Profile'),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: () {
-              // Back navigation
-              Navigator.pop(context);
-            },
-          ),
-        ),
+        appBar: TopNavigationBar(),
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -27,21 +21,20 @@ class UserProfileScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage('assets/avatar.jpg'), // Replace with a valid image asset
+                    Avatar(
+                      name: 'Pasindu Jayasena',// Replace with a valid image asset
                     ),
                     SizedBox(width: 12),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'John Doe',
+                          'Pasindu jayasena',
                           style: TextStyle(
                               fontSize: 20, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          'john.doe@example.com',
+                          'pasindujaysena.edu@gmail.com',
                           style: TextStyle(
                               fontSize: 16, color: Colors.grey[600]),
                         ),
@@ -76,7 +69,7 @@ class UserProfileScreen extends StatelessWidget {
                               style: TextStyle(fontSize: 16),
                             ),
                             Text(
-                              '+123 456 7890',
+                              '+94 76 985 834',
                               style: TextStyle(
                                   fontSize: 16, color: Colors.grey[600]),
                             ),

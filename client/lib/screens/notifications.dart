@@ -1,20 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:client/constants/constants.dart';
+import 'package:client/components/top_navigation_bar.dart';
 
 class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 48,
-        title: Text('Notifications', style: TextStyle(fontSize: 18)),
-        centerTitle: true,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context); // Back navigation
-          },
-        ),
-      ),
+      appBar: TopNavigationBar(),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,

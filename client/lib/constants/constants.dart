@@ -1,21 +1,6 @@
 import 'package:flutter/material.dart';
 
 // Colors
-const Color kResultCardGreyColor = Color(0xFFB0BEC5); // Original border color for ResultCard
-const Color kResultCardWhiteColor = Color(0xFFFFFFFF);
-const Color kDashBackgroundColor = Color(0xFFF5F5F5);
-const Color kDashPrimaryColor = Color(0xFF6200EE);
-const double kDashAppBarTitleSpacing = 10.0;
-const double kDashPaddingHorizontal = 16.0; // White color for ResultCard
-
-// Sizes
-const double kResultCardPadding = 10.0; // Padding for ResultCard
-const double kResultCardBorderRadius = 8.0; // Border radius for ResultCard
-
-// Text Styles
-const TextStyle kResultCardTitleStyle = TextStyle(fontSize: 14); // Original title style for ResultCard
-const TextStyle kResultCardPercentageStyle = TextStyle(fontSize: 16, fontWeight: FontWeight.bold); // Original percentage style for ResultCard
-
 
 const double kPaddingHorizontal = 12.0;
 const double kSizedBoxHeight = 16.0;
@@ -23,10 +8,10 @@ const double kButtonRadius = 10.0;
 const double kAppBarTitleSpacing = 8.0;
 
 // Colors
-const Color kPrimaryColor = Color(0xFF4A3AFF); // Example color
-const Color kBackgroundColor = Color(0xFFF6F6F6); // Light grey background
-const Color kTextFieldBackgroundColor =
-    Color(0xFFEEEEEE); // Text field background
+const Color kPrimaryColor = Color(0xFF4A3AFF);
+const Color kSecondaryColor = Color(0xff673AB7);
+const Color kBackgroundColor = Colors.white;
+const Color kTextFieldBackgroundColor = Color(0xFFF3F3F3);
 
 // Text Styles
 const TextStyle kHeadlineStyle = TextStyle(
@@ -48,5 +33,50 @@ const InputDecoration kInputDecoration = InputDecoration(
   border: OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(8.0)),
     borderSide: BorderSide.none,
+  ),
+);
+
+final ThemeData KLightTheme = ThemeData(
+  primaryColor: Colors.white,
+  scaffoldBackgroundColor: Colors.white,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.white,
+    iconTheme: IconThemeData(color: Colors.black),
+    titleTextStyle: TextStyle(
+      color: Colors.black,
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  textTheme: const TextTheme(
+    bodyMedium: TextStyle(color: Colors.black),
+  ),
+  colorScheme: ColorScheme.fromSwatch().copyWith(
+    primary: Colors.white,
+    secondary: Colors.black,
+    background: Colors.white,
+  ),
+);
+
+
+final ThemeData KDarkTheme = ThemeData(
+  primaryColor: Colors.black,
+  scaffoldBackgroundColor: Colors.black,
+  appBarTheme: const AppBarTheme(
+    backgroundColor: Colors.black,
+    iconTheme: IconThemeData(color: Colors.white),
+    titleTextStyle: TextStyle(
+      color: Colors.white,
+      fontSize: 20,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
+  textTheme: const TextTheme(
+    bodyMedium: TextStyle(color: Colors.white),
+  ),
+  colorScheme: ColorScheme.fromSwatch().copyWith(
+    primary: Colors.black,
+    secondary: Colors.white,
+    background: Colors.black,
   ),
 );

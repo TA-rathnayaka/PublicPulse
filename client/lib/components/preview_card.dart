@@ -33,7 +33,7 @@ class PreviewCard extends StatelessWidget {
             width: double.infinity,
             child: Image.network(
               imageUrl,
-              fit: BoxFit.cover,
+              fit: BoxFit.fill,
             ),
           ),
           Padding(

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:client/components/comment_card.dart';
 import 'package:client/components/result_card.dart';
 import 'package:client/components/preview_card.dart';
+import 'package:client/constants/constants.dart';
+import 'package:client/components/top_navigation_bar.dart';
 
-class PollScreen extends StatelessWidget {
+class PollScreen extends StatefulWidget {
   static String id = '/poll-screen';
 
   final String username;
@@ -12,8 +14,8 @@ class PollScreen extends StatelessWidget {
   final String title;
   final String subtitle;
   final String description;
-  final Map<String, double> results; // Poll results (option => percentage)
-  final List<Map<String, String>> comments; // User comments
+  final Map<String, int> results;
+  final List<Map<String, String>> comments;
 
   const PollScreen({
     Key? key,
@@ -28,41 +30,50 @@ class PollScreen extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _PollScreenState createState() => _PollScreenState();
+}
+
+class _PollScreenState extends State<PollScreen> {
+  bool _hasVoted = false; // Track if the user has voted
+  int _totalVotes = 0; // Track the total votes
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize total votes from the results
+    _totalVotes = 0;
+  }
+
+  void _vote() {
+    setState(() {
+      _totalVotes++;
+      _hasVoted = true;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 48,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: const Text('Poll'),
-      ),
+      appBar: TopNavigationBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Poll Preview Section
               PreviewCard(
-                username: username,
-                avatarPath: avatarPath,
-                imageUrl: imageUrl,
-                description: description,
+                username: widget.username,
+                avatarPath: widget.avatarPath,
+                imageUrl: widget.imageUrl,
+                description: widget.description,
               ),
               const SizedBox(height: 12),
 
-              // Vote Button
               Center(
                 child: SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Voting logic here
-                    },
+                    onPressed: _hasVoted ? null : _vote,
                     style: ElevatedButton.styleFrom(
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -74,37 +85,40 @@ class PollScreen extends StatelessWidget {
               ),
               const SizedBox(height: 28),
 
-              // Poll Results
-              const Text('Total votes counted: 13,483,958',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              Text(
+                'Total votes counted: $_totalVotes',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
               const SizedBox(height: 10),
-              ...results.entries.map((entry) {
+              ...widget.results.entries.map((entry) {
                 return Column(
                   children: [
                     ResultCard(
                       title: entry.key,
-                      percentage: entry.value.toInt(),
+                      percentage: entry.value, // Ensure this is the correct representation of the vote count
                     ),
                     const SizedBox(height: 10),
                   ],
                 );
               }).toList(),
 
-              // User Interaction Section
               const SizedBox(height: 20),
-              const Text('User Interaction:', style: TextStyle(fontSize: 18)),
+              const Text(
+                'User Interaction:',
+                style: TextStyle(fontSize: 18),
+              ),
               const SizedBox(height: 10),
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: comments.map((commentData) {
+                  children: widget.comments.map((commentData) {
                     return Row(
                       children: [
                         CommentCard(
-                          name: commentData['name']!,
-                          comment: commentData['comment']!,
-                          rating: double.parse(commentData['rating']!),
-                          avatarPath: commentData['avatarPath']!,
+                          name: commentData['name'] ?? 'Anonymous',
+                          comment: commentData['comment'] ?? '',
+                          rating: double.tryParse(commentData['rating'] ?? '0') ?? 0.0,
+                          avatarPath: commentData['avatarPath'] ?? '',
                         ),
                         const SizedBox(width: 10),
                       ],

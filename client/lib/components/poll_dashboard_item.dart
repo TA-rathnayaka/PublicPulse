@@ -15,28 +15,26 @@ class PollCard extends StatelessWidget {
     required this.label,
     required this.avatarLabel,
     this.avatarBackgroundColor = Colors.black12,
-    this.imageUrl = '', // You can provide a default image if needed
+    this.imageUrl = '',
   });
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
-      onPressed: (){
-        Navigator.pushNamed(context,PollScreen.id);
+      onPressed: () {
+        Navigator.pushNamed(context, PollScreen.id);
       },
       style: ElevatedButton.styleFrom(
-
         padding: EdgeInsets.all(16.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0), // Rounded edges
-        ),// Adjust padding if needed
+          borderRadius: BorderRadius.circular(12.0),
+        ),
       ),
       child: Padding(
         padding: const EdgeInsets.only(bottom: 16.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image on the left
             Container(
               width: 80,
               height: 80,
@@ -45,30 +43,29 @@ class PollCard extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
                 image: imageUrl.isNotEmpty
                     ? DecorationImage(
-                        image: NetworkImage(imageUrl),
-                        fit: BoxFit.cover,
-                      )
-                    : null, // If imageUrl is empty, no image is shown
+                  image: NetworkImage(imageUrl),
+                  fit: BoxFit.cover,
+                )
+                    : null,
               ),
             ),
             SizedBox(width: 12),
-            // Poll details in a column
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    title, // Dynamic Title
+                    title,
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 4),
                   Text(
-                    subtitle, // Dynamic Subtitle
+                    subtitle,
                     style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
                   SizedBox(height: 6),
                   Text(
-                    label, // Dynamic Label
+                    label,
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.black,
@@ -80,11 +77,10 @@ class PollCard extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 10,
-                        backgroundColor:
-                            avatarBackgroundColor, // Dynamic avatar color
+                        backgroundColor: avatarBackgroundColor,
                       ),
                       SizedBox(width: 8),
-                      Text(avatarLabel), // Dynamic Avatar Label
+                      Text(avatarLabel),
                     ],
                   ),
                 ],

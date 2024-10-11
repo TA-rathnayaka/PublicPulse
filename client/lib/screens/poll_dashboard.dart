@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
-import '../components/Custom_BottomNavBar.dart'; // Adjusted to match your custom bottom navigation component
-import '../components/poll_card.dart'; // Adjusted to match your custom poll card component
-import '../constants/constants.dart'; // Ensure your constants file is correctly imported
+import 'package:client/components/custom_bottom_navbar.dart';
+import 'package:client/components/dashboard_status_card.dart';
+import 'package:client/screens/notifications.dart';
+import 'package:client/screens/poll_creation.dart';
+import 'package:client/screens/user_profile.dart';
+import 'package:client/components/poll_card.dart';
+import 'package:client/constants/constants.dart';
+import 'package:client/components/search_button.dart';
+import 'dummy_data.dart';
 
 class PollDashboardScreen extends StatefulWidget {
   static String id = '/';
@@ -11,108 +17,99 @@ class PollDashboardScreen extends StatefulWidget {
 }
 
 class _PollDashboardScreenState extends State<PollDashboardScreen> {
-  final List<Map<String, String>> pollData = [
-    {
-      "title": "Government Healthcare Policy",
-      "subtitle": "Vote for your stance on healthcare reforms",
-      "label": "Open",
-      "avatarLabel": "Admin",
-      "imageUrl": "https://example.com/healthcare.jpg",
-    },
-    {
-      "title": "Education Budget Allocation",
-      "subtitle": "Do you agree with the proposed budget?",
-      "label": "Closed",
-      "avatarLabel": "Moderator",
-      "imageUrl": "https://example.com/education.jpg",
-    },
-    {
-      "title": "Climate Change Initiative",
-      "subtitle": "Share your opinion on climate policies",
-      "label": "Open",
-      "avatarLabel": "User123",
-      "imageUrl": "https://example.com/climate.jpg",
-    },
-    {
-      "title": "Tax Reform Proposal",
-      "subtitle": "Do you support the new tax policies?",
-      "label": "Open",
-      "avatarLabel": "Admin",
-      "imageUrl": "https://example.com/tax.jpg",
-    },
-    {
-      "title": "Public Transportation Funding",
-      "subtitle": "Your input on the transportation budget",
-      "label": "Closed",
-      "avatarLabel": "User456",
-      "imageUrl": "https://example.com/transport.jpg",
-    },
-  ];
-
   int _currentIndex = 0;
 
-  void _onBottomNavTap(int index) {
-    setState(() {
-      _currentIndex = index;
-      // Add navigation logic if necessary
-    });
-  }
+  final List<Widget> _pages = [
+    PollDashboardScreen(),
+    PollCreationScreen(),
+    NotificationScreen(),
+    UserProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: kBackgroundColor, // Use your custom background color
-      appBar: AppBar(
-        title: Row(
-          children: [
-            SizedBox(width: kAppBarTitleSpacing),
-            const Text(
-              "Poll Dashboard",
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
-        elevation: 0,
-        toolbarHeight: 48,
-        backgroundColor: kPrimaryColor, // Use your primary color
+      body: _currentIndex == 0 ? _buildPollDashboard() : _pages[_currentIndex],
+      bottomNavigationBar: CustomBottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: (int index) {
+          setState(() {
+            _currentIndex = index;
+          });
+        },
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: kPaddingHorizontal),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 28), // Spacing before the title
-            const Text(
-              "Vote on the Government Policies & Polls", // Main title
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            const Text(
-              "Think and vote", // Subtitle
-              style: TextStyle(fontSize: 16, color: Colors.grey),
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: ListView.builder(
-                itemCount: pollData.length, // Number of polls to display
+    );
+  }
+
+  Widget _buildPollDashboard() {
+    int activeCount = pollData.where((poll) => poll['label'] == 'Open').length;
+    int endedCount = pollData.where((poll) => poll['label'] == 'Closed').length;
+    int recentCount = 0;
+    int dormantCount = 0;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: kPaddingHorizontal),
+      child: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SizedBox(height: 10),
+              Row(
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: pollData[0]['imageUrl']!.isNotEmpty
+                        ? NetworkImage(pollData[0]['imageUrl']!)
+                        : null,
+                    child: pollData[0]['imageUrl']!.isNotEmpty
+                        ? null
+                        : Text(
+                            'PJ',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                  ),
+                  SizedBox(width: 10),
+                  Text(
+                    'Pasindu Jayasena',
+                    style: kHeadlineStyle,
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              DashBoardStatusCard(
+                activeCount: activeCount,
+                endedCount: endedCount,
+                recentCount: recentCount,
+                dormantCount: dormantCount,
+              ),
+              SizedBox(height: 16),
+              const Text(
+                "Government Policies & Polls",
+                style: kHeadlineStyle,
+              ),
+              SizedBox(height: 12),
+              SearchButton(
+                hintText: "Search",
+                onChanged: (id) {},
+              ),
+              const SizedBox(height: 16),
+              ListView.builder(
+                itemCount: pollData.length,
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
                 itemBuilder: (context, index) {
                   final poll = pollData[index];
                   return PollCard(
                     title: poll['title']!,
                     subtitle: poll['subtitle']!,
-                    label: poll['label']!,
-                    avatarLabel: poll['avatarLabel']!,
                     imageUrl: poll['imageUrl']!,
                   );
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
-      // Use your custom bottom navigation bar component
-      bottomNavigationBar: CustomBottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onBottomNavTap,
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:client/constants/constants.dart';
+import 'package:client/constants/result_card_constants.dart';
 
 class ResultCard extends StatelessWidget {
   final String title;
