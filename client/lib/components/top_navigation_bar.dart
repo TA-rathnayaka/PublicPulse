@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:client/constants/top_navigation_bar_constants.dart';
 
 class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
   @override
@@ -7,32 +8,32 @@ class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: Colors.transparent, // Keep background transparent
-      elevation: 0, // Remove AppBar shadow
+      backgroundColor: kTopNavBarBackgroundColor,
+      elevation: kTopNavBarElevation,
       leading: Padding(
-        padding: const EdgeInsets.all(8.0), // Add padding for better positioning
+        padding: kLeadingButtonPadding,
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.deepPurpleAccent, // Set the background color of the button
+            color: kLeadingButtonColor,
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1), // Light shadow for depth
-                spreadRadius: 2,
-                blurRadius: 5,
-                offset: Offset(0, 2), // Shadow position
+                color: kLeadingButtonShadowColor.withOpacity(kLeadingButtonShadowOpacity),
+                spreadRadius: kLeadingButtonShadowSpreadRadius,
+                blurRadius: kLeadingButtonShadowBlurRadius,
+                offset: const Offset(0, 2),
               ),
             ],
           ),
           child: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 18), // Make the icon smaller
+            icon: Icon(Icons.arrow_back_ios_new, color: kLeadingButtonIconColor, size: kLeadingButtonIconSize),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
         ),
       ),
-      title: const SizedBox.shrink(), // Remove the title for a minimalistic look
+      title: const SizedBox.shrink(),
     );
   }
 }

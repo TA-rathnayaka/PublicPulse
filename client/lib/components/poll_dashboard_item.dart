@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:client/screens/poll_screen.dart';
+import 'package:client/constants/poll_dashboard_item.dart';
 
 class PollCard extends StatelessWidget {
   final String title;
@@ -14,7 +15,7 @@ class PollCard extends StatelessWidget {
     required this.subtitle,
     required this.label,
     required this.avatarLabel,
-    this.avatarBackgroundColor = Colors.black12,
+    this.avatarBackgroundColor = kAvatarBackgroundColorPollCard,
     this.imageUrl = '',
   });
 
@@ -25,9 +26,9 @@ class PollCard extends StatelessWidget {
         Navigator.pushNamed(context, PollScreen.id);
       },
       style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12.0),
+          borderRadius: kBorderRadiusPollCard,
         ),
       ),
       child: Padding(
@@ -39,8 +40,8 @@ class PollCard extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.black12,
-                borderRadius: BorderRadius.circular(8),
+                color: kContainerBackgroundColorPollCard,
+                borderRadius: kImageBorderRadiusPollCard,
                 image: imageUrl.isNotEmpty
                     ? DecorationImage(
                   image: NetworkImage(imageUrl),
@@ -49,38 +50,38 @@ class PollCard extends StatelessWidget {
                     : null,
               ),
             ),
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     title,
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: kTitleTextStylePollCard,
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     subtitle,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: kSubtitleTextStylePollCard,
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Text(
                     label,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.black,
-                    ),
+                    style: kLabelTextStylePollCard,
                     textAlign: TextAlign.left,
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Row(
                     children: [
                       CircleAvatar(
                         radius: 10,
                         backgroundColor: avatarBackgroundColor,
                       ),
-                      SizedBox(width: 8),
-                      Text(avatarLabel),
+                      const SizedBox(width: 8),
+                      Text(
+                        avatarLabel,
+                        style: kAvatarLabelTextStylePollCard,
+                      ),
                     ],
                   ),
                 ],

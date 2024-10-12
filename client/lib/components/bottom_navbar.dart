@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:client/constants/bottom_navbar_constants.dart';
 
-class CustomBottomNavigationBar extends StatelessWidget {
+
+class BottomNavbar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
 
-  const CustomBottomNavigationBar({
+  const BottomNavbar({
     required this.currentIndex,
     required this.onTap,
   });
@@ -12,15 +14,15 @@ class CustomBottomNavigationBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(10),
+      margin: const EdgeInsets.all(10),
       decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(15)),
+        color: kBackgroundColorBottomNavbar,
+        borderRadius: kBorderRadiusBottomNavbar,
         boxShadow: [
           BoxShadow(
-            color: Colors.black26,
+            color: kShadowColorBottomNavbar,
             blurRadius: 10,
-            offset: Offset(0, -2),
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -30,9 +32,9 @@ class CustomBottomNavigationBar extends StatelessWidget {
         elevation: 0,
         currentIndex: currentIndex,
         onTap: onTap,
-        selectedItemColor: Colors.deepPurpleAccent,
-        unselectedItemColor: Colors.black,
-        items: [
+        selectedItemColor: kSelectedItemColorBottomNavbar,
+        unselectedItemColor: kUnselectedItemColorBottomNavbar,
+        items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',

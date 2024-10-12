@@ -1,48 +1,92 @@
 import 'package:flutter/material.dart';
+import 'package:client/constants/preview_card_constants.dart';
 
 class PreviewCard extends StatelessWidget {
   final String username;
   final String avatarPath;
-  final String imageUrl;
+  final String title;
+  final String subTitle;
   final String description;
+  final String imageUrl;
 
   const PreviewCard({
     Key? key,
     required this.username,
     required this.avatarPath,
-    required this.imageUrl,
+    required this.title,
+    required this.subTitle,
     required this.description,
+    required this.imageUrl,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: kCardClipBehaviorPreviewCard,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start, // Align all content to the start (left)
         children: [
+          // User info with avatar and username
           ListTile(
             leading: CircleAvatar(
               backgroundImage: AssetImage(avatarPath),
-              radius: 15,
+              radius: kAvatarRadiusPreviewCard,
             ),
-            title: Text(username, style: TextStyle(fontSize: 10)),
-            trailing: Icon(Icons.arrow_drop_down_circle),
+            title: Text(username, style: kUsernameStylePreviewCard),
+            trailing: Icon(Icons.more_vert),
           ),
+
+          // Image displayed with fixed size
           Container(
-            height: 336,
+            height: kImageHeightPreviewCard,
             width: double.infinity,
             child: Image.network(
               imageUrl,
-              fit: BoxFit.fill,
+              fit: BoxFit.cover,
             ),
           ),
+
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding: kCardPaddingPreviewCard,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: kTitleStylePreviewCard,
+                  textAlign: TextAlign.left, // Align title to the left
+                ),
+                SizedBox(height: 4),
+                Text(
+                  subTitle,
+                  style: kSubTitleStylePreviewCard,
+                  textAlign: TextAlign.left, // Align subtitle to the left
+                ),
+              ],
+            ),
+          ),
+
+          // Main description or caption below
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
               description,
-              style: TextStyle(fontSize: 14),
+              style: kDescriptionStylePreviewCard,
+              textAlign: TextAlign.left, // Align description to the left
             ),
           ),
+
+          // Tags or hashtags at the bottom
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+            child: Row(
+              children: [
+                Chip(label: Text("#OpinionPolls", style: kChipLabelStylePreviewCard)),
+                SizedBox(width: kChipSpacingPreviewCard.horizontal),
+                Chip(label: Text("#SummerActivities", style: kChipLabelStylePreviewCard)),
+              ],
+            ),
+          )
         ],
       ),
     );

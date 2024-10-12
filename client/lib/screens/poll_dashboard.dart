@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:client/components/custom_bottom_navbar.dart';
+import 'package:client/components/bottom_navbar.dart';
 import 'package:client/components/dashboard_status_card.dart';
 import 'package:client/screens/notifications.dart';
 import 'package:client/screens/poll_creation.dart';
 import 'package:client/screens/user_profile.dart';
-import 'package:client/components/poll_card.dart';
+import 'package:client/components/poll_dashboard_card.dart';
 import 'package:client/constants/constants.dart';
 import 'package:client/components/search_button.dart';
 import 'dummy_data.dart';
@@ -30,7 +30,7 @@ class _PollDashboardScreenState extends State<PollDashboardScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _currentIndex == 0 ? _buildPollDashboard() : _pages[_currentIndex],
-      bottomNavigationBar: CustomBottomNavigationBar(
+      bottomNavigationBar: BottomNavbar(
         currentIndex: _currentIndex,
         onTap: (int index) {
           setState(() {
@@ -100,7 +100,7 @@ class _PollDashboardScreenState extends State<PollDashboardScreen> {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   final poll = pollData[index];
-                  return PollCard(
+                  return PollDashBoardCard(
                     title: poll['title']!,
                     subtitle: poll['subtitle']!,
                     imageUrl: poll['imageUrl']!,

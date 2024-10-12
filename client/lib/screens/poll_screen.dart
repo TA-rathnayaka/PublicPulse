@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:client/components/comment_card.dart';
 import 'package:client/components/result_card.dart';
 import 'package:client/components/preview_card.dart';
-import 'package:client/constants/constants.dart';
+import 'package:client/components/primary_button.dart';
 import 'package:client/components/top_navigation_bar.dart';
 
 class PollScreen extends StatefulWidget {
@@ -41,7 +41,7 @@ class _PollScreenState extends State<PollScreen> {
   void initState() {
     super.initState();
     // Initialize total votes from the results
-    _totalVotes = 0;
+    _totalVotes = widget.results.values.fold(0, (sum, value) => sum + value);
   }
 
   void _vote() {
@@ -62,29 +62,24 @@ class _PollScreenState extends State<PollScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               PreviewCard(
+                title: widget.title,
+                subTitle: widget.subtitle,
                 username: widget.username,
                 avatarPath: widget.avatarPath,
                 imageUrl: widget.imageUrl,
                 description: widget.description,
               ),
               const SizedBox(height: 12),
-
               Center(
                 child: SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: _hasVoted ? null : _vote,
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    child: const Text('Vote'),
+                  child: PrimaryButton(
+                    label: 'Vote',
+                    onPressed: () =>_hasVoted ? null : _vote,
                   ),
                 ),
               ),
               const SizedBox(height: 28),
-
               Text(
                 'Total votes counted: $_totalVotes',
                 style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -95,13 +90,12 @@ class _PollScreenState extends State<PollScreen> {
                   children: [
                     ResultCard(
                       title: entry.key,
-                      percentage: entry.value, // Ensure this is the correct representation of the vote count
+                      percentage: entry.value, // Assuming this is a count
                     ),
                     const SizedBox(height: 10),
                   ],
                 );
               }).toList(),
-
               const SizedBox(height: 20),
               const Text(
                 'User Interaction:',

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:client/screens/poll_screen.dart'; // Ensure this import is correct
+import 'package:client/screens/poll_screen.dart';
+import 'package:client/constants/poll_dashboard_card_constants.dart';
 
-class PollCard extends StatelessWidget {
+
+class PollDashBoardCard extends StatelessWidget {
   final String title;
   final String subtitle;
   final String imageUrl;
 
-  const PollCard({
+  const PollDashBoardCard({
     Key? key,
     required this.title,
     required this.subtitle,
@@ -26,17 +28,17 @@ class PollCard extends StatelessWidget {
               imageUrl: imageUrl,
               title: title,
               subtitle: subtitle,
-              description: subtitle, // You can change this if you have a different description
-              results: {}, // Pass an empty map or actual results if available
-              comments: [], // Pass an empty list or actual comments if available
+              description: subtitle, // Change if necessary
+              results: {}, // Pass actual results if available
+              comments: [], // Pass actual comments if available
             ),
           ),
         );
       },
       child: Card(
-        elevation: 4, // Add elevation for a more prominent card
+        elevation: kCardElevationPollDashBoardCard, // Use extracted elevation
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16), // Rounded corners
+          borderRadius: kCardBorderRadiusPollDashBoardCard, // Rounded corners
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0), // Adjust padding
@@ -44,7 +46,7 @@ class PollCard extends StatelessWidget {
             children: [
               // Left side image (network image or asset image)
               ClipRRect(
-                borderRadius: BorderRadius.circular(16), // Rounded corners for the image
+                borderRadius: kCardBorderRadiusPollDashBoardCard, // Rounded corners for the image
                 child: SizedBox(
                   width: 120, // Set image width
                   height: 120, // Set image height
@@ -63,18 +65,12 @@ class PollCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18, // Adjust font size
-                      ),
+                      style: kTitleTextStylePollDashBoardCard, // Use extracted title text style
                     ),
                     const SizedBox(height: 8), // Spacing between title and subtitle
                     Text(
                       subtitle,
-                      style: const TextStyle(
-                        fontSize: 14, // Adjust font size
-                        color: Colors.black, // Subtle color for the subtitle
-                      ),
+                      style: kSubtitleTextStylePollDashBoardCard, // Use extracted subtitle text style
                     ),
                     const SizedBox(height: 16), // Space between subtitle and button
                     ElevatedButton(
@@ -82,20 +78,16 @@ class PollCard extends StatelessWidget {
                         // Add button action here
                       },
                       style: ElevatedButton.styleFrom(
-                        side: const BorderSide(color: Colors.deepPurpleAccent, width: 2), // Border color
-                        backgroundColor: Colors.white, // White background
+                        side: kButtonBorderSidePollDashBoardCard, // Use extracted button border style
+                        backgroundColor: kButtonBackgroundColorPollDashBoardCard, // Use extracted button background
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16), // Rounded corners for button
+                          borderRadius: kButtonBorderRadiusPollDashBoardCard, // Use extracted button border radius
                         ),
-                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12), // Button padding
+                        padding: kButtonPaddingPollDashBoardCard, // Use extracted button padding
                       ),
                       child: const Text(
                         'View Policy',
-                        style: TextStyle(
-                          color: Colors.deepPurpleAccent, // Text color
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15, // Adjust font size
-                        ),
+                        style: kButtonTextStylePollDashBoardCard, // Use extracted button text style
                       ),
                     ),
                   ],

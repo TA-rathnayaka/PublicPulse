@@ -11,13 +11,37 @@ const double kAppBarTitleSpacing = 8.0;
 const Color kPrimaryColor = Color(0xFF4A3AFF);
 const Color kSecondaryColor = Color(0xff673AB7);
 const Color kBackgroundColor = Colors.white;
+
 const Color kTextFieldBackgroundColor = Color(0xFFF3F3F3);
+const Color kTextFieldHintColor = Colors.grey;
+
+const kBorderRadius = BorderRadius.all(Radius.circular(15));
 
 // Text Styles
 const TextStyle kHeadlineStyle = TextStyle(
   fontSize: 24,
   fontWeight: FontWeight.bold,
   color: Colors.black,
+);
+
+final InputDecoration kTextFieldDecoration = InputDecoration(
+  filled: true,
+  fillColor: kTextFieldBackgroundColor,
+  border: OutlineInputBorder(
+    borderRadius: kBorderRadius,
+    borderSide: BorderSide.none,
+  ),
+  enabledBorder: OutlineInputBorder(
+    borderRadius: kBorderRadius,
+    borderSide: BorderSide.none,
+  ),
+  focusedBorder: OutlineInputBorder(
+    borderRadius: kBorderRadius,
+    borderSide: BorderSide.none,
+  ),
+  hintStyle: TextStyle(
+    color: kTextFieldHintColor,
+  ),
 );
 
 const TextStyle kButtonTextStyle = TextStyle(
@@ -31,7 +55,7 @@ const InputDecoration kInputDecoration = InputDecoration(
   filled: true,
   fillColor: kTextFieldBackgroundColor,
   border: OutlineInputBorder(
-    borderRadius: BorderRadius.all(Radius.circular(8.0)),
+    borderRadius: kBorderRadius,
     borderSide: BorderSide.none,
   ),
 );
@@ -58,7 +82,6 @@ final ThemeData KLightTheme = ThemeData(
   ),
 );
 
-
 final ThemeData KDarkTheme = ThemeData(
   primaryColor: Colors.black,
   scaffoldBackgroundColor: Colors.black,
@@ -77,6 +100,5 @@ final ThemeData KDarkTheme = ThemeData(
   colorScheme: ColorScheme.fromSwatch().copyWith(
     primary: Colors.black,
     secondary: Colors.white,
-    background: Colors.black,
   ),
 );
