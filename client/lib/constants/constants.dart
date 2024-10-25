@@ -60,6 +60,8 @@ const InputDecoration kInputDecoration = InputDecoration(
   ),
 );
 
+const TextStyle kInputHintTextStyle = TextStyle(color:kTextFieldHintColor);
+
 final ThemeData KLightTheme = ThemeData(
   primaryColor: Colors.white,
   scaffoldBackgroundColor: Colors.white,
