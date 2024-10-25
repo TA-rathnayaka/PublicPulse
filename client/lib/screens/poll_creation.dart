@@ -1,8 +1,9 @@
-
 import 'package:flutter/material.dart';
 import '../constants/constants.dart';
 import '../components/StatelessWidget.dart';
-import 'package:client/components/preview_card.dart'; // Import the PreviewCard
+import 'package:client/components/preview_card.dart';
+import 'package:client/components/top_navigation_bar.dart';
+import 'package:client/components/primary_button.dart';
 
 class PollCreationScreen extends StatelessWidget {
   static String id = '/poll-creation';
@@ -11,101 +12,97 @@ class PollCreationScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: kPrimaryColor,
-        title: Row(
-          children: [
-            SizedBox(width: kAppBarTitleSpacing),
-            Text(
-              "Poll Create",
-              style: TextStyle(color: Colors.white),
-            ),
-          ],
-        ),
-      ),
+      appBar: TopNavigationBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: kPaddingHorizontal),
           child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              SizedBox(height: 28),
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 28),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Preview Card
-                  PreviewCard(
-                    username: '@username',
-                    avatarPath: 'images/avatar.png',
-                    imageUrl: 'https://picsum.photos/250?image=9',
-                    description:
-                        'This is a sample description for the poll preview.',
-                  ),
-                  SizedBox(height: kSizedBoxHeight),
-                  // Poll Topic
-                  PollTopicInput(label: 'Poll Topic'),
-                  SizedBox(height: kSizedBoxHeight),
-                  // Poll Description
-                  PollDescriptionInput(),
-                  SizedBox(height: kSizedBoxHeight),
-                  // Another Poll Topic Input (for multiple options)
-                  PollTopicInput(label: 'Poll Topic'),
-                ],
+            // Preview Card
+            PreviewCard(
+            title: "title",
+            subTitle: "subtitle",
+            username: '@username',
+            avatarPath: 'images/avatar.png',
+            imageUrl:
+            'https://as2.ftcdn.net/v2/jpg/02/29/51/37/1000_F_229513787_8XjaId5E9g3DYxHNialX7xUr0pppLXLJ.jpg',
+            description:
+            'This is a sample description for the poll preview.',
+          ),
+          SizedBox(height: kSizedBoxHeight),
+          // Poll Topic
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Poll Topic",
+                style: kHeadlineStyle,
               ),
               SizedBox(height: kSizedBoxHeight),
-              // Poll Results
-              PollResultsSection(),
-              SizedBox(height: kSizedBoxHeight),
-              // Pro Security Toggle (can add functionality later)
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Pro Security',
-                    style: kHeadlineStyle,
-                  ),
-                  Switch(
-                    value: true, // Example value
-                    onChanged: (bool value) {
-                      // Handle switch change
-                    },
-                  ),
-                ],
+              TextField(
+                decoration: kTextFieldDecoration.copyWith(hintText: 'Write a Topic'),
               ),
-              SizedBox(height: kSizedBoxHeight),
-              // Create Poll Button
-              CreatePollButton(),
-              SizedBox(height: 100), // Add extra space at the bottom
             ],
           ),
+          SizedBox(height: kSizedBoxHeight),
+          // Poll Description
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Poll Description',
+                style: kHeadlineStyle,
+              ),
+              SizedBox(height: kSizedBoxHeight),
+              TextField(
+                maxLines: 5,
+                decoration:
+                kTextFieldDecoration.copyWith(hintText: 'Write a Description'),
+              ),
+            ],
+          ),
+          SizedBox(height: kSizedBoxHeight),
+          // Another Poll Topic Input (for multiple options)
+          // PollTopicInput(label: 'Poll Topic'),
+          ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Poll',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
+        SizedBox(height: kSizedBoxHeight),
+        // Poll Results
+        PollResultsSection(),
+        SizedBox(height: kSizedBoxHeight),
+        // Pro Security Toggle (can add functionality later)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Pro Security',
+              style: kHeadlineStyle,
+            ),
+            Switch(
+              value: true, // Example value
+              onChanged: (bool value) {
+                // Handle switch change
+              },
+            ),
+          ],
+        ),
+        SizedBox(height: kSizedBoxHeight),
+        // Create Poll Button
+        Container(
+          width: double.infinity,
+          child: PrimaryButton(label: "Create Poll", onPressed: () {}),
+        )
 
-        unselectedItemColor: Colors.black, // Color for unselected items
-        backgroundColor: Colors.black, // Background color of the BottomNavigationBar
-        onTap: (int index) {
-        },
+        // Add extra space at the bottom
+        ],
       ),
+    ),)
+    ,
     );
   }
 }
-

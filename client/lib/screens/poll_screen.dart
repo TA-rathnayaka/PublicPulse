@@ -2,112 +2,123 @@ import 'package:flutter/material.dart';
 import 'package:client/components/comment_card.dart';
 import 'package:client/components/result_card.dart';
 import 'package:client/components/preview_card.dart';
+import 'package:client/components/primary_button.dart';
+import 'package:client/components/top_navigation_bar.dart';
 
-class PollScreen extends StatelessWidget {
+class PollScreen extends StatefulWidget {
   static String id = '/poll-screen';
+
+  final String username;
+  final String avatarPath;
+  final String imageUrl;
+  final String title;
+  final String subtitle;
+  final String description;
+  final Map<String, int> results;
+  final List<Map<String, String>> comments;
+
+  const PollScreen({
+    Key? key,
+    required this.username,
+    required this.avatarPath,
+    required this.imageUrl,
+    required this.title,
+    required this.subtitle,
+    required this.description,
+    required this.results,
+    required this.comments,
+  }) : super(key: key);
+
+  @override
+  _PollScreenState createState() => _PollScreenState();
+}
+
+class _PollScreenState extends State<PollScreen> {
+  bool _hasVoted = false; // Track if the user has voted
+  int _totalVotes = 0; // Track the total votes
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize total votes from the results
+    _totalVotes = widget.results.values.fold(0, (sum, value) => sum + value);
+  }
+
+  void _vote() {
+    setState(() {
+      _totalVotes++;
+      _hasVoted = true;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 48,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-        title: Text('Poll'),
-      ),
+      appBar: TopNavigationBar(),
       body: SingleChildScrollView(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Use PreviewCard instead of the inline card widget
               PreviewCard(
-                username: '@username',
-                avatarPath: 'images/avatar.png',
-                imageUrl: "https://picsum.photos/250?image=9",
-                description:
-                'Greyhound divisively hello coldly wonderfully marginally far upon excluding.',
+                title: widget.title,
+                subTitle: widget.subtitle,
+                username: widget.username,
+                avatarPath: widget.avatarPath,
+                imageUrl: widget.imageUrl,
+                description: widget.description,
               ),
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Center(
                 child: SizedBox(
                   width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // Voting logic here
-                    },
-                    child: Text('Vote'),
-                    style: ElevatedButton.styleFrom(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
+                  child: PrimaryButton(
+                    label: 'Vote',
+                    onPressed: () =>_hasVoted ? null : _vote,
                   ),
                 ),
               ),
-              SizedBox(height: 28),
-              Text('Poll Results:', style: TextStyle(fontSize: 18)),
-              SizedBox(height: 10),
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(children: [
-                      ResultCard(title: 'Option 1', percentage: 30),
-                      SizedBox(height: 10),
-                      ResultCard(title: 'Option 2', percentage: 50),
-                    ]),
-                  ),
-                  SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        ResultCard(title: 'Option 3', percentage: 20),
-                        SizedBox(height: 10),
-                        ResultCard(title: 'Option 4', percentage: 10),
-                      ],
-                    ),
-                  ),
-                ],
+              const SizedBox(height: 28),
+              Text(
+                'Total votes counted: $_totalVotes',
+                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('User Interaction:', style: TextStyle(fontSize: 18)),
-                  SizedBox(height: 10),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
+              const SizedBox(height: 10),
+              ...widget.results.entries.map((entry) {
+                return Column(
+                  children: [
+                    ResultCard(
+                      title: entry.key,
+                      percentage: entry.value, // Assuming this is a count
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                );
+              }).toList(),
+              const SizedBox(height: 20),
+              const Text(
+                'User Interaction:',
+                style: TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 10),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: widget.comments.map((commentData) {
+                    return Row(
                       children: [
                         CommentCard(
-                          name: 'John Doe',
-                          comment: 'Great poll! I really enjoyed participating.',
-                          rating: 4.5,
-                          avatarPath: '',
+                          name: commentData['name'] ?? 'Anonymous',
+                          comment: commentData['comment'] ?? '',
+                          rating: double.tryParse(commentData['rating'] ?? '0') ?? 0.0,
+                          avatarPath: commentData['avatarPath'] ?? '',
                         ),
-                        SizedBox(width: 10),
-                        CommentCard(
-                          name: 'Jane Smith',
-                          comment: 'This was fun, thanks for sharing!',
-                          rating: 4.8,
-                          avatarPath: '',
-                        ),
-                        SizedBox(width: 10),
-                        CommentCard(
-                          name: 'Mark Johnson',
-                          comment: 'I found this very informative!',
-                          rating: 4.7,
-                          avatarPath: '',
-                        ),
+                        const SizedBox(width: 10),
                       ],
-                    ),
-                  ),
-                ],
+                    );
+                  }).toList(),
+                ),
               ),
             ],
           ),
