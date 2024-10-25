@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
@@ -61,7 +62,8 @@ const Widget = ({ type }) => {
     case "user":
       data = {
         title: "USERS",
-        link: "See user details",
+        link: "/users", // Redirect link for users
+        linkText: "See user details",
         icon: (
           <PersonOutlinedIcon
             className="icon"
@@ -76,7 +78,8 @@ const Widget = ({ type }) => {
     case "polls":
       data = {
         title: "POLLS",
-        link: "View all Polls",
+        link: "/polls", // Redirect link for polls
+        linkText: "View all Polls",
         icon: (
           <PollOutlinedIcon
             className="icon"
@@ -91,7 +94,8 @@ const Widget = ({ type }) => {
     case "participation":
       data = {
         title: "PARTICIPATION",
-        link: "View participation details",
+        link: "/participation", // Redirect link for participation
+        linkText: "View participation details",
         icon: (
           <EventAvailableOutlinedIcon
             className="icon"
@@ -117,7 +121,10 @@ const Widget = ({ type }) => {
           <div className="left">
             <span className="title">{data.title}</span>
             <span className="counter">{dataCount}</span>
-            <span className="link">{data.link}</span>
+            {/* Change here to make it look like regular text */}
+            <Link to={data.link} className="link" style={{ textDecoration: 'none', color: 'inherit' }}>
+              {data.linkText}
+            </Link>
           </div>
           <div className="right">
             <div className="percentage positive">

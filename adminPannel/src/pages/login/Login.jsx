@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword } from "firebase/auth"; // Firebase Auth import
 import { doc, getDoc } from "firebase/firestore"; // Firestore imports
-import { auth, firestore } from '../../firebase/firebase'; // Your firebase config file
+import { auth, firestore } from '../../backend/firebase/firebase'; // Your firebase config file
 import "./login.scss";
 
 const Login = () => {
