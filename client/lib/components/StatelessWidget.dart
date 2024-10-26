@@ -18,7 +18,7 @@ class PollTopicInput extends StatelessWidget {
         ),
         SizedBox(height: kSizedBoxHeight),
         TextField(
-          decoration: kInputDecoration.copyWith(hintText: 'Write a Topic'),
+          decoration: kTextFieldDecoration.copyWith(hintText: 'Write a Topic'),
         ),
       ],
     );
@@ -39,7 +39,7 @@ class PollDescriptionInput extends StatelessWidget {
         TextField(
           maxLines: 5,
           decoration:
-              kInputDecoration.copyWith(hintText: 'Write a Description'),
+              kTextFieldDecoration.copyWith(hintText: 'Write a Description'),
         ),
       ],
     );
