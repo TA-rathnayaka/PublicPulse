@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Sidebar from "../../components/sidebar/Sidebar";
-import Navbar from "../../components/navbar/Navbar";
 import Widget from "../../components/widget/Widget";
 import Featured from "../../components/featured/Featured";
 import Chart from "../../components/chart/Chart";
@@ -14,34 +12,11 @@ import { doc, getDoc } from "firebase/firestore"; // Firestore methods
 
 const Home = () => {
   const [user, loading, authError] = useAuthState(auth); // Firebase Auth state hook
-  const [userData, setUserData] = useState(null); // State to hold user data from Firestore
+  
   const [dataLoading, setDataLoading] = useState(true); // Loading state for user data
   const [fetchError, setFetchError] = useState(null); // To handle errors during data fetch
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (user) {
-        try {
-          const userRef = doc(firestore, "users", user.uid); // Reference to the user document in Firestore
-          const userDoc = await getDoc(userRef);
-          console.log(user)
-          if (userDoc.exists()) {
-            setUserData(userDoc.data()); // Set the user data in state
-          } else {
-            setFetchError("User data not found.");
-          }
-        } catch (err) {
-          setFetchError("Error fetching user data.");
-        } finally {
-          setDataLoading(false); // Stop loading after fetching
-        }
-      }
-    };
 
-    if (user && !loading) {
-      fetchUserData(); // Fetch the user data once authenticated
-    }
-  }, [user, loading]);
 
   // Show authentication error if any
   if (authError) {
@@ -63,19 +38,11 @@ const Home = () => {
   // Show dashboard while loading only necessary components
   return (
     <div className="home">
-      <Sidebar />
       <div className="homeContainer">
-        <Navbar />
-        <div className="welcomeMessage">
-          {/* Example of showing user data */}
-          <h2>Welcome, {userData?.name || user.email}</h2>
-          <p>Your role: {userData?.role}</p>
-        </div>
         <div className="widgets">
           <Widget type="user" loading={loading || dataLoading} />
           <Widget type="polls" loading={loading || dataLoading} />
           <Widget type="participation" loading={loading || dataLoading} />
-          
         </div>
         <div className="charts">
           <Featured />

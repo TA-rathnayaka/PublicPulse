@@ -1,0 +1,16 @@
+// src/layout.scss
+.layout {
+    display: flex;
+  }
+  
+  .layoutContainer {
+    flex-grow: 1; // This allows the layout to take up the remaining space
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .children {
+    flex-grow: 1; // This ensures the children fill the available space
+    padding: 20px; // Adjust padding as needed
+  }
+  

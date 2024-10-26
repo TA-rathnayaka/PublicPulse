@@ -4,7 +4,17 @@
   .homeContainer {
     flex: 6;
 
-    .widgets,
+    .widgets {
+      display: flex; /* Display as a flex container */
+      justify-content: space-between; /* Space items evenly */
+      flex-wrap: wrap; /* Allow wrapping of widgets */
+      gap: 20px; /* Space between widgets */
+      padding: 20px; /* Padding around the container */
+      border: 1px solid rgba(0, 0, 0, 0.1); /* Light border for the container */
+      border-radius: 12px; /* Rounded corners */
+      /* Background color for the container */
+      margin: 20px;
+    }
     .charts {
       display: flex;
       padding: 20px;

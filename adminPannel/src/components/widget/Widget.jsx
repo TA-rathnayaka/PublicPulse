@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; // Import Link from react-router-dom
+import { Link } from "react-router-dom"; 
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import PollOutlinedIcon from "@mui/icons-material/PollOutlined";
 import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
-import CircularProgress from "@mui/material/CircularProgress"; // Material UI loader
-import { getUserCount, getPollCount, getParticipationCount } from "../../backend/widgetsController"; // Import API functions
+import CircularProgress from "@mui/material/CircularProgress"; 
+import { getUserCount, getPollCount, getParticipationCount } from "../../backend/widgetsController"; 
 
 const Widget = ({ type }) => {
   const [dataCount, setDataCount] = useState(null);
@@ -14,32 +14,31 @@ const Widget = ({ type }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true; // Track whether the component is mounted
+    let isMounted = true; 
     const fetchData = async () => {
       setLoading(true);
       try {
         let count;
         switch (type) {
           case "user":
-            count = await getUserCount(); // Fetch user count
+            count = await getUserCount(); 
             break;
           case "polls":
-            count = await getPollCount(); // Fetch poll count
+            count = await getPollCount(); 
             break;
           case "participation":
-            count = await getParticipationCount(); // Fetch participation count
+            count = await getParticipationCount(); 
             break;
           default:
             return;
         }
         
-        // Only update state if the component is still mounted
         if (isMounted) {
           setDataCount(count);
         }
       } catch (err) {
         if (isMounted) {
-          setError("Error fetching data.");
+          setError(err.message || "Error fetching data."); // Improved error handling
         }
       } finally {
         if (isMounted) {
@@ -49,7 +48,6 @@ const Widget = ({ type }) => {
     };
     fetchData();
 
-    // Cleanup function to set isMounted to false
     return () => {
       isMounted = false;
     };
@@ -62,7 +60,7 @@ const Widget = ({ type }) => {
     case "user":
       data = {
         title: "USERS",
-        link: "/users", // Redirect link for users
+        link: "/users", 
         linkText: "See user details",
         icon: (
           <PersonOutlinedIcon
@@ -78,7 +76,7 @@ const Widget = ({ type }) => {
     case "polls":
       data = {
         title: "POLLS",
-        link: "/polls", // Redirect link for polls
+        link: "/polls", 
         linkText: "View all Polls",
         icon: (
           <PollOutlinedIcon
@@ -94,7 +92,7 @@ const Widget = ({ type }) => {
     case "participation":
       data = {
         title: "PARTICIPATION",
-        link: "/participation", // Redirect link for participation
+        link: "/participation", 
         linkText: "View participation details",
         icon: (
           <EventAvailableOutlinedIcon
@@ -120,8 +118,7 @@ const Widget = ({ type }) => {
         <>
           <div className="left">
             <span className="title">{data.title}</span>
-            <span className="counter">{dataCount}</span>
-            {/* Change here to make it look like regular text */}
+            <span className="counter">{dataCount !== null ? dataCount : "No data available"}</span>
             <Link to={data.link} className="link" style={{ textDecoration: 'none', color: 'inherit' }}>
               {data.linkText}
             </Link>

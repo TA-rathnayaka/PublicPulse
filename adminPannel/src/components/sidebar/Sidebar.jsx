@@ -47,12 +47,15 @@ const Sidebar = () => {
       <div className="center">
         <ul>
           <p className="title">MAIN</p>
+          <Link to={'/'}>
           <li>
             <Tooltip title="Dashboard" placement="right">
               <DashboardIcon className="icon" />
             </Tooltip>
-            <span>Dashboard</span>
+            <span onClick={() => navigate('/')} >Dashboard</span>
           </li>
+          </Link>
+          
           <p className="title">MANAGE</p>
           <Link to="/users" style={{ textDecoration: "none" }}>
             <li>

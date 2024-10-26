@@ -9,9 +9,8 @@ const New = ({ inputs, title }) => {
 
   return (
     <div className="new">
-      <Sidebar />
       <div className="newContainer">
-        <Navbar />
+
         <div className="top">
           <h1>{title}</h1>
         </div>

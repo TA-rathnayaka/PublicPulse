@@ -1,54 +1,68 @@
+.widgets {
+  
+}
+
 .widget {
   display: flex;
   justify-content: space-between;
   flex: 1;
-  padding: 10px;
-  -webkit-box-shadow: 2px 4px 10px 1px rgba(0, 0, 0, 0.47);
-  box-shadow: 2px 4px 10px 1px rgba(201, 201, 201, 0.47);
-  border-radius: 10px;
-  height: 100px;
+  color: black;
+  padding: 20px; /* Increased padding for a more spacious look */
+  border-radius: 12px; /* Slightly larger border-radius */
+  height: 120px; /* Increased height for more space */
+  background-color: white; /* Ensure background is white for a clean look */
+  margin-bottom: 20px; /* Add space between widgets */
+  border: 1px solid rgba(0, 0, 0, 0.1); 
 
   .left,
   .right {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    flex: 1; /* Ensure both sides take equal space */
 
     .title {
       font-weight: bold;
-      font-size: 14px;
-      color: rgb(160, 160, 160);
+      font-size: 16px; /* Increased font size for title */
+      color: rgb(0, 0, 0); /* Darker title color for contrast */
     }
 
     .counter {
-      font-size: 28px;
-      font-weight: 300;
+      font-size: 32px; /* Increased font size for counter */
+      font-weight: 700; /* Bold font weight for better visibility */
+      color: black; /* Set color to black for prominence */
     }
 
     .link {
-      width: max-content;
-      font-size: 12px;
-      border-bottom: 1px solid gray;
+      font-size: 14px; /* Increased font size for the link */
+      color: #007bff; /* Blue color for links */
+      border-bottom: 1px solid transparent; /* Add border styling */
+      transition: border-color 0.3s; /* Smooth transition effect */
+
+      &:hover {
+        border-color: gray; /* Change border color on hover */
+      }
     }
 
     .percentage {
       display: flex;
       align-items: center;
-      font-size: 14px;
+      font-size: 14px; /* Maintain a good size for percentages */
 
       &.positive {
-        color: green;
+        color: green; /* Green for positive percentage */
       }
       &.negative {
-        color: red;
+        color: red; /* Red for negative percentage */
       }
     }
 
     .icon {
-      font-size: 18px;
-      padding: 5px;
-      border-radius: 5px;
-      align-self: flex-end;
+      font-size: 40px; /* Increased icon size for better visibility */
+      padding: 10px; /* More padding for the icon */
+      border-radius: 50%; /* Rounded icon */
+      align-self: flex-end; /* Align icon to the right */
+      background-color: rgba(0, 0, 0, 0.05); /* Light background for the icon */
     }
   }
 }
