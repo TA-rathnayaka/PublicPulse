@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:client/constants/dash_board_status_card_constants.dart';
+import 'package:client/views/constants/dash_board_status_card_constants.dart';
 
 
 class DashBoardStatusCard extends StatelessWidget {

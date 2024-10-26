@@ -1,4 +1,4 @@
-import 'package:client/constants/constants.dart';
+import 'package:client/views/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 const Color kPrimaryButtonColor = kPrimaryColor; // Button background color

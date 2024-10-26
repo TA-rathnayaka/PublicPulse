@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:client/components/primary_button.dart';
-import 'package:client/constants/constants.dart';
+import 'package:client/views/components/primary_button.dart';
+import 'package:client/views/constants/constants.dart';
+import 'package:client/views/components/top_navigation_bar.dart';
 
 class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(kPaddingHorizontal),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 20),
+            TopNavigationBar(),
+            SizedBox(height: kSizedBoxHeight),
             Center(
               child: Column(
                 children: [
                   Icon(Icons.how_to_vote, size: 100, color: kPrimaryColor),
-                  SizedBox(height: 20),
+                  SizedBox(height: kSizedBoxHeight),
                   Text(
                     "Well come to Public Pulse",
                     style: kHeadlineStyle,
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: kSizedBoxHeight),
                   TextField(
                       decoration: kTextFieldDecoration.copyWith(
                           hintText: 'User name or email',
@@ -30,7 +32,7 @@ class Login extends StatelessWidget {
                             Icons.person,
                             color: kTextFieldHintColor,
                           ))),
-                  SizedBox(height: 20),
+                  SizedBox(height: kSizedBoxHeight),
                   TextField(
                     obscureText: true,
                     decoration: kTextFieldDecoration.copyWith(
@@ -40,7 +42,7 @@ class Login extends StatelessWidget {
                         ),
                         hintText: "Password"),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: kSizedBoxHeight),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -53,7 +55,7 @@ class Login extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: kSizedBoxHeight),
                   SizedBox(
                     width: double.infinity,
                     child: PrimaryButton(
@@ -61,7 +63,7 @@ class Login extends StatelessWidget {
                       onPressed: () {},
                     ),
                   ),
-                  SizedBox(height: 15),
+                  SizedBox(height: kSizedBoxHeight),
                   SizedBox(
                     width: double.infinity,
                     child: PrimaryButton(

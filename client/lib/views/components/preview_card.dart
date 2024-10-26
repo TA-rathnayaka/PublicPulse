@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:client/constants/preview_card_constants.dart';
+import 'package:client/views/constants/preview_card_constants.dart';
 
 class PreviewCard extends StatelessWidget {
   final String username;

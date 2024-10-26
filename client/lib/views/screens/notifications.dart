@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:client/constants/constants.dart';
-import 'package:client/components/top_navigation_bar.dart';
+import 'package:client/views/constants/constants.dart';
+import 'package:client/views/components/top_navigation_bar.dart';
 
 class NotificationScreen extends StatelessWidget {
   @override

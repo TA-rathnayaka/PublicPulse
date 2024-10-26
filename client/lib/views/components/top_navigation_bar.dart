@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:client/constants/top_navigation_bar_constants.dart';
+import 'package:client/views/constants/top_navigation_bar_constants.dart';
 
 class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
   @override

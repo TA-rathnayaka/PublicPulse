@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:client/components/comment_card.dart';
-import 'package:client/components/result_card.dart';
-import 'package:client/components/preview_card.dart';
-import 'package:client/components/primary_button.dart';
-import 'package:client/components/top_navigation_bar.dart';
+import 'package:client/views/components/comment_card.dart';
+import 'package:client/views/components/result_card.dart';
+import 'package:client/views/components/preview_card.dart';
+import 'package:client/views/components/primary_button.dart';
+import 'package:client/views/components/top_navigation_bar.dart';
 
 class PollScreen extends StatefulWidget {
   static String id = '/poll-screen';

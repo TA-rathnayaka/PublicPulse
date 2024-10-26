@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:client/constants/constants.dart';
+import 'package:client/views/constants/constants.dart';
 
 const kTitleTextStylePollDashBoardCard = TextStyle(
   fontWeight: FontWeight.bold,

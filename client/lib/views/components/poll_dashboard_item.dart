@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:client/screens/poll_screen.dart';
-import 'package:client/constants/poll_dashboard_item.dart';
+import 'package:client/views/screens/poll_screen.dart';
+import 'package:client/views/constants/poll_dashboard_item.dart';
 
 class PollCard extends StatelessWidget {
   final String title;

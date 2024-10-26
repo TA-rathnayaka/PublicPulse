@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:client/components/bottom_navbar.dart';
-import 'package:client/components/dashboard_status_card.dart';
-import 'package:client/screens/notifications.dart';
-import 'package:client/screens/poll_creation.dart';
-import 'package:client/screens/user_profile.dart';
-import 'package:client/components/poll_dashboard_card.dart';
-import 'package:client/constants/constants.dart';
-import 'package:client/components/search_button.dart';
+import 'package:client/views/components/bottom_navbar.dart';
+import 'package:client/views/components/dashboard_status_card.dart';
+import 'package:client/views/screens/notifications.dart';
+import 'package:client/views/screens/poll_creation.dart';
+import 'package:client/views/screens/user_profile.dart';
+import 'package:client/views/components/poll_dashboard_card.dart';
+import 'package:client/views/constants/constants.dart';
+import 'package:client/views/components/search_button.dart';
 import 'dummy_data.dart';
 
 class PollDashboardScreen extends StatefulWidget {
