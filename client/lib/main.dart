@@ -1,4 +1,5 @@
 
+import 'package:client/views/screens/_all.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:client/config/app_routes.dart';
@@ -14,8 +15,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      home: Signup(),
       theme: KLightTheme,
-      routes: routes,
+      // routes: routes,
     );
   }
 }
