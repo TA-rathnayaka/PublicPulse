@@ -1,8 +1,10 @@
 import 'package:client/services/auth.dart';
+import 'package:client/services/firestore.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:client/views/components/top_navigation_bar.dart';
 import 'package:client/views/constants/constants.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Signup extends StatefulWidget {
   @override
@@ -14,8 +16,10 @@ class _SignupState extends State<Signup> {
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _repeatPasswordController = TextEditingController();
+  final TextEditingController _repeatPasswordController =
+      TextEditingController();
   final AuthService _auth = AuthService();
+  final StorageService _storageService = StorageService();
 
   String? _firstNameError;
   String? _lastNameError;
@@ -90,14 +94,14 @@ class _SignupState extends State<Signup> {
       _emailError = _emailController.text.isEmpty
           ? "Email cannot be empty."
           : _isValidEmail(_emailController.text)
-          ? null
-          : "Please enter a valid email address.";
+              ? null
+              : "Please enter a valid email address.";
       _passwordError =
-      _passwordController.text.isEmpty ? "Password cannot be empty." : null;
+          _passwordController.text.isEmpty ? "Password cannot be empty." : null;
       _repeatPasswordError =
-      _passwordController.text != _repeatPasswordController.text
-          ? "Passwords do not match."
-          : null;
+          _passwordController.text != _repeatPasswordController.text
+              ? "Passwords do not match."
+              : null;
     });
   }
 
@@ -109,7 +113,7 @@ class _SignupState extends State<Signup> {
     return emailRegExp.hasMatch(email);
   }
 
-  void _handleSignup() {
+  void _handleSignup() async {
     _validateInputs();
 
     // If any error exists, stop further execution
@@ -127,7 +131,8 @@ class _SignupState extends State<Signup> {
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    _auth.registerUserAndPassword(email, password);
+    User? user = await _auth.registerUserAndPassword(email, password);
+    _storageService.storeUserDetails(user?.uid, firstName, lastName, email);
 
     // Optionally show success message or navigate to another screen
     ScaffoldMessenger.of(context).showSnackBar(

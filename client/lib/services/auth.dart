@@ -10,7 +10,6 @@ class AuthService {
       User? user = result.user;
       return user;
     } on FirebaseAuthException catch (e) {
-      // Handle specific FirebaseAuth exceptions
       switch (e.code) {
         case 'invalid-email':
           print('Invalid email format.');
@@ -37,6 +36,7 @@ class AuthService {
         email: email,
         password: password,
       );
+      print(result.user);
       return result.user;
     } catch (e) {
       if (e is FirebaseAuthException) {

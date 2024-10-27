@@ -9,25 +9,26 @@ class User {
   String? _division;
   String? _phoneNumber;
 
-
   User({required this.uid});
 
-  String get phoneNumber => _phoneNumber;
+  // Getters
+  String get phoneNumber => _phoneNumber ?? '';
 
-  String get division => _division;
+  String get division => _division ?? '';
 
-  String get district => _district;
+  String get district => _district ?? '';
 
-  String get national_id => _national_id;
+  String get national_id => _national_id ?? '';
 
-  String get image_url => _image_url;
+  String get image_url => _image_url ?? '';
 
-  String get email => _email;
+  String get email => _email ?? '';
 
-  String get last_name => _last_name;
+  String get last_name => _last_name ?? '';
 
-  String get first_name => _first_name;
+  String get first_name => _first_name ?? '';
 
+  // Setters
   set phoneNumber(String value) {
     _phoneNumber = value;
   }
@@ -59,4 +60,27 @@ class User {
   set first_name(String value) {
     _first_name = value;
   }
+
+  // New method to update user information
+  void updateUserInfo({
+    String? firstName,
+    String? lastName,
+    String? email,
+    String? imageUrl,
+    String? nationalId,
+    String? district,
+    String? division,
+    String? phoneNumber,
+  }) {
+    if (firstName != null) _first_name = firstName;
+    if (lastName != null) _last_name = lastName;
+    if (email != null) _email = email;
+    if (imageUrl != null) _image_url = imageUrl;
+    if (nationalId != null) _national_id = nationalId;
+    if (district != null) _district = district;
+    if (division != null) _division = division;
+    if (phoneNumber != null) _phoneNumber = phoneNumber;
+  }
+
+
 }
