@@ -1,5 +1,5 @@
 :root {
-  /* Define color variables */
+  /* Existing color variables */
   --border-color: rgb(230, 227, 227);
   --sidebar-bg-color: rgba(249, 249, 249, 1);
   --logo-color: #6439ff;
@@ -11,6 +11,7 @@
   --color-option-1: whitesmoke;
   --color-option-2: #525252;
   --color-option-3: rgb(190, 190, 193);
+  --active-color: #6439ff;
 }
 
 .sidebar {
@@ -40,10 +41,6 @@
 
   .center {
     padding-left: 10px;
-    
-    .Dashboard {
-      color: #6439ff;
-    }
 
     ul {
       list-style: none;
@@ -63,14 +60,20 @@
         align-items: center;
         padding: 5px;
         cursor: pointer;
+        transition: color 0.3s ease;
 
         &:hover {
-          background-color: var(--hover-bg-color);
+          color: var(--active-color); // Apply hover color to text and icon
+        }
+
+        &:hover .icon, &:hover span {
+          color: var(--active-color); // Change icon and text color on hover
         }
 
         .icon {
           font-size: 20px;
           color: var(--icon-color);
+          transition: color 0.3s ease;
         }
 
         span {
@@ -78,6 +81,7 @@
           font-weight: 600;
           color: var(--font-color);
           margin-left: 10px;
+          transition: color 0.3s ease;
         }
       }
     }
@@ -104,86 +108,6 @@
       }
       &:nth-child(3) {
         background-color: var(--color-option-3);
-      }
-    }
-  }
-}
-
-/* Media Queries for Responsiveness */
-@media (max-width: 1200px) {
-  .sidebar {
-    padding-left: 10px;
-    padding-right: 10px;
-
-    .top {
-      height: 40px;
-
-      .logo {
-        font-size: 24px; /* Reduce logo size */
-      }
-    }
-
-    .center {
-      .title {
-        font-size: 14px; /* Reduce title size */
-      }
-
-      li {
-        padding: 8px; /* Increase padding for touch targets */
-      }
-    }
-  }
-}
-
-@media (max-width: 768px) {
-  .sidebar {
-    flex: 0 0 60px; /* Reduce width for smaller screens */
-    overflow: hidden; /* Hide overflow */
-    transition: flex 0.3s ease;
-
-    .top {
-      justify-content: space-between; /* Space between logo and close button */
-    }
-
-    .center {
-      display: none; /* Hide center section by default */
-    }
-
-    .toggle-button {
-      display: block; /* Add a toggle button for mobile */
-      cursor: pointer;
-    }
-  }
-
-  .sidebar.active {
-    flex: 1; /* Expand on toggle */
-    
-    .center {
-      display: block; /* Show center section when active */
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .sidebar {
-    padding-left: 5px;
-    padding-right: 5px;
-
-    .top {
-      height: 35px;
-
-      .logo {
-        font-size: 20px; /* Further reduce logo size */
-      }
-    }
-
-    .center {
-      .title {
-        font-size: 12px; /* Further reduce title size */
-      }
-
-      li {
-        padding: 5px; /* Reduce padding for smaller screens */
       }
     }
   }
