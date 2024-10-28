@@ -14,6 +14,7 @@ import Settings from "./pages/settins/Settings";
 import ManagePolls from "./pages/managePoll/ManagePolls";
 import Policies from "./pages/policies/Policies"
 import PolicyDetails from "./pages/policyDetails/PolicyDetails";
+import Notifications from "./pages/notifications/notifications";
 
 
 function App() {
@@ -28,6 +29,7 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/notifications" element={<Notifications />} />
             <Route path="polls" element={<ManagePolls />} />
             <Route path="profile" element={<Profile />} />
             <Route path="settings" element={<Settings />} />

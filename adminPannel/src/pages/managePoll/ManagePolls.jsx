@@ -1,3 +1,5 @@
+
+
 import React, { useState } from "react";
 import "./managePolls.scss";
 import PollCreation from "../../components/pollCreation/PollCreation";
@@ -34,11 +36,7 @@ const ManagePolls = () => {
   );
 };
 
-<<<<<<< HEAD
-export default ManagePolls;
-=======
-export default SettingsPage; // Don't forget to export your component
+export default ManagePolls; // Don't forget to export your component
 
 
 
->>>>>>> feature/chathura-models
