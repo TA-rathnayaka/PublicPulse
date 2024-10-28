@@ -42,7 +42,7 @@
 
     .image-preview {
       margin-top: 10px;
-      
+
       .preview-img {
         max-width: 100%;
         height: auto;
@@ -52,13 +52,14 @@
     }
 
     .add-description {
-      display: block;
+      display: block; /* Change to block for full width */
       margin: 1rem 0;
-      background: #f0f0f0;
-      border: none;
-      padding: 0.5rem 1rem;
+      background: none; /* Remove background */
+      border: none; /* Remove border */
+      padding: 0; /* Remove padding */
+      color: #6439ff; /* Keep text color */
       cursor: pointer;
-      color: #6439ff;
+      text-decoration: underline; /* Add underline to indicate it's clickable */
     }
 
     .options {
@@ -73,8 +74,14 @@
         color: #6439ff;
         cursor: pointer;
         text-align: left;
-        padding: 0;
+        padding: 0; /* Remove padding */
         margin-top: 0.5rem;
+      }
+
+      .options-buttons {
+        display: flex;
+        gap: 1rem; /* Add gap between the buttons */
+        margin-top: 0.5rem; /* Space above the button container */
       }
     }
   }
@@ -128,10 +135,11 @@
       background: #6439ff;
       color: #fff;
       border: none;
-      border-radius: 5px;
+      border-radius: 15px;
       font-size: 1rem;
       cursor: pointer;
       margin-top: 1rem;
     }
   }
+  
 }

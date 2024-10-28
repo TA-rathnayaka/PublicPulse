@@ -1,0 +1,18 @@
+/* ToggleSwitch.scss */
+
+.toggleSwitch {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  
+    .infoIcon {
+      color: #888;
+      cursor: pointer;
+      transition: color 0.3s;
+  
+      &:hover {
+        color: #6439ff;
+      }
+    }
+  }
+  

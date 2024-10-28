@@ -1,26 +1,27 @@
 import React, { useState } from 'react';
-import { firestore } from '../../backend/firebase/firebase'; // Import Firebase Firestore
+import { firestore } from "../../backend/firebase/firebase";
 import { collection, addDoc } from "firebase/firestore";
+import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import './pollCreation.scss';
+import "./pollCreation.scss";
 
 const PollCreation = () => {
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [image, setImage] = useState(null);
-  const [imageFile, setImageFile] = useState(null); // Store image file for upload
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [options, setOptions] = useState(['']);
-  const [relatedPolicy, setRelatedPolicy] = useState('multiple-choice');
+  const [imageFile, setImageFile] = useState(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [options, setOptions] = useState([""]);
+  const [relatedPolicy, setRelatedPolicy] = useState("multiple-choice");
   const [settings, setSettings] = useState({
     multipleSelection: false,
     requireNames: false,
-    securityOption: 'One vote per IP address',
+    securityOption: "One vote per IP address",
     blockVPN: true,
-    useCaptcha: false
+    useCaptcha: false,
   });
 
-  const storage = getStorage(); // Initialize Firebase Storage
+  const storage = getStorage();
 
   const handleAddImageClick = () => {
     setShowImageUpload((prev) => !prev);
@@ -29,13 +30,13 @@ const PollCreation = () => {
   const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-      setImage(URL.createObjectURL(file)); // For preview
-      setImageFile(file); // Store actual file for upload
+      setImage(URL.createObjectURL(file));
+      setImageFile(file);
     }
   };
 
   const handleAddOption = () => {
-    setOptions([...options, '']);
+    setOptions([...options, ""]);
   };
 
   const handleOptionChange = (index, value) => {
@@ -53,41 +54,36 @@ const PollCreation = () => {
     if (!imageFile) return null;
     const imageRef = ref(storage, `polls/${imageFile.name}`);
     await uploadBytes(imageRef, imageFile);
-    return getDownloadURL(imageRef); // Return the image URL after upload
+    return getDownloadURL(imageRef);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      // Upload image to Firebase Storage if there is an image
       const imageUrl = await uploadImage();
-
-      // Save poll data to Firestore
-      await addDoc(collection(firestore, 'polls'), {
+      await addDoc(collection(firestore, "polls"), {
         title,
         description,
-        options: options.filter(option => option.trim() !== ''), // Remove empty options
+        options: options.filter((option) => option.trim() !== ""),
         relatedPolicy,
         settings,
-        imageUrl, // Save image URL if available
-        createdAt: new Date()
+        imageUrl,
+        createdAt: new Date(),
       });
 
       alert("Poll created successfully!");
-
-      // Reset form fields
-      setTitle('');
-      setDescription('');
-      setOptions(['']);
+      setTitle("");
+      setDescription("");
+      setOptions([""]);
       setImage(null);
       setImageFile(null);
       setSettings({
         multipleSelection: false,
         requireNames: false,
-        securityOption: 'One vote per IP address',
+        securityOption: "One vote per IP address",
         blockVPN: true,
-        useCaptcha: false
+        useCaptcha: false,
       });
     } catch (error) {
       console.error("Error creating poll:", error);
@@ -154,7 +150,14 @@ const PollCreation = () => {
             <label>Answer Options</label>
             <div className="options">
               {options.map((option, index) => (
-                <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <div
+                  key={index}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                  }}
+                >
                   <input
                     type="text"
                     placeholder={`Option ${index + 1}`}
@@ -162,16 +165,27 @@ const PollCreation = () => {
                     onChange={(e) => handleOptionChange(index, e.target.value)}
                   />
                   {index > 1 && (
-                    <button type="button" onClick={() => handleRemoveOption(index)}>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveOption(index)}
+                    >
                       Remove
                     </button>
                   )}
                 </div>
               ))}
-              <button type="button" className="add-option" onClick={handleAddOption}>
-                + Add option
-              </button>
-              <button type="button" className="add-other">Add "Other"</button>
+              <div className="options-buttons">
+                <button
+                  type="button"
+                  className="add-option"
+                  onClick={handleAddOption}
+                >
+                  + Add option
+                </button>
+                <button type="button" className="add-other">
+                  + Add Other
+                </button>
+              </div>
             </div>
           </div>
         </form>
@@ -181,55 +195,68 @@ const PollCreation = () => {
         <form onSubmit={handleSubmit}>
           <div className="settings">
             <h3>Settings</h3>
-            <hr></hr>
+            <hr />
             <div className="setting-item">
-              <label>Allow selection of multiple options</label>
-              <input
-                type="checkbox"
+              <ToggleSwitch
+                label="Allow selection of multiple options"
                 checked={settings.multipleSelection}
-                onChange={(e) => setSettings({ ...settings, multipleSelection: e.target.checked })}
+                onChange={(checked) =>
+                  setSettings({
+                    ...settings,
+                    multipleSelection: checked,
+                  })
+                }
               />
             </div>
             <div className="setting-item">
-              <label>Require participant names</label>
-              <input
-                type="checkbox"
+              <ToggleSwitch
+                label="Require participant names"
                 checked={settings.requireNames}
-                onChange={(e) => setSettings({ ...settings, requireNames: e.target.checked })}
+                onChange={(checked) =>
+                  setSettings({
+                    ...settings,
+                    requireNames: checked,
+                  })
+                }
               />
             </div>
             <div className="setting-item">
               <label>Voting security</label>
               <select
                 value={settings.securityOption}
-                onChange={(e) => setSettings({ ...settings, securityOption: e.target.value })}
+                onChange={(e) =>
+                  setSettings({ ...settings, securityOption: e.target.value })
+                }
               >
                 <option>One vote per IP address</option>
                 {/* Additional security options here */}
               </select>
             </div>
             <div className="setting-item">
-              <label>Block VPN users</label>
-              <input
-                type="checkbox"
+              <ToggleSwitch
+                label="Block VPN users"
                 checked={settings.blockVPN}
-                onChange={(e) => setSettings({ ...settings, blockVPN: e.target.checked })}
+                onChange={(checked) =>
+                  setSettings({ ...settings, blockVPN: checked })
+                }
               />
             </div>
             <div className="setting-item">
-              <label>Use CAPTCHA</label>
-              <input
-                type="checkbox"
+              <ToggleSwitch
+                label="Use CAPTCHA"
                 checked={settings.useCaptcha}
-                onChange={(e) => setSettings({ ...settings, useCaptcha: e.target.checked })}
+                onChange={(checked) =>
+                  setSettings({ ...settings, useCaptcha: checked })
+                }
               />
             </div>
-            <a href="#" className="advanced-settings">Show advanced settings</a>
-          
-
+            <a href="#" className="advanced-settings">
+              Show advanced settings
+            </a>
           </div>
-
-          <button type="submit" className="create-poll">Create poll</button>
+          <button type="submit" className="create-poll">
+            Create poll
+          </button>
         </form>
       </div>
     </div>
