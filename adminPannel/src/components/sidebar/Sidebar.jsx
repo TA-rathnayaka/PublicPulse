@@ -74,12 +74,12 @@ const Sidebar = () => {
               <span>Policies</span>
             </li>
           </Link>
-          <Link to="/votes" style={{ textDecoration: "none" }}>
+          <Link to="/polls" style={{ textDecoration: "none" }}>
             <li>
-              <Tooltip title="Votes" placement="right">
+              <Tooltip title="Polles" placement="right">
                 <ThumbUpIcon className="icon" />
               </Tooltip>
-              <span>Votes</span>
+              <span>Polls</span>
             </li>
           </Link>
           <p className="title">ANALYTICS</p>

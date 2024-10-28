@@ -1,4 +1,6 @@
-import axios from 'axios';
+// src/services/userService.js
+import { firestore } from './backend/firebase/firebase'; // Import Firestore instance from your setup
+import { collection, getDocs } from 'firebase/firestore';
 
 // Define your user columns here
 export const userColumns = [
@@ -10,21 +12,27 @@ export const userColumns = [
   // Add more columns as needed
 ];
 
-// Function to fetch user data from the API
+// Function to fetch user data from Firestore
 export const fetchUserData = async () => {
   try {
-    const response = await axios.get('http://localhost:3000/users/users'); // Update with your API endpoint
-    // Ensure each user object has a unique ID
-    const usersWithId = response.data.map((user, index) => ({
-      id: user.id || index, // Use an existing id or the index as a fallback
-      username: user.username,
-      email: user.email,
-      status: user.status ? 'active' : 'inactive', // Convert boolean to string
-      age: user.age,
+    // Reference to the 'users' collection
+    const usersCollection = collection(firestore, 'users');
+    
+    // Fetch all documents in the 'users' collection
+    const snapshot = await getDocs(usersCollection);
+    
+    // Map the snapshot data to an array of user objects with a unique ID
+    const usersWithId = snapshot.docs.map((doc) => ({
+      id: doc.id, // Use Firestore document ID as the unique ID
+      username: doc.data().username || '', // Default to empty string if undefined
+      email: doc.data().email || '',
+      status: doc.data().status ? 'active' : 'inactive', // Convert boolean to string
+      age: doc.data().age || null, // Default to null if undefined
     }));
+    
     return usersWithId; // Return the transformed data
   } catch (error) {
-    console.error('Error fetching users:', error);
+    console.error('Error fetching users from Firestore:', error);
     return []; // Return an empty array on error
   }
 };

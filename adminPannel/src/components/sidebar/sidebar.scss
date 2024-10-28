@@ -14,11 +14,10 @@
 }
 
 .sidebar {
-  flex: 1;
   min-height: 100vh;
   background-color: var(--sidebar-bg-color);
   padding-left: 15px;
-  padding-right: 15px;
+  padding-right: 80px;
 
   .top {
     height: 50px;

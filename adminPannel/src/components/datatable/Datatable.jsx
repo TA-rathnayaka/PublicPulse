@@ -22,6 +22,7 @@ const Datatable = () => {
         pageSize={5} 
         rowHeight={40} 
         disableSelectionOnClick 
+        getRowId={(row) => row.id} // Ensure each row has a unique ID
       />
     </div>
   );

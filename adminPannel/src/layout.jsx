@@ -5,7 +5,7 @@ import './layout.scss';
 import { auth, firestore } from "./backend/firebase/firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore"; 
-
+import Forbidden from "./components/forbidden/Forbidden";
 const Layout = ({ children }) => {
     const [userData, setUserData] = useState(null);
     const [user, loading, authError] = useAuthState(auth);
@@ -58,13 +58,10 @@ const Layout = ({ children }) => {
         }
     }, [user, loading]);
     if (!user) {
-        return (
-          <div className="loginMessage">
-            <div>
-              <h2>Please login to access this page.</h2>
-              <p>You need to be authenticated to view the dashboard.</p>
-            </div>
-          </div>
+        return (<>
+        <Forbidden/>
+        </>
+          
         );
       }
 
