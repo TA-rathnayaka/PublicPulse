@@ -16,17 +16,17 @@ import { useAuthState } from "react-firebase-hooks/auth";
 
 
   
-const Navbar = ({ imgURL }) => {
+const Navbar = ({ imgURL , navbarData }) => {
   const user = useAuthState(auth); 
   const navigate = useNavigate(); // Initialize useNavigate
-
+  console.log("navbar data" ,navbarData)
   const handleImageClick = () => {
     navigate("/profile"); // Navigate to the profile page
   };
   return (
     <div className="navbar">
       <div className="wrapper">
-        <div className="welcomeMessage">welcome</div>
+        <div className="navbar-title">{navbarData}</div>
         
         <div className="items">
           <div className="search">

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./managePolls.scss";
 import PollCreation from "../../components/pollCreation/PollCreation";
 
-const SettingsPage = () => {
+const ManagePolls = () => {
   const [activeTab, setActiveTab] = useState("polls");
 
   return (
@@ -49,4 +49,4 @@ const SettingsPage = () => {
   );
 };
 
-export default SettingsPage;
+export default ManagePolls;
