@@ -1,4 +1,5 @@
 import "./sidebar.scss";
+import { useState } from "react"; // Import useState to manage active link state
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import PersonOutlineIcon from "@mui/icons-material/PersonOutline";
 import PollIcon from "@mui/icons-material/Poll";
@@ -10,7 +11,7 @@ import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SettingsSystemDaydreamOutlinedIcon from "@mui/icons-material/SettingsSystemDaydreamOutlined";
 import PsychologyOutlinedIcon from "@mui/icons-material/PsychologyOutlined";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
-import Tooltip from "@mui/material/Tooltip"; // Tooltip for better UX
+import Tooltip from "@mui/material/Tooltip";
 import { Link, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
@@ -19,21 +20,25 @@ import { getAuth, signOut } from "firebase/auth";
 const Sidebar = () => {
   const { dispatch } = useContext(DarkModeContext);
   const navigate = useNavigate();
+  const [activeLink, setActiveLink] = useState("/"); // State to track the active link
 
   // Logout handler
-
-  
   const handleLogout = () => {
     const auth = getAuth();
     signOut(auth)
       .then(() => {
-        // Clear any other session or app-specific data here if needed
         localStorage.clear();
         navigate("/login");
       })
       .catch((error) => {
         console.error("Error signing out:", error);
       });
+  };
+
+  // Function to handle link click
+  const handleLinkClick = (link) => {
+    setActiveLink(link); // Update the active link state
+    navigate(link); // Navigate to the selected link
   };
 
   return (
@@ -47,58 +52,101 @@ const Sidebar = () => {
       <div className="center">
         <ul>
           <p className="title">MAIN</p>
-          <div className="Dashboard">
-          <Link to={'/'}>
-          <li>
+          <li onClick={() => handleLinkClick("/")}>
             <Tooltip title="Dashboard" placement="right">
-              <DashboardIcon className="icon" />
+              <DashboardIcon
+                className="icon"
+                style={{ color: activeLink === "/" ? "#6439ff" : undefined }}
+              />
             </Tooltip>
-            <span onClick={() => navigate('/')} >Dashboard</span>
+            <span style={{ color: activeLink === "/" ? "#6439ff" : undefined }}>
+              Dashboard
+            </span>
           </li>
-          </Link>
-          </div>
           <p className="title">MANAGE</p>
-          <Link to="/users" style={{ textDecoration: "none" }}>
-            <li>
-              <Tooltip title="Users" placement="right">
-                <PersonOutlineIcon className="icon" />
-              </Tooltip>
-              <span>Users</span>
-            </li>
-          </Link>
-          <Link to="/policies" style={{ textDecoration: "none" }}>
-            <li>
-              <Tooltip title="Policies" placement="right">
-                <PollIcon className="icon" />
-              </Tooltip>
-              <span>Policies</span>
-            </li>
-          </Link>
-          <Link to="/polls" style={{ textDecoration: "none" }}>
-            <li>
-              <Tooltip title="Polles" placement="right">
-                <ThumbUpIcon className="icon" />
-              </Tooltip>
-              <span>Polls</span>
-            </li>
-          </Link>
+          <li onClick={() => handleLinkClick("/users")}>
+            <Tooltip title="Users" placement="right">
+              <PersonOutlineIcon
+                className="icon"
+                style={{
+                  color: activeLink === "/users" ? "#6439ff" : undefined,
+                }}
+              />
+            </Tooltip>
+            <span
+              style={{ color: activeLink === "/users" ? "#6439ff" : undefined }}
+            >
+              Users
+            </span>
+          </li>
+          <li onClick={() => handleLinkClick("/policies")}>
+            <Tooltip title="Policies" placement="right">
+              <PollIcon
+                className="icon"
+                style={{
+                  color: activeLink === "/policies" ? "#6439ff" : undefined,
+                }}
+              />
+            </Tooltip>
+            <span
+              style={{
+                color: activeLink === "/policies" ? "#6439ff" : undefined,
+              }}
+            >
+              Policies
+            </span>
+          </li>
+          <li onClick={() => handleLinkClick("/polls")}>
+            <Tooltip title="Polls" placement="right">
+              <ThumbUpIcon
+                className="icon"
+                style={{
+                  color: activeLink === "/polls" ? "#6439ff" : undefined,
+                }}
+              />
+            </Tooltip>
+            <span
+              style={{ color: activeLink === "/polls" ? "#6439ff" : undefined }}
+            >
+              Polls
+            </span>
+          </li>
           <p className="title">ANALYTICS</p>
-          <Link to="/statistics" style={{ textDecoration: "none" }}>
-            <li>
-              <Tooltip title="Statistics" placement="right">
-                <InsertChartIcon className="icon" />
-              </Tooltip>
-              <span>Statistics</span>
-            </li>
-          </Link>
-          <Link to="/notifications" style={{ textDecoration: "none" }}>
-            <li>
-              <Tooltip title="Notifications" placement="right">
-                <NotificationsNoneIcon className="icon" />
-              </Tooltip>
-              <span>Notifications</span>
-            </li>
-          </Link>
+          <li onClick={() => handleLinkClick("/statistics")}>
+            <Tooltip title="Statistics" placement="right">
+              <InsertChartIcon
+                className="icon"
+                style={{
+                  color: activeLink === "/statistics" ? "#6439ff" : undefined,
+                }}
+              />
+            </Tooltip>
+            <span
+              style={{
+                color: activeLink === "/statistics" ? "#6439ff" : undefined,
+              }}
+            >
+              Statistics
+            </span>
+          </li>
+          <li onClick={() => handleLinkClick("/notifications")}>
+            <Tooltip title="Notifications" placement="right">
+              <NotificationsNoneIcon
+                className="icon"
+                style={{
+                  color:
+                    activeLink === "/notifications" ? "#6439ff" : undefined,
+                }}
+              />
+            </Tooltip>
+            <span
+              style={{
+                color: activeLink === "/notifications" ? "#6439ff" : undefined,
+              }}
+            >
+              Notifications
+            </span>
+          </li>
           <p className="title">SERVICE</p>
           <li>
             <Tooltip title="System Health" placement="right">
@@ -112,20 +160,42 @@ const Sidebar = () => {
             </Tooltip>
             <span>Logs</span>
           </li>
-          <Link to='/settings'>
-          <li>
+          <li onClick={() => handleLinkClick("/settings")}>
             <Tooltip title="Settings" placement="right">
-              <SettingsApplicationsIcon className="icon" />
+              <SettingsApplicationsIcon
+                className="icon"
+                style={{
+                  color: activeLink === "/settings" ? "#6439ff" : undefined,
+                }}
+              />
             </Tooltip>
-            <span>Settings</span>
+            <span
+              style={{
+                color: activeLink === "/settings" ? "#6439ff" : undefined,
+              }}
+            >
+              Settings
+            </span>
           </li>
-          </Link>
           <p className="title">USER</p>
-          <li>
+          <li onClick={() => handleLinkClick("/profile")}>
             <Tooltip title="Profile" placement="right">
-              <AccountCircleOutlinedIcon className="icon" />
+              <AccountCircleOutlinedIcon
+                className="icon"
+                style={{
+                  color: activeLink === "/profile" ? "#6439ff" : undefined,
+                }}
+              />
             </Tooltip>
-            <span>Profile</span>
+            <Link
+              to="/profile"
+              style={{
+                textDecoration: "none",
+                color: activeLink === "/profile" ? "#6439ff" : "inherit",
+              }}
+            >
+              <span>Profile</span>
+            </Link>
           </li>
           <li onClick={handleLogout}>
             <Tooltip title="Logout" placement="right">
