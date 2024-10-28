@@ -181,6 +181,7 @@ const PollCreation = () => {
         <form onSubmit={handleSubmit}>
           <div className="settings">
             <h3>Settings</h3>
+            <hr></hr>
             <div className="setting-item">
               <label>Allow selection of multiple options</label>
               <input

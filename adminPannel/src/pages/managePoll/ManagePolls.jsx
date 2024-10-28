@@ -40,9 +40,9 @@ const SettingsPage = () => {
             />
           </div>
         ) : (
-          <div>
+          
             <PollCreation />
-          </div>
+          
         )}
       </div>
     </div>
