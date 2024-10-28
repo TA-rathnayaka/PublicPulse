@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./managePolls.scss";
 import PollCreation from "../../components/pollCreation/PollCreation";
+import PollPage from "../../components/PollPage/PollPage"; // Import PollPage
 
 const ManagePolls = () => {
   const [activeTab, setActiveTab] = useState("polls");
@@ -24,29 +25,20 @@ const ManagePolls = () => {
 
       <div className="content">
         {activeTab === "polls" ? (
-          <div>
-            <h3>Polls</h3>
-            <p>Themes and Appearance</p>
-            <input
-              className="input"
-              type="text"
-              placeholder="Theme selection"
-            />
-            <p>Language Settings</p>
-            <input
-              className="input"
-              type="text"
-              placeholder="Language selection"
-            />
-          </div>
+          <PollPage /> // Render PollPage when the "Polls" tab is active
         ) : (
-          
-            <PollCreation />
-          
+          <PollCreation />
         )}
       </div>
     </div>
   );
 };
 
+<<<<<<< HEAD
 export default ManagePolls;
+=======
+export default SettingsPage; // Don't forget to export your component
+
+
+
+>>>>>>> feature/chathura-models
