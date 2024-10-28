@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { firestore } from "../../backend/firebase/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs ,updateDoc, arrayUnion } from "firebase/firestore";
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "./pollCreation.scss";
@@ -57,6 +57,30 @@ const PollCreation = () => {
     return getDownloadURL(imageRef);
   };
 
+  const notifyUsers = async (message) => {
+    const usersCollectionRef = collection(firestore, "users");
+  
+    // Get all users
+    const usersSnapshot = await getDocs(usersCollectionRef);
+    const userUpdates = usersSnapshot.docs.map(async (doc) => {
+      const userRef = doc.ref; // Get a reference to the user's document
+  
+      // Create a new notification object
+      const notification = {
+        message,
+        dateTime: new Date(),
+      };
+  
+      // Update the user's notifications array by adding the new notification
+      await updateDoc(userRef, {
+        notifications: arrayUnion(notification), // Use arrayUnion to add without overwriting
+      });
+    });
+  
+    // Wait for all notifications to be sent
+    await Promise.all(userUpdates);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -71,6 +95,9 @@ const PollCreation = () => {
         imageUrl,
         createdAt: new Date(),
       });
+      const message = "new poll added : "+title;
+      // Notify users about the new poll
+      await notifyUsers(message);
 
       alert("Poll created successfully!");
       setTitle("");
