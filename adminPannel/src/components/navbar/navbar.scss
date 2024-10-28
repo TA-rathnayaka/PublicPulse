@@ -1,6 +1,6 @@
 .navbar {
   height: 50px;
-
+  padding-top: 10px;
   display: flex;
   align-items: center;
   font-size: 24px;
@@ -55,6 +55,9 @@
         align-items: center;
         margin-right: 20px;
         position: relative;
+        background-color: rgba(186, 210, 222, 0.307);
+        border-radius: 15px;
+        padding:0.5%;
 
         .icon {
           font-size: 25px;

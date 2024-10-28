@@ -10,7 +10,8 @@ import New from "./pages/new/New";
 import Profile from "./pages/profile/Profile";
 import { productInputs, userInputs } from "./formSource";
 import "./style/dark.scss";
-
+import Settings from "./pages/settins/Settings"
+import ManagePolls from "./pages/managePoll/ManagePolls"
 function App() {
   const { darkMode } = useContext(DarkModeContext);
 
@@ -23,8 +24,9 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="polls" element={<ManagePolls/>}/>
             <Route path="profile" element={<Profile />} />
-            
+            <Route path="settings" element={<Settings/>}/>
             <Route path="users">
               <Route index element={<List />} />
               <Route path=":userId" element={<Single />} />

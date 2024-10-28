@@ -9,6 +9,7 @@ import { doc, getDoc } from "firebase/firestore";
 const Layout = ({ children }) => {
     const [userData, setUserData] = useState(null);
     const [user, loading, authError] = useAuthState(auth);
+    
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -56,6 +57,16 @@ const Layout = ({ children }) => {
           fetchUserData();
         }
     }, [user, loading]);
+    if (!user) {
+        return (
+          <div className="loginMessage">
+            <div>
+              <h2>Please login to access this page.</h2>
+              <p>You need to be authenticated to view the dashboard.</p>
+            </div>
+          </div>
+        );
+      }
 
     return (
       <div className="layout">

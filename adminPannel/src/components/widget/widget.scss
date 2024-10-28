@@ -1,18 +1,17 @@
-.widgets {
-  
-}
 
 .widget {
   display: flex;
   justify-content: space-between;
   flex: 1;
   color: black;
-  padding: 20px; /* Increased padding for a more spacious look */
-  border-radius: 12px; /* Slightly larger border-radius */
-  height: 120px; /* Increased height for more space */
+  padding: 10px;
+  border-radius: 12px; /* Increased padding for a more spacious look */
+/* Slightly larger border-radius */
+  height: 100px; /* Set height for consistent widget size */
+  width: 10vh; /* Reduced width of the widget */
   background-color: white; /* Ensure background is white for a clean look */
-  margin-bottom: 20px; /* Add space between widgets */
-  border: 1px solid rgba(0, 0, 0, 0.1); 
+  margin: 30px; 
+
 
   .left,
   .right {

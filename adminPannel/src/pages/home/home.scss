@@ -1,6 +1,6 @@
 .home {
   display: flex;
-
+  background-color: rgba(255, 255, 255, 1);
   .homeContainer {
     flex: 6;
 
@@ -11,7 +11,9 @@
       gap: 20px; /* Space between widgets */
       padding: 20px; /* Padding around the container */
       border: 1px solid rgba(0, 0, 0, 0.1); /* Light border for the container */
-      border-radius: 12px; /* Rounded corners */
+      border-top-left-radius: 55px;
+  border-top-right-radius: 55px;
+
       /* Background color for the container */
       margin: 20px;
     }

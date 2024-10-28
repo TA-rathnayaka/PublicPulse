@@ -40,13 +40,14 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="top">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="logo">Public Pulse</span>
+          <span className="logo">PublicPulse</span>
         </Link>
       </div>
       <hr />
       <div className="center">
         <ul>
           <p className="title">MAIN</p>
+          <div className="Dashboard">
           <Link to={'/'}>
           <li>
             <Tooltip title="Dashboard" placement="right">
@@ -55,7 +56,7 @@ const Sidebar = () => {
             <span onClick={() => navigate('/')} >Dashboard</span>
           </li>
           </Link>
-          
+          </div>
           <p className="title">MANAGE</p>
           <Link to="/users" style={{ textDecoration: "none" }}>
             <li>
@@ -111,12 +112,14 @@ const Sidebar = () => {
             </Tooltip>
             <span>Logs</span>
           </li>
+          <Link to='/settings'>
           <li>
             <Tooltip title="Settings" placement="right">
               <SettingsApplicationsIcon className="icon" />
             </Tooltip>
             <span>Settings</span>
           </li>
+          </Link>
           <p className="title">USER</p>
           <li>
             <Tooltip title="Profile" placement="right">

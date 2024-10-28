@@ -2,9 +2,6 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom"; 
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import PollOutlinedIcon from "@mui/icons-material/PollOutlined";
-import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
 import CircularProgress from "@mui/material/CircularProgress"; 
 import { getUserCount, getPollCount, getParticipationCount } from "../../backend/widgetsController"; 
 
@@ -62,15 +59,7 @@ const Widget = ({ type }) => {
         title: "USERS",
         link: "/users", 
         linkText: "See user details",
-        icon: (
-          <PersonOutlinedIcon
-            className="icon"
-            style={{
-              color: "crimson",
-              backgroundColor: "rgba(255, 0, 0, 0.2)",
-            }}
-          />
-        ),
+        backgroundColor: "#f2e4d5", // Light blue
       };
       break;
     case "polls":
@@ -78,15 +67,7 @@ const Widget = ({ type }) => {
         title: "POLLS",
         link: "/polls", 
         linkText: "View all Polls",
-        icon: (
-          <PollOutlinedIcon
-            className="icon"
-            style={{
-              backgroundColor: "rgba(218, 165, 32, 0.2)",
-              color: "goldenrod",
-            }}
-          />
-        ),
+        backgroundColor: "#e7d5e8", // Light orange
       };
       break;
     case "participation":
@@ -94,12 +75,7 @@ const Widget = ({ type }) => {
         title: "PARTICIPATION",
         link: "/participation", 
         linkText: "View participation details",
-        icon: (
-          <EventAvailableOutlinedIcon
-            className="icon"
-            style={{ backgroundColor: "rgba(0, 128, 0, 0.2)", color: "green" }}
-          />
-        ),
+        backgroundColor: "#e0f7fa", // Light purple
       };
       break;
     default:
@@ -107,7 +83,7 @@ const Widget = ({ type }) => {
   }
 
   return (
-    <div className="widget">
+    <div className="widget" style={{ backgroundColor: data.backgroundColor }}>
       {loading ? (
         <div className="widgetLoading">
           <CircularProgress size={30} />
@@ -128,7 +104,6 @@ const Widget = ({ type }) => {
               <KeyboardArrowUpIcon />
               {diff} %
             </div>
-            {data.icon}
           </div>
         </>
       )}

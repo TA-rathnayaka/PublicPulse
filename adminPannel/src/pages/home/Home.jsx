@@ -24,16 +24,7 @@ const Home = () => {
   }
 
   // If the user is not authenticated, show an error or redirect
-  if (!user) {
-    return (
-      <div className="loginMessage">
-        <div>
-          <h2>Please login to access this page.</h2>
-          <p>You need to be authenticated to view the dashboard.</p>
-        </div>
-      </div>
-    );
-  }
+
 
   // Show dashboard while loading only necessary components
   return (
@@ -47,7 +38,7 @@ const Home = () => {
         <div className="charts">
           <Featured />
           <Chart
-            title="Public Opinion Trends (Last 6 Months)"
+            title="User Engagement"
             aspect={2 / 1}
             loading={loading || dataLoading} // Pass loading prop to Chart
           />

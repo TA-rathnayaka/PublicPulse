@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import "./profile.scss";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const Profile = () => {
+  const auth = getAuth();
+  const [userId, setUserId] = useState(null);
   const [userData, setUserData] = useState({
     name: "",
     username: "",
@@ -13,19 +16,33 @@ const Profile = () => {
     city: "",
     postalCode: "",
     country: "",
-    img: "", // Add img property for profile image
+    img: "",
   });
 
   useEffect(() => {
-    // Fetch user data from local storage
-    const userId = "YOUR_USER_ID"; // Replace with logic to get the current user's ID
-    const storedUserData = localStorage.getItem(`userData_${userId}`);
-    
-    if (storedUserData) {
-      setUserData(JSON.parse(storedUserData));
-      console.log("Fetched user data:", JSON.parse(storedUserData));
+    // Listen to auth state change to set userId
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUserId(user.uid);
+      } else {
+        setUserId(null);
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup on component unmount
+  }, [auth]);
+
+  useEffect(() => {
+    if (userId) {
+      // Fetch user data from local storage
+      const storedUserData = localStorage.getItem(`userData_${userId}`);
+      if (storedUserData) {
+        setUserData(JSON.parse(storedUserData));
+        console.log("Fetched user data:", JSON.parse(storedUserData));
+        console.log("userData: ",userData)
+      }
     }
-  }, []); // The empty dependency array ensures this runs once after the component mounts
+  }, [userId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,9 +53,13 @@ const Profile = () => {
   };
 
   const handleSave = () => {
-    // Save logic here (e.g., updating the user in local storage or sending to backend)
-    localStorage.setItem(`userData_${userData.uid}`, JSON.stringify(userData));
-    alert("Profile saved successfully!"); // Replace with a better feedback mechanism
+    if (!userId) {
+      alert("No user is logged in to save the profile.");
+      return;
+    }
+    
+    localStorage.setItem(`userData_${userId}`, JSON.stringify(userData));
+    alert("Profile saved successfully!");
   };
 
   return (
@@ -48,119 +69,40 @@ const Profile = () => {
           <h2>Edit Profile</h2>
           <div className="tabs">
             <button className="active">Edit Profile</button>
-            <button>Preferences</button>
-            <button>Security</button>
           </div>
           <div className="profileDetails">
             <div className="profileImage">
               <img
-                src={userData.img || "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"}
+                src={userData.imgURL || "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"}
                 alt="Profile"
               />
               <button className="editIcon">✏️</button>
             </div>
             <div className="form">
               {/* Form Fields */}
-              <div className="formGroup">
-                <label>Your Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={userData.name}
-                  onChange={handleChange}
-                  placeholder="Charlene Reed"
-                />
-              </div>
-              <div className="formGroup">
-                <label>User Name</label>
-                <input
-                  type="text"
-                  name="username"
-                  value={userData.username}
-                  onChange={handleChange}
-                  placeholder="Charlene Reed"
-                />
-              </div>
-              <div className="formGroup">
-                <label>Email</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={userData.email}
-                  onChange={handleChange}
-                  placeholder="charlenereed@gmail.com"
-                />
-              </div>
-              <div className="formGroup">
-                <label>Password</label>
-                <input
-                  type="password"
-                  name="password"
-                  value={userData.password}
-                  onChange={handleChange}
-                  placeholder="********"
-                />
-              </div>
-              <div className="formGroup">
-                <label>Date of Birth</label>
-                <input
-                  type="date"
-                  name="dob"
-                  value={userData.dob}
-                  onChange={handleChange}
-                  placeholder="25 January 1990"
-                />
-              </div>
-              <div className="formGroup">
-                <label>Present Address</label>
-                <input
-                  type="text"
-                  name="presentAddress"
-                  value={userData.presentAddress}
-                  onChange={handleChange}
-                  placeholder="San Jose, California, USA"
-                />
-              </div>
-              <div className="formGroup">
-                <label>Permanent Address</label>
-                <input
-                  type="text"
-                  name="permanentAddress"
-                  value={userData.permanentAddress}
-                  onChange={handleChange}
-                  placeholder="San Jose, California, USA"
-                />
-              </div>
-              <div className="formGroup">
-                <label>City</label>
-                <input
-                  type="text"
-                  name="city"
-                  value={userData.city}
-                  onChange={handleChange}
-                  placeholder="San Jose"
-                />
-              </div>
-              <div className="formGroup">
-                <label>Postal Code</label>
-                <input
-                  type="text"
-                  name="postalCode"
-                  value={userData.postalCode}
-                  onChange={handleChange}
-                  placeholder="45962"
-                />
-              </div>
-              <div className="formGroup">
-                <label>Country</label>
-                <input
-                  type="text"
-                  name="country"
-                  value={userData.country}
-                  onChange={handleChange}
-                  placeholder="USA"
-                />
-              </div>
+              {[
+                { label: "Your Name", name: "name", placeholder: "Name" },
+                { label: "User Name", name: "username", placeholder: "username" },
+                { label: "Email", name: "email", placeholder: "example@gmail.com", readOnly: true },
+                { label: "Date of Birth", name: "birthdate", type: "date", placeholder: "25 January 1990" },
+                { label: "Present Address", name: "presentAddress", placeholder: "San Jose, California, USA" },
+                { label: "Permanent Address", name: "permanentAddress", placeholder: "San Jose, California, USA" },
+                { label: "District", name: "district", placeholder: "San Jose" },
+                { label: "Postal Code", name: "postalCode", placeholder: "45962" },
+                { label: "Country", name: "country", placeholder: "USA" },
+              ].map((field) => (
+                <div className="formGroup" key={field.name}>
+                  <label>{field.label}</label>
+                  <input
+                    type={field.type || "text"}
+                    name={field.name}
+                    value={userData[field.name]}
+                    onChange={handleChange}
+                    placeholder={field.placeholder}
+                    readOnly={field.readOnly || false}
+                  />
+                </div>
+              ))}
               <button className="saveButton" onClick={handleSave}>Save</button>
             </div>
           </div>
