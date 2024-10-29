@@ -1,122 +1,135 @@
 .poll-page-container {
-    padding: 2rem;
-  }
-  
-  .stats-container {
+  padding: 2rem;
+}
+
+.stats-container {
+  display: flex;
+  justify-content: space-between;
+  margin: 2rem 0;
+  gap: 20px;
+
+  .stat-item {
+    flex: 1;
     display: flex;
-    justify-content: space-between;
-    margin: 2rem 0;
-    gap: 20px;
-  
-    .stat-item {
-      flex: 1;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 16px; /* Increased for rounder corners */
+    color: white;
+    font-weight: bold;
+
+    /* Increase the border thickness */
+    border: 3px solid; /* Adjusted border thickness */
+
+    /* Use a lighter background color */
+    background: rgba(255, 255, 255, 0.2); /* Light background for inside */
+
+    /* Define the border colors manually */
+    &.recent-polls {
+      border-color: #CDAA00; /* Darker shade of #FAD02E */
+    }
+    &.active-polls {
+      border-color: #006699; /* Darker shade of #84C9FB */
+    }
+    &.ended-polls {
+      border-color: #BF2B2B; /* Darker shade of #FF8484 */
+    }
+    &.dormant-polls {
+      border-color: #007E7D; /* Darker shade of #A1E2D7 */
+    }
+
+    .MuiSvgIcon-root {
+      font-size: 2rem;
+      margin-right: 1rem;
+    }
+
+    .stat-text {
+      display: flex;
+      flex-direction: column;
+
+      span {
+        font-size: 0.9rem;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 1.5rem;
+      }
+    }
+  }
+}
+
+.recent-polls {
+  .poll-list {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 1rem;
+
+    .poll-item {
       display: flex;
       align-items: center;
       padding: 1rem;
-      border-radius: 16px; // Increased for rounder corners
-      color: white;
-      font-weight: bold;
-      
-      // Increase the border thickness
-      border: 3px solid; // Adjusted border thickness
-  
-      // Use a lighter background color
-      background: rgba(255, 255, 255, 0.2); // Light background for inside
-      
-      // Define the border colors manually
-      &.recent-polls {
-        border-color: #CDAA00; // Darker shade of #FAD02E
-      }
-      &.active-polls {
-        border-color: #006699; // Darker shade of #84C9FB
-      }
-      &.ended-polls {
-        border-color: #BF2B2B; // Darker shade of #FF8484
-      }
-      &.dormant-polls {
-        border-color: #007E7D; // Darker shade of #A1E2D7
-      }
-  
-      .MuiSvgIcon-root {
-        font-size: 2rem;
-        margin-right: 1rem;
-      }
-  
-      .stat-text {
-        display: flex;
-        flex-direction: column;
-  
-        span {
-          font-size: 0.9rem;
-        }
-  
-        h3 {
-          margin: 0;
-          font-size: 1.5rem;
-        }
-      }
-    }
-  }
-  
-  .recent-polls {
-    .poll-list {
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      gap: 1rem;
-  
-      .poll-item {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background: #f9f9f9;
+
+      .poll-info {
+        flex: 2;
         display: flex;
         align-items: center;
-        padding: 1rem;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background: #f9f9f9;
-  
-        .poll-info {
-          flex: 2;
+        gap: 1rem;
+
+        /* Styling for both image and icon */
+        .poll-image, .poll-icon {
+          width: 100px; /* Consistent size */
+          height: 100px; /* Consistent size */
+          object-fit: cover;
+          border-radius: 8px;
+          margin-right: 15px;
+        }
+
+        /* Poll icon-specific styling */
+        .poll-icon {
+          font-size: 2rem;
+          color: #ff8484;
           display: flex;
+          justify-content: center;
           align-items: center;
-          gap: 1rem;
-  
-          .poll-icon {
-            font-size: 2rem;
-            color: #ff8484;
-          }
-  
-          h4 {
-            margin: 0;
-            font-size: 1rem;
-          }
-  
-          p {
-            margin: 0;
-            color: #666;
-            font-size: 0.9rem;
-          }
+          background-color: #f0f0f0; /* Background to match icon size with image */
         }
-  
-        .poll-details {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 0.5rem;
-  
-          span {
-            font-size: 0.9rem;
-            color: #666;
-          }
+
+        h4 {
+          margin: 0;
+          font-size: 1rem;
         }
-  
-        .view-details-button {
-          padding: 0.5rem 1rem;
-          background: #007bff;
-          color: white;
-          border: none;
-          border-radius: 4px;
-          cursor: pointer;
+
+        p {
+          margin: 0;
+          color: #666;
+          font-size: 0.9rem;
         }
+      }
+
+      .poll-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        span {
+          font-size: 0.9rem;
+          color: #666;
+        }
+      }
+
+      .view-details-button {
+        padding: 0.5rem 1rem;
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
       }
     }
   }
-  
+}
