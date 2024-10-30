@@ -127,7 +127,7 @@ const PollCreation = () => {
             <input
               type="text"
               id="title"
-              placeholder="Type your question here"
+              placeholder="Type your title here"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
