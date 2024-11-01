@@ -1,86 +1,59 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom"; 
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CircularProgress from "@mui/material/CircularProgress"; 
-import { getUserCount, getPollCount, getParticipationCount } from "../../backend/widgetsController"; 
+import { getDataCount } from "../../backend/widgetsController"; // Consolidated function
 
 const Widget = ({ type }) => {
   const [dataCount, setDataCount] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    let isMounted = true; 
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        let count;
-        switch (type) {
-          case "user":
-            count = await getUserCount(); 
-            break;
-          case "polls":
-            count = await getPollCount(); 
-            break;
-          case "participation":
-            count = await getParticipationCount(); 
-            break;
-          default:
-            return;
-        }
-        
-        if (isMounted) {
-          setDataCount(count);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err.message || "Error fetching data."); // Improved error handling
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const count = await getDataCount(type);
+      setDataCount(count);
+    } catch (err) {
+      setError(err.message || "Error fetching data.");
+    } finally {
+      setLoading(false);
+    }
   }, [type]);
 
-  let data;
-  const diff = 20;
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-  switch (type) {
-    case "user":
-      data = {
-        title: "USERS",
-        link: "/users", 
-        linkText: "See user details",
-        backgroundColor: "#f2e4d5", // Light blue
-      };
-      break;
-    case "polls":
-      data = {
-        title: "POLLS",
-        link: "/polls", 
-        linkText: "View all Polls",
-        backgroundColor: "#e7d5e8", // Light orange
-      };
-      break;
-    case "participation":
-      data = {
-        title: "PARTICIPATION",
-        link: "/participation", 
-        linkText: "View participation details",
-        backgroundColor: "#e0f7fa", // Light purple
-      };
-      break;
-    default:
-      break;
-  }
+  const handleRetry = () => {
+    fetchData();
+  };
+
+  const widgetData = {
+    users: {
+      title: "USERS",
+      link: "/users",
+      linkText: "See user details",
+      backgroundColor: "#f2e4d5",
+    },
+    polls: {
+      title: "POLLS",
+      link: "/polls",
+      linkText: "View all Polls",
+      backgroundColor: "#e7d5e8",
+    },
+    votes: {
+      title: "PARTICIPATION",
+      link: "/participation",
+      linkText: "View participation details",
+      backgroundColor: "#e0f7fa",
+    },
+  };
+
+  const data = widgetData[type] || {};
+  const diff = 20; // Example static value; can be dynamic based on historical data
 
   return (
     <div className="widget" style={{ backgroundColor: data.backgroundColor }}>
@@ -89,7 +62,10 @@ const Widget = ({ type }) => {
           <CircularProgress size={30} />
         </div>
       ) : error ? (
-        <div className="error">{error}</div>
+        <div className="error">
+          {error}
+          <button onClick={handleRetry} className="retryButton">Retry</button>
+        </div>
       ) : (
         <>
           <div className="left">
