@@ -8,14 +8,8 @@ import 'package:client/views/components/search_button.dart';
 import 'dummy_data.dart';
 import 'package:client/views/components/dashboard_list_tile.dart';
 
-class PollDashboardScreen extends StatefulWidget {
-  static String id = '/poll-dashboard';
-
-  @override
-  _PollDashboardScreenState createState() => _PollDashboardScreenState();
-}
-
-class _PollDashboardScreenState extends State<PollDashboardScreen> {
+class MainScreen extends StatefulWidget {
+  static String id = '/main-screen';
   int _currentIndex = 0;
 
   final List<Widget> _pages = [
@@ -32,9 +26,7 @@ class _PollDashboardScreenState extends State<PollDashboardScreen> {
       bottomNavigationBar: BottomNavbar(
         currentIndex: _currentIndex,
         onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
+
         },
       ),
     );
