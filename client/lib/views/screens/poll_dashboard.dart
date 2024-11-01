@@ -8,9 +8,10 @@ import 'package:client/views/components/poll_dashboard_card.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:client/views/components/search_button.dart';
 import 'dummy_data.dart';
+import 'package:client/views/components/dashboard_list_tile.dart';
 
 class PollDashboardScreen extends StatefulWidget {
-  static String id = '/';
+  static String id = '/poll-dashboard';
 
   @override
   _PollDashboardScreenState createState() => _PollDashboardScreenState();
@@ -55,37 +56,10 @@ class _PollDashboardScreenState extends State<PollDashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(height: 10),
-              Row(
-                children: [
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundImage: pollData[0]['imageUrl']!.isNotEmpty
-                        ? NetworkImage(pollData[0]['imageUrl']!)
-                        : null,
-                    child: pollData[0]['imageUrl']!.isNotEmpty
-                        ? null
-                        : Text(
-                            'PJ',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                  ),
-                  SizedBox(width: 10),
-                  Text(
-                    'Pasindu Jayasena',
-                    style: kHeadlineStyle,
-                  ),
-                ],
-              ),
               const SizedBox(height: 16),
-              DashBoardStatusCard(
-                activeCount: activeCount,
-                endedCount: endedCount,
-                recentCount: recentCount,
-                dormantCount: dormantCount,
-              ),
               SizedBox(height: 16),
               const Text(
-                "Government Policies & Polls",
+                "Polls",
                 style: kHeadlineStyle,
               ),
               SizedBox(height: 12),
@@ -100,11 +74,13 @@ class _PollDashboardScreenState extends State<PollDashboardScreen> {
                 shrinkWrap: true,
                 itemBuilder: (context, index) {
                   final poll = pollData[index];
-                  return PollDashBoardCard(
-                    title: poll['title']!,
-                    subtitle: poll['subtitle']!,
-                    imageUrl: poll['imageUrl']!,
-                  );
+                  return DashboardListTile(
+                      title: poll['title']!,
+                      subtitle: poll['subtitle']!,
+                      imageUrl: poll['imageUrl']!,
+                      onTap: () {
+
+                      });
                 },
               ),
             ],

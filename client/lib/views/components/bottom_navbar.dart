@@ -1,6 +1,6 @@
+import 'package:client/views/constants/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:client/views/constants/bottom_navbar_constants.dart';
-
 
 class BottomNavbar extends StatelessWidget {
   final int currentIndex;
@@ -13,46 +13,38 @@ class BottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: kBackgroundColorBottomNavbar,
-        borderRadius: kBorderRadiusBottomNavbar,
-        boxShadow: [
-          BoxShadow(
-            color: kShadowColorBottomNavbar,
-            blurRadius: 10,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        currentIndex: currentIndex,
-        onTap: onTap,
-        selectedItemColor: kSelectedItemColorBottomNavbar,
-        unselectedItemColor: kUnselectedItemColorBottomNavbar,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.bar_chart),
-            label: 'Poll',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profile',
-          ),
-        ],
-      ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: kCommonGrayColor, // Match navbar color
+          elevation: 0,
+          currentIndex: currentIndex,
+          onTap: onTap,
+          selectedItemColor: kSelectedItemColorBottomNavbar,
+          unselectedItemColor: kUnselectedItemColorBottomNavbar,
+          items: [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home, size: 20),
+              label: 'Home',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.bar_chart, size: 20),
+              label: 'Poll',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.notifications, size: 20),
+              label: 'Notification',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person, size: 20),
+              label: 'Profile',
+            ),
+          ],
+        ),
+
+      ],
     );
   }
 }

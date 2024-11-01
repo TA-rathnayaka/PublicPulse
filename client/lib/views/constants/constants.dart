@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 // Colors
 
 const double kPaddingHorizontal = 12.0;
+const double kPaddingVertical = 16.0;
 const double kSizedBoxHeight = 16.0;
 const double kButtonRadius = 10.0;
 const double kAppBarTitleSpacing = 8.0;
@@ -10,7 +11,9 @@ const double kAppBarTitleSpacing = 8.0;
 // Colors
 const Color kPrimaryColor = Color(0xFF4A3AFF);
 const Color kSecondaryColor = Color(0xff673AB7);
+const Color kCommonGrayColor = Color(0xFFF3F3F3);
 const Color kBackgroundColor = Colors.white;
+
 
 const Color kTextFieldBackgroundColor = Color(0xFFF3F3F3);
 const Color kTextFieldHintColor = Colors.grey;
