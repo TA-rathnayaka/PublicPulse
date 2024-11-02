@@ -3,6 +3,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
+  Stream<User?> get userStream {
+    return _auth.authStateChanges();
+  }
+
   Future<User?> signInEmailAndPassword(String email, String password) async {
     try {
       UserCredential result = await _auth.signInWithEmailAndPassword(
@@ -57,6 +61,35 @@ class AuthService {
         print('An unexpected error occurred: ${e.toString()}');
       }
       return null;
+    }
+  }
+
+  Future<void> changeUserEmail(String newEmail) async {
+    User? user = _auth.currentUser;
+
+    if (user != null) {
+      try {
+        await user.updateEmail(newEmail);
+        print('Email updated successfully to $newEmail');
+      } on FirebaseAuthException catch (e) {
+        switch (e.code) {
+          case 'invalid-email':
+            print('The email address is not valid.');
+            break;
+          case 'email-already-in-use':
+            print('The email is already in use by another account.');
+            break;
+          case 'requires-recent-login':
+            print('Please reauthenticate to update your email.');
+            break;
+          default:
+            print('An error occurred: ${e.message}');
+        }
+      } catch (e) {
+        print('An unexpected error occurred: $e');
+      }
+    } else {
+      print('No user is currently logged in.');
     }
   }
 }

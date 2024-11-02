@@ -1,30 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:client/models/poll.dart';
 import 'package:client/views/components/comment_card.dart';
-import 'package:client/views/components/result_card.dart';
-import 'package:client/views/components/preview_card.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/components/top_navigation_bar.dart';
 
 class PollScreen extends StatefulWidget {
   static String id = '/poll-screen';
 
-  final String username;
-  final String avatarPath;
-  final String imageUrl;
-  final String title;
-  final String subtitle;
-  final String description;
-  final Map<String, int> results;
+  final Poll poll;
+  final List<Map<String, int>> results; // Adjusted based on your Poll class
   final List<Map<String, String>> comments;
 
   const PollScreen({
     Key? key,
-    required this.username,
-    required this.avatarPath,
-    required this.imageUrl,
-    required this.title,
-    required this.subtitle,
-    required this.description,
+    required this.poll,
     required this.results,
     required this.comments,
   }) : super(key: key);
@@ -34,21 +23,23 @@ class PollScreen extends StatefulWidget {
 }
 
 class _PollScreenState extends State<PollScreen> {
-  bool _hasVoted = false; // Track if the user has voted
-  int _totalVotes = 0; // Track the total votes
+  bool _hasVoted = false;
+  int _totalVotes = 0;
 
   @override
   void initState() {
     super.initState();
-    // Initialize total votes from the results
-    _totalVotes = widget.results.values.fold(0, (sum, value) => sum + value);
+    // Calculate the total votes from the results
+    _totalVotes = widget.results.fold(0, (sum, option) => sum + option.values.first);
   }
 
-  void _vote() {
-    setState(() {
-      _totalVotes++;
-      _hasVoted = true;
-    });
+  void _vote(String optionName) {
+    if (widget.poll.vote(optionName)) {
+      setState(() {
+        _totalVotes++;
+        _hasVoted = true;
+      });
+    }
   }
 
   @override
@@ -61,65 +52,66 @@ class _PollScreenState extends State<PollScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              PreviewCard(
-                title: widget.title,
-                subTitle: widget.subtitle,
-                username: widget.username,
-                avatarPath: widget.avatarPath,
-                imageUrl: widget.imageUrl,
-                description: widget.description,
-              ),
-              const SizedBox(height: 12),
-              Center(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: PrimaryButton(
-                    label: 'Vote',
-                    onPressed: () =>_hasVoted ? null : _vote,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 28),
+              // Display Poll Title
               Text(
-                'Total votes counted: $_totalVotes',
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                widget.poll.title,
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
-              const SizedBox(height: 10),
-              ...widget.results.entries.map((entry) {
+              const SizedBox(height: 8),
+
+              // Display Poll Description
+              Text(
+                widget.poll.description,
+                style: TextStyle(fontSize: 16),
+              ),
+              const SizedBox(height: 8),
+
+              // Display Poll Image if available
+              if (widget.poll.imageUrl != null)
+                Image.network(widget.poll.imageUrl!),
+              const SizedBox(height: 16),
+
+              // Display Total Votes
+              Text(
+                'Total Votes: $_totalVotes',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 16),
+
+              // Display Voting Options
+              Text(
+                'Voting Options:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+              ...widget.poll.options.map((option) {
+                // Extract option name and vote count
+                final optionName = option.keys.first;
+                final voteCount = option[optionName] ?? 0;
                 return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ResultCard(
-                      title: entry.key,
-                      percentage: entry.value, // Assuming this is a count
+                    Text(
+                      '$optionName: $voteCount votes',
+                      style: TextStyle(fontSize: 16),
                     ),
-                    const SizedBox(height: 10),
+                    if (!_hasVoted)
+                      PrimaryButton(
+                        onPressed: () => _vote(optionName),
+                        label: 'Vote for $optionName',
+                      ),
+                    const SizedBox(height: 8),
                   ],
                 );
               }).toList(),
-              const SizedBox(height: 20),
-              const Text(
-                'User Interaction:',
-                style: TextStyle(fontSize: 18),
+              const SizedBox(height: 16),
+
+              // Display Comments
+              Text(
+                'Comments:',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
-              const SizedBox(height: 10),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: widget.comments.map((commentData) {
-                    return Row(
-                      children: [
-                        CommentCard(
-                          name: commentData['name'] ?? 'Anonymous',
-                          comment: commentData['comment'] ?? '',
-                          rating: double.tryParse(commentData['rating'] ?? '0') ?? 0.0,
-                          avatarPath: commentData['avatarPath'] ?? '',
-                        ),
-                        const SizedBox(width: 10),
-                      ],
-                    );
-                  }).toList(),
-                ),
-              ),
+
+              const SizedBox(height: 16),
             ],
           ),
         ),

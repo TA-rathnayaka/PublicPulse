@@ -1,11 +1,15 @@
 import 'dart:collection';
 import 'package:flutter/foundation.dart';
 import 'package:client/models/poll.dart';
-import 'package:client/services/firestore.dart';
+import 'package:client/services/poll_service.dart';
 
 class PollsProvider extends ChangeNotifier {
-  final StorageService storageService = StorageService();
+  final PollService storageService = PollService();
   List<Poll> _polls = [];
+
+  PollsProvider() {
+    fetchPolls();
+  }
 
   UnmodifiableListView<Poll> get polls => UnmodifiableListView(_polls);
 

@@ -1,5 +1,5 @@
 import 'package:client/services/auth.dart';
-import 'package:client/services/firestore.dart';
+import 'package:client/services/user_service.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:client/views/components/top_navigation_bar.dart';
@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class Signup extends StatefulWidget {
   static const id = '/signup';
+
   @override
   _SignupState createState() => _SignupState();
 }
@@ -18,9 +19,9 @@ class _SignupState extends State<Signup> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repeatPasswordController =
-      TextEditingController();
+  TextEditingController();
   final AuthService _auth = AuthService();
-  final StorageService _storageService = StorageService();
+  final UserService _userService = UserService();
 
   String? _firstNameError;
   String? _lastNameError;
@@ -32,7 +33,6 @@ class _SignupState extends State<Signup> {
   void initState() {
     super.initState();
 
-    // Add listeners to each controller to clear errors on valid input
     _firstNameController.addListener(() {
       if (_firstNameError != null && _firstNameController.text.isNotEmpty) {
         setState(() {
@@ -83,7 +83,6 @@ class _SignupState extends State<Signup> {
     super.dispose();
   }
 
-  // Validation method
   void _validateInputs() {
     setState(() {
       _firstNameError = _firstNameController.text.isEmpty
@@ -95,18 +94,17 @@ class _SignupState extends State<Signup> {
       _emailError = _emailController.text.isEmpty
           ? "Email cannot be empty."
           : _isValidEmail(_emailController.text)
-              ? null
-              : "Please enter a valid email address.";
+          ? null
+          : "Please enter a valid email address.";
       _passwordError =
-          _passwordController.text.isEmpty ? "Password cannot be empty." : null;
+      _passwordController.text.isEmpty ? "Password cannot be empty." : null;
       _repeatPasswordError =
-          _passwordController.text != _repeatPasswordController.text
-              ? "Passwords do not match."
-              : null;
+      _passwordController.text != _repeatPasswordController.text
+          ? "Passwords do not match."
+          : null;
     });
   }
 
-  // Email validation regex
   bool _isValidEmail(String email) {
     final RegExp emailRegExp = RegExp(
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
@@ -117,7 +115,6 @@ class _SignupState extends State<Signup> {
   void _handleSignup() async {
     _validateInputs();
 
-    // If any error exists, stop further execution
     if (_firstNameError != null ||
         _lastNameError != null ||
         _emailError != null ||
@@ -126,16 +123,14 @@ class _SignupState extends State<Signup> {
       return;
     }
 
-    // If validation passes, proceed with the signup logic
     String firstName = _firstNameController.text;
     String lastName = _lastNameController.text;
     String email = _emailController.text;
     String password = _passwordController.text;
 
     User? user = await _auth.registerUserAndPassword(email, password);
-    _storageService.storeUserDetails(user?.uid, firstName, lastName, email);
+    _userService.storeUserDetails(user?.uid, firstName, lastName, email);
 
-    // Optionally show success message or navigate to another screen
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Signup successful!')),
     );
@@ -154,7 +149,7 @@ class _SignupState extends State<Signup> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: TopNavigationBar(),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(kPaddingHorizontal),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,

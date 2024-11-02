@@ -1,6 +1,7 @@
 class Poll {
   String title;
   String description;
+  String? imageUrl;
   List<Map<String, int>> options;
   DateTime createDate;
   DateTime endDate;
@@ -8,6 +9,7 @@ class Poll {
   Poll({
     required this.title,
     required this.description,
+    this.imageUrl,
     required this.options,
     required this.createDate,
     Duration? duration,
@@ -32,6 +34,7 @@ class Poll {
     return {
       'title': title,
       'description': description,
+      'imageUrl': imageUrl,
       'createdOn': createDate.toLocal().toString(),
       'endsOn': endDate.toLocal().toString(),
       'options': formattedOptions,

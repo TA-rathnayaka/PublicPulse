@@ -1,5 +1,10 @@
+import 'package:client/services/auth.dart';
+import 'package:client/services/user_service.dart';
+
 class User {
-  late final String uid;
+  final UserService _storageService = UserService();
+  final AuthService _authService = AuthService();
+  final String uid;
   String? _first_name;
   String? _last_name;
   String? _email;
@@ -11,7 +16,28 @@ class User {
 
   User({required this.uid});
 
-  // Getters
+  static Future<User> create(String uid) async {
+    User user = User(uid: uid);
+    await user._initializeUserDetails();
+    return user;
+  }
+
+  Future<void> _initializeUserDetails() async {
+    Map<String, dynamic>? userDetails =
+        await _storageService.getUserDetails(uid);
+    if (userDetails != null) {
+      _first_name = userDetails['firstName'];
+      _last_name = userDetails['lastName'];
+      _email = userDetails['email'];
+      _image_url = userDetails['imageUrl'];
+      _national_id = userDetails['nationalId'];
+      _district = userDetails['district'];
+      _division = userDetails['division'];
+      _phoneNumber = userDetails['phoneNumber'];
+    }
+  }
+
+
   String get phoneNumber => _phoneNumber ?? '';
 
   String get division => _division ?? '';
@@ -50,6 +76,7 @@ class User {
   }
 
   set email(String value) {
+    _authService.changeUserEmail(value);
     _email = value;
   }
 
@@ -61,7 +88,6 @@ class User {
     _first_name = value;
   }
 
-  // New method to update user information
   void updateUserInfo({
     String? firstName,
     String? lastName,
@@ -81,6 +107,4 @@ class User {
     if (division != null) _division = division;
     if (phoneNumber != null) _phoneNumber = phoneNumber;
   }
-
-
 }

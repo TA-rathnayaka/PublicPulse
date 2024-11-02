@@ -3,15 +3,15 @@ import 'package:client/views/constants/dashboard_list_tile_constants.dart';
 
 class DashboardListTile extends StatelessWidget {
   final String title;
-  final String subtitle;
-  final String imageUrl;
+  final String description;
+  final String? imageUrl;
   final VoidCallback onTap;
 
   const DashboardListTile({
     Key? key,
     required this.title,
-    required this.subtitle,
-    required this.imageUrl,
+    required this.description,
+    this.imageUrl,
     required this.onTap,
   }) : super(key: key);
 
@@ -35,7 +35,7 @@ class DashboardListTile extends StatelessWidget {
           title,
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
-        subtitle: Text(subtitle),
+        subtitle: Text(description),
         leading: ClipRRect(
           borderRadius: kImageBorderRadius,
           child: Container(
@@ -43,7 +43,7 @@ class DashboardListTile extends StatelessWidget {
             height: kImageHeight,
             child: FittedBox(
               fit: BoxFit.cover,
-              child: Image.network(imageUrl),
+              child: imageUrl != null ? Image.network(imageUrl!):Image.asset('./images/placeholder.png'),
             ),
           ),
         ),

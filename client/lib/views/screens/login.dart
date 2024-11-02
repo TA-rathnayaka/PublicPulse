@@ -7,7 +7,7 @@ import 'package:client/views/components/top_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class Login extends StatefulWidget {
-  static const id = '/';
+  static const id = '/login';
 
   @override
   _LoginState createState() => _LoginState();
@@ -85,7 +85,7 @@ class _LoginState extends State<Login> {
     try {
       User? user = await _auth.signInEmailAndPassword(email, password);
       if (user != null) {
-        Navigator.pushNamed(context, PollDashboardScreen.id); // Replace with your home screen
+        Navigator.pushNamed(context, Dashboard.id); // Replace with your home screen
       } else {
         setState(() {
           _passwordError = "Login failed. Please check your credentials.";
