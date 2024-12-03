@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:client/views/screens/poll_screen.dart';
 import 'package:client/views/constants/poll_dashboard_card_constants.dart';
-
+import 'package:client/models/poll.dart';
 
 class PollDashBoardCard extends StatelessWidget {
   final String title;
@@ -23,14 +23,14 @@ class PollDashBoardCard extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder: (context) => PollScreen(
-              username: "",
-              avatarPath: "",
-              imageUrl: imageUrl,
-              title: title,
-              subtitle: subtitle,
-              description: subtitle, // Change if necessary
-              results: {}, // Pass actual results if available
-              comments: [], // Pass actual comments if available
+              poll: Poll(
+                title: title, // replace with actual title
+                description: subtitle, // replace with actual subtitle or description
+                imageUrl: imageUrl, // replace with actual imageUrl
+                options: [], // replace with actual options if available
+                createDate: DateTime.now(), // replace with actual createDate if needed
+                duration: Duration(days: 7), // example duration
+              ), // Pass actual comments if available
             ),
           ),
         );
