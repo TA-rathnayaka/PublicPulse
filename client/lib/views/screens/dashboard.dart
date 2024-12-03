@@ -1,3 +1,4 @@
+import 'package:client/views/screens/_all.dart';
 import 'package:flutter/material.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:client/views/components/search_button.dart';
@@ -20,12 +21,14 @@ class Dashboard extends StatelessWidget {
               SizedBox(height: 10),
               const Text(
                 "Polls",
-                style: kHeadlineStyle,
+                style:
+                    kHeadlineStyle, // Make sure this style suits a light theme
               ),
               SizedBox(height: 12),
               SearchButton(
                 hintText: "Search",
                 onChanged: (id) {},
+                // Adjust colors for the SearchButton to fit a light theme
               ),
               const SizedBox(height: 16),
               // Use Consumer to listen for changes in PollsProvider
@@ -41,7 +44,14 @@ class Dashboard extends StatelessWidget {
                         title: poll.title,
                         description: poll.description,
                         imageUrl: poll.imageUrl ?? 'default_image_url',
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      PollScreen(poll: poll)));
+                        },
+                        // Adjust colors for DashboardListTile to suit a light theme
                       );
                     },
                   );

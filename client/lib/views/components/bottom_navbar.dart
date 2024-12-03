@@ -1,6 +1,5 @@
-import 'package:client/views/constants/constants.dart';
-import 'package:flutter/material.dart';
 import 'package:client/views/constants/bottom_navbar_constants.dart';
+import 'package:flutter/material.dart';
 
 class BottomNavbar extends StatelessWidget {
   final int currentIndex;
@@ -13,38 +12,47 @@ class BottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        BottomNavigationBar(
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: kCommonGrayColor, // Match navbar color
-          elevation: 0,
-          currentIndex: currentIndex,
-          onTap: onTap,
-          selectedItemColor: kSelectedItemColorBottomNavbar,
-          unselectedItemColor: kUnselectedItemColorBottomNavbar,
-          items: [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home, size: 20),
-              label: 'Home',
+    return Container(
+      color: Colors.black, // Set background color for the navbar
+      child: BottomNavigationBar(
+        showSelectedLabels: false, // Hide selected labels
+        showUnselectedLabels: false, // Hide unselected labels
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: kBackgroundColorBottomNavbar, // Match navbar background color
+        elevation: 0,
+        currentIndex: currentIndex,
+        onTap: onTap,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.home,
+              color: currentIndex == 0 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.bar_chart, size: 20),
-              label: 'Poll',
+            label: 'Home', // Keep label for the sake of structure but won't be displayed
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.shopify,
+              color: currentIndex == 1 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.notifications, size: 20),
-              label: 'Notification',
+            label: 'Shop', // Keep label for the sake of structure but won't be displayed
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.favorite,
+              color: currentIndex == 2 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person, size: 20),
-              label: 'Profile',
+            label: 'Favourite', // Keep label for the sake of structure but won't be displayed
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.notification_add,
+              color: currentIndex == 3 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
             ),
-          ],
-        ),
-
-      ],
+            label: 'Notification', // Keep label for the sake of structure but won't be displayed
+          ),
+        ],
+      ),
     );
   }
 }

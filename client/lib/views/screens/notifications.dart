@@ -1,86 +1,72 @@
 import 'package:flutter/material.dart';
-import 'package:client/views/constants/constants.dart';
-import 'package:client/views/components/top_navigation_bar.dart';
+import 'package:provider/provider.dart';
+import 'package:client/models/notification_provider.dart';
 
 class NotificationScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
-              child: Column(
-                children: [
-                  ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemCount: notificationList.length,
-                    // Assuming notificationList is provided
-                    itemBuilder: (context, index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            vertical: 12, horizontal: 14),
-                        child: Row(
-                          children: [
-                            Icon(Icons.arrow_back),
-                            SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+      body: Consumer<NotificationProvider>(
+        builder: (context, notificationProvider, child) {
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 12, 8, 12),
+                  child: Column(
+                    children: [
+                      ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemCount: notificationProvider.notifications.length,
+                        itemBuilder: (context, index) {
+                          final notification = notificationProvider.notifications[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 14),
+                            child: Row(
+                              children: [
+                                Icon(notification.isRead ? Icons.check : Icons.notifications), // Change icon based on read status
+                                SizedBox(width: 8),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        "New Message",
-                                        style: TextStyle(fontSize: 16),
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            notification.message, // Use message instead of title
+                                            style: TextStyle(fontSize: 16),
+                                          ),
+                                          Text(
+                                            // Format the timestamp to a readable string
+                                            '${notification.timestamp.hour}:${notification.timestamp.minute} ${notification.timestamp.day}/${notification.timestamp.month}/${notification.timestamp.year}',
+                                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                                          ),
+                                        ],
                                       ),
+                                      SizedBox(height: 4),
                                       Text(
-                                        "2 hours ago",
-                                        style: TextStyle(
-                                            fontSize: 12, color: Colors.grey),
+                                        notification.isRead ? 'Read' : 'Unread', // Display read status
+                                        style: TextStyle(fontSize: 14, color: Colors.grey),
                                       ),
                                     ],
                                   ),
-                                  SizedBox(height: 4),
-                                  Text(
-                                    "You have a new message from John Doe.",
-                                    style: TextStyle(fontSize: 14),
-                                  ),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
+                          );
+                        },
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
 }
-
-// Sample notification data
-List<Map<String, String>> notificationList = [
-  {
-    'title': 'New Message',
-    'time': '2 hours ago',
-    'description': 'You have a new message from John Doe.'
-  },
-  {
-    'title': 'App Update',
-    'time': 'Yesterday',
-    'description': 'A new version of the app is available for update.'
-  },
-  // Add more notifications here
-];

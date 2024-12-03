@@ -3,14 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:client/views/screens/_all.dart';
 import 'package:client/views/components/bottom_navbar.dart';
 import 'package:provider/provider.dart';
+import 'package:client/models/polls_provider.dart';
+import 'package:client/models/notification_provider.dart';
 
 class MainScreen extends StatelessWidget {
   static String id = '/main-screen';
 
   final List<Widget> _pages = [
-    Dashboard(),
+    ChangeNotifierProvider<PollsProvider>(
+        create: (context) => PollsProvider(), child: Dashboard()),
     PollCreationScreen(),
-    NotificationScreen(),
+    ChangeNotifierProvider<NotificationProvider>(
+        create: (context) => NotificationProvider(),
+        child: NotificationScreen()),
     UserProfileScreen(),
   ];
 
@@ -19,7 +24,8 @@ class MainScreen extends StatelessWidget {
     return Consumer<NavigatorProvider>(
       builder: (context, navigatorProvider, child) {
         return Scaffold(
-          body: (navigatorProvider.currentIndex >= 0 && navigatorProvider.currentIndex < _pages.length)
+          body: (navigatorProvider.currentIndex >= 0 &&
+                  navigatorProvider.currentIndex < _pages.length)
               ? _pages[navigatorProvider.currentIndex]
               : Dashboard(),
           bottomNavigationBar: BottomNavbar(

@@ -17,38 +17,60 @@ class DashboardListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: kDividerColor, // Change the color as needed
-            width: 0.7, // Change the thickness as needed
-          ),
-        ),
-      ),
-      child: ListTile(
-        contentPadding: EdgeInsets.symmetric(
-          vertical: kListTileVerticalPadding,
-          horizontal: kListTileHorizontalPadding,
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(description),
-        leading: ClipRRect(
+    return GestureDetector( // Use GestureDetector to detect taps
+      onTap: onTap, // Call the onTap callback when tapped
+      child: Card(
+        color: kCardBackgroundColor, // Use the background color constant
+        shape: RoundedRectangleBorder(
           borderRadius: kImageBorderRadius,
-          child: Container(
-            width: kImageWidth,
-            height: kImageHeight,
-            child: FittedBox(
-              fit: BoxFit.cover,
-              child: imageUrl != null ? Image.network(imageUrl!):Image.asset('./images/placeholder.png'),
-            ),
+        ),
+        child: Container(
+          margin: EdgeInsets.all(kCardMargin),
+          height: kImageContainerHeight,
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: kImageBorderRadius,
+                child: Container(
+                  height: kImageContainerHeight,
+                  width: kImageContainerWidth,
+                  decoration: BoxDecoration(
+                    image: DecorationImage(
+                      image: imageUrl != null
+                          ? NetworkImage(imageUrl!)
+                          : AssetImage('images/placeholder.png'), // Fixed path without leading './'
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(width: kSpaceBetweenImageAndText),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      title,
+                      style: kTitleTextStyle,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                    SizedBox(height: kSpaceBetweenTitleAndDescription),
+                    Flexible(
+                      child: Text(
+                        description,
+                        style: kDescriptionTextStyle,
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 2,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        onTap: onTap,
-        trailing: Icon(Icons.arrow_forward_ios, size: kTrailingIconSize),
       ),
     );
   }

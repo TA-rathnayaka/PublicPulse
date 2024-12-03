@@ -7,13 +7,13 @@ import 'package:client/config/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:client/models/navigator_provider.dart';
 import 'package:client/models/user.dart';
+import 'package:client/models/poll.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  PollsProvider pollsProvider = PollsProvider();
-  print(pollsProvider.polls);
-  // runApp(MyApp());
+
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -24,6 +24,7 @@ class MyApp extends StatelessWidget {
         return NavigatorProvider();
       },
       child: MaterialApp(
+
         theme: KLightTheme,
         routes: routes,
       ),

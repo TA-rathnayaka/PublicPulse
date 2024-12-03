@@ -8,36 +8,41 @@ class PollScreen extends StatefulWidget {
   static String id = '/poll-screen';
 
   final Poll poll;
-  final List<Map<String, int>> results; // Adjusted based on your Poll class
-  final List<Map<String, String>> comments;
 
-  const PollScreen({
-    Key? key,
-    required this.poll,
-    required this.results,
-    required this.comments,
-  }) : super(key: key);
+  const PollScreen({Key? key, required this.poll}) : super(key: key);
 
   @override
   _PollScreenState createState() => _PollScreenState();
 }
 
 class _PollScreenState extends State<PollScreen> {
-  bool _hasVoted = false;
-  int _totalVotes = 0;
+  List<String> comments = []; // Store comments
+  String selectedOption = ''; // Track the selected poll option
 
-  @override
-  void initState() {
-    super.initState();
-    // Calculate the total votes from the results
-    _totalVotes = widget.results.fold(0, (sum, option) => sum + option.values.first);
+  void submitVote() {
+    // Handle vote submission logic here
+    // For now, just show a confirmation dialog
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Vote Submitted'),
+        content: Text('You voted for: $selectedOption'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
-  void _vote(String optionName) {
-    if (widget.poll.vote(optionName)) {
+  void addComment(String comment) {
+    if (comment.isNotEmpty) {
       setState(() {
-        _totalVotes++;
-        _hasVoted = true;
+        comments.add(comment); // Add comment to the list
       });
     }
   }
@@ -45,75 +50,56 @@ class _PollScreenState extends State<PollScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: TopNavigationBar(),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Display Poll Title
-              Text(
-                widget.poll.title,
-                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+      appBar: AppBar(
+        title: Text('Poll: ${widget.poll.title}'),
+        actions: [
+          TopNavigationBar(), // Include your top navigation bar here
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+
+            Text(
+              widget.poll.title,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            SizedBox(height: 10),
+            Text(
+              widget.poll.description,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            SizedBox(height: 20),
+            ...widget.poll.options.map((option) => RadioListTile<String>(
+                  title: Text(""),
+                  value: "option",
+                  groupValue: selectedOption,
+                  onChanged: (value) {
+                    setState(() {
+                      selectedOption = value!;
+                    });
+                  },
+                )),
+            SizedBox(height: 20),
+            PrimaryButton(
+              onPressed: submitVote,
+              label: 'Submit Vote',
+            ),
+            SizedBox(height: 20),
+            Text('Comments:', style: Theme.of(context).textTheme.headlineSmall),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: 'Add a comment',
+                  border: OutlineInputBorder(),
+                ),
+                onSubmitted: addComment,
               ),
-              const SizedBox(height: 8),
-
-              // Display Poll Description
-              Text(
-                widget.poll.description,
-                style: TextStyle(fontSize: 16),
-              ),
-              const SizedBox(height: 8),
-
-              // Display Poll Image if available
-              if (widget.poll.imageUrl != null)
-                Image.network(widget.poll.imageUrl!),
-              const SizedBox(height: 16),
-
-              // Display Total Votes
-              Text(
-                'Total Votes: $_totalVotes',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              const SizedBox(height: 16),
-
-              // Display Voting Options
-              Text(
-                'Voting Options:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-              ...widget.poll.options.map((option) {
-                // Extract option name and vote count
-                final optionName = option.keys.first;
-                final voteCount = option[optionName] ?? 0;
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '$optionName: $voteCount votes',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                    if (!_hasVoted)
-                      PrimaryButton(
-                        onPressed: () => _vote(optionName),
-                        label: 'Vote for $optionName',
-                      ),
-                    const SizedBox(height: 8),
-                  ],
-                );
-              }).toList(),
-              const SizedBox(height: 16),
-
-              // Display Comments
-              Text(
-                'Comments:',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-
-              const SizedBox(height: 16),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
