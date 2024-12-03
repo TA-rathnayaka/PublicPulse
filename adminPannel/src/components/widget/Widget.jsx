@@ -1,99 +1,88 @@
+import { useState, useEffect, useCallback } from "react";
+import { Link } from "react-router-dom"; 
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-import PollOutlinedIcon from "@mui/icons-material/PollOutlined";
-import PeopleAltOutlinedIcon from "@mui/icons-material/PeopleAltOutlined";
-import EventAvailableOutlinedIcon from "@mui/icons-material/EventAvailableOutlined";
+import CircularProgress from "@mui/material/CircularProgress"; 
+import { getDataCount } from "../../backend/widgetsController"; // Consolidated function
 
 const Widget = ({ type }) => {
-  let data;
+  const [dataCount, setDataCount] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  //temporary
-  const amount = 100;
-  const diff = 20;
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const count = await getDataCount(type);
+      setDataCount(count);
+    } catch (err) {
+      setError(err.message || "Error fetching data.");
+    } finally {
+      setLoading(false);
+    }
+  }, [type]);
 
-  switch (type) {
-    case "user":
-      data = {
-        title: "USERS",
-        isMoney: false,
-        link: "See all users",
-        icon: (
-          <PersonOutlinedIcon
-            className="icon"
-            style={{
-              color: "crimson",
-              backgroundColor: "rgba(255, 0, 0, 0.2)",
-            }}
-          />
-        ),
-      };
-      break;
-    case "polls":
-      data = {
-        title: "POLLS",
-        isMoney: false,
-        link: "View all Polls",
-        icon: (
-          <PollOutlinedIcon
-            className="icon"
-            style={{
-              backgroundColor: "rgba(218, 165, 32, 0.2)",
-              color: "goldenrod",
-            }}
-          />
-        ),
-      };
-      break;
-    case "participation":
-      data = {
-        title: "PARTICIPATION",
-        isMoney: true,
-        link: "View participation details",
-        icon: (
-          <EventAvailableOutlinedIcon
-            className="icon"
-            style={{ backgroundColor: "rgba(0, 128, 0, 0.2)", color: "green" }}
-          />
-        ),
-      };
-      break;
-    case "engagement":
-      data = {
-        title: "ENGAGEMENT",
-        isMoney: true,
-        link: "View engagement details",
-        icon: (
-          <PeopleAltOutlinedIcon
-            className="icon"
-            style={{
-              backgroundColor: "rgba(128, 0, 128, 0.2)",
-              color: "purple",
-            }}
-          />
-        ),
-      };
-      break;
-    default:
-      break;
-  }
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleRetry = () => {
+    fetchData();
+  };
+
+  const widgetData = {
+    users: {
+      title: "USERS",
+      link: "/users",
+      linkText: "See user details",
+      backgroundColor: "#f2e4d5",
+    },
+    polls: {
+      title: "POLLS",
+      link: "/polls",
+      linkText: "View all Polls",
+      backgroundColor: "#e7d5e8",
+    },
+    votes: {
+      title: "PARTICIPATION",
+      link: "/participation",
+      linkText: "View participation details",
+      backgroundColor: "#e0f7fa",
+    },
+  };
+
+  const data = widgetData[type] || {};
+  const diff = 20; // Example static value; can be dynamic based on historical data
 
   return (
-    <div className="widget">
-      <div className="left">
-        <span className="title">{data.title}</span>
-        <span className="counter">
-          {data.isMoney && ""} {amount}
-        </span>
-        <span className="link">{data.link}</span>
-      </div>
-      <div className="right">
-        <div className="percentage positive">
-          <KeyboardArrowUpIcon />
-          {diff} %
+    <div className="widget" style={{ backgroundColor: data.backgroundColor }}>
+      {loading ? (
+        <div className="widgetLoading">
+          <CircularProgress size={30} />
         </div>
-        {data.icon}
-      </div>
+      ) : error ? (
+        <div className="error">
+          {error}
+          <button onClick={handleRetry} className="retryButton">Retry</button>
+        </div>
+      ) : (
+        <>
+          <div className="left">
+            <span className="title">{data.title}</span>
+            <span className="counter">{dataCount !== null ? dataCount : "No data available"}</span>
+            <Link to={data.link} className="link" style={{ textDecoration: 'none', color: 'inherit' }}>
+              {data.linkText}
+            </Link>
+          </div>
+          <div className="right">
+            <div className="percentage positive">
+              <KeyboardArrowUpIcon />
+              {diff} %
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };

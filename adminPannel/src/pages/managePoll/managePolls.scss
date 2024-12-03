@@ -1,0 +1,54 @@
+.settings-container {
+  padding: 2rem;
+}
+
+.tab-container {
+  width: 50%;
+  display: flex;
+  border-bottom: none; /* Remove the grey bottom border */
+}
+
+.tab {
+  flex: 1;
+  padding: 1rem;
+  cursor: pointer;
+  background: white; /* Keep the background white */
+  border: none;
+  border-bottom: 2px solid transparent; /* Default transparent border */
+  color: #aaa;
+  font-weight: normal;
+  transition: all 0.3s ease;
+
+  &.active {
+    border-bottom: 4px solid #6439ff; /* Change to #6439ff */
+    color: #000; /* Change text color to black */
+    font-weight: bold; /* Make text bold */
+  }
+}
+
+.content {
+  padding: 1rem 0;
+  border-color: var(--border-color);
+}
+
+.input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 5px;
+  background: #007bff;
+  color: #fff;
+  cursor: pointer;
+  margin-right: 0.5rem;
+
+  &.cancel {
+    background: #ccc;
+  }
+}

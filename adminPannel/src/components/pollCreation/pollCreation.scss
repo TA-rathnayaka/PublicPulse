@@ -1,0 +1,145 @@
+.poll-container {
+  display: flex;
+  gap: 6rem;
+  padding: 2rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-color, #ddd); // Set a fallback color if `--border-color` isn't defined
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+    color: #666;
+  }
+
+  /* Left Section Styles */
+  .poll-container-left {
+    flex: 1;
+    border-right: 1px solid var(--border-color, #ddd); // Adding border-right for left section
+    padding-right: 2rem; // Padding for separation from border
+
+    .form-group {
+      margin-bottom: 1rem;
+
+      label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        margin-top: 0.5rem;
+      }
+    }
+
+    .image-preview {
+      margin-top: 10px;
+
+      .preview-img {
+        max-width: 100%;
+        height: auto;
+        padding: 5px;
+        border-radius: 4px;
+      }
+    }
+
+    .add-description {
+      display: block; /* Change to block for full width */
+      margin: 1rem 0;
+      background: none; /* Remove background */
+      border: none; /* Remove border */
+      padding: 0; /* Remove padding */
+      color: #6439ff; /* Keep text color */
+      cursor: pointer;
+      text-decoration: underline; /* Add underline to indicate it's clickable */
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      .add-option,
+      .add-other {
+        background: none;
+        border: none;
+        color: #6439ff;
+        cursor: pointer;
+        text-align: left;
+        padding: 0; /* Remove padding */
+        margin-top: 0.5rem;
+      }
+
+      .options-buttons {
+        display: flex;
+        gap: 1rem; /* Add gap between the buttons */
+        margin-top: 0.5rem; /* Space above the button container */
+      }
+    }
+  }
+
+  /* Right Section Styles */
+  .poll-container-right {
+    flex: 1;
+    border-left: 1px solid var(--border-color, #ddd); // Adding border-left for right section
+    padding-left: 2rem; // Padding for separation from border
+
+    .settings {
+      padding: 1rem;
+      border-radius: 10px;
+
+      h3 {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+        color: #333;
+      }
+
+      .setting-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+
+        label {
+          font-weight: normal;
+          color: #555;
+        }
+
+        input[type="checkbox"],
+        select {
+          margin-left: 0.5rem;
+        }
+      }
+
+      .advanced-settings {
+        display: block;
+        margin-top: 1rem;
+        color: #6439ff;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+
+    .create-poll {
+      display: block;
+      width: 100%;
+      padding: 0.75rem;
+      background: #6439ff;
+      color: #fff;
+      border: none;
+      border-radius: 15px;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+  }
+  
+}

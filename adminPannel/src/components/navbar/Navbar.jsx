@@ -6,54 +6,47 @@ import FullscreenExitOutlinedIcon from "@mui/icons-material/FullscreenExitOutlin
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import ListOutlinedIcon from "@mui/icons-material/ListOutlined";
+import SettingsIcon from "@mui/icons-material/Settings";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { auth, firestore } from "../../backend/firebase/firebase";
+import { useAuthState } from "react-firebase-hooks/auth";
 
-const Navbar = () => {
-  const { dispatch } = useContext(DarkModeContext);
+
+
+  
+const Navbar = ({ imgURL , navbarData }) => {
+  const user = useAuthState(auth); 
   const navigate = useNavigate(); // Initialize useNavigate
-
+  console.log("navbar data" ,navbarData)
   const handleImageClick = () => {
-    navigate("/login"); // Navigate to the Login page
+    navigate("/profile"); // Navigate to the profile page
   };
-
   return (
     <div className="navbar">
       <div className="wrapper">
-        <div className="search">
-          <input type="text" placeholder="Search..." />
-          <SearchOutlinedIcon />
-        </div>
+        <div className="navbar-title">{navbarData}</div>
+        
         <div className="items">
-          <div className="item">
-            <LanguageOutlinedIcon className="icon" />
-            English
+          <div className="search">
+            <SearchOutlinedIcon className="icon" />
+            <input type="text" placeholder="Search..." />
           </div>
+          
           <div className="item">
-            <DarkModeOutlinedIcon
-              className="icon"
-              onClick={() => dispatch({ type: "TOGGLE" })}
-            />
+            <SettingsIcon className="icon" />
           </div>
-          <div className="item">
-            <FullscreenExitOutlinedIcon className="icon" />
-          </div>
+          
           <div className="item">
             <NotificationsNoneOutlinedIcon className="icon" />
-            <div className="counter">1</div>
-          </div>
-          <div className="item">
-            <ChatBubbleOutlineOutlinedIcon className="icon" />
             <div className="counter">2</div>
           </div>
-          <div className="item">
-            <ListOutlinedIcon className="icon" />
-          </div>
+          
           <div className="item">
             <img
-              src="https://images.pexels.com/photos/775358/pexels-photo-775358.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-              alt=""
+              src={imgURL} // Use the retrieved image URL
+              alt="User Avatar"
               className="avatar"
               onClick={handleImageClick} // Add click handler
             />

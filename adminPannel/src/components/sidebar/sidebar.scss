@@ -1,25 +1,42 @@
+:root {
+  /* Existing color variables */
+  --border-color: rgb(230, 227, 227);
+  --sidebar-bg-color: rgba(249, 249, 249, 1);
+  --logo-color: #6439ff;
+  --title-color: rgba(135, 135, 135, 1);
+  --hover-bg-color: #ece8ff;
+  --icon-color: rgba(135, 135, 135, 1);
+  --font-color: rgba(135, 135, 135, 1);
+  --highlight-border-color: #7451f8;
+  --color-option-1: whitesmoke;
+  --color-option-2: #525252;
+  --color-option-3: rgb(190, 190, 193);
+  --active-color: #6439ff;
+}
+
 .sidebar {
-  flex: 1;
-  border-right: 0.5px solid rgb(230, 227, 227);
   min-height: 100vh;
-  background-color: white;
+  background-color: var(--sidebar-bg-color);
+  padding-left: 15px;
+  padding-right: 80px;
 
   .top {
     height: 50px;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding-top: 15px;
 
     .logo {
-      font-size: 20px;
+      font-size: 30px;
       font-weight: bold;
-      color: #6439ff;
+      color: var(--logo-color);
     }
   }
 
   hr {
     height: 0;
-    border: 0.5px solid rgb(230, 227, 227);
+    border: 0.5px solid var(--border-color);
   }
 
   .center {
@@ -31,9 +48,9 @@
       padding: 0;
 
       .title {
-        font-size: 10px;
+        font-size: 15px;
         font-weight: bold;
-        color: #999;
+        color: var(--title-color);
         margin-top: 15px;
         margin-bottom: 5px;
       }
@@ -43,48 +60,55 @@
         align-items: center;
         padding: 5px;
         cursor: pointer;
+        transition: color 0.3s ease;
 
         &:hover {
-          background-color: #ece8ff;
+          color: var(--active-color); // Apply hover color to text and icon
+        }
+
+        &:hover .icon, &:hover span {
+          color: var(--active-color); // Change icon and text color on hover
         }
 
         .icon {
-          font-size: 18px;
-          color: #7451f8;
+          font-size: 20px;
+          color: var(--icon-color);
+          transition: color 0.3s ease;
         }
 
-        span{
-            font-size: 13px;
-            font-weight: 600;
-            color: #888;
-            margin-left: 10px;
+        span {
+          font-size: 15px;
+          font-weight: 600;
+          color: var(--font-color);
+          margin-left: 10px;
+          transition: color 0.3s ease;
         }
       }
     }
   }
 
-  .bottom{
-      display: flex;
-      align-items: center;
-      margin: 10px;
+  .bottom {
+    display: flex;
+    align-items: center;
+    margin: 10px;
 
-      .colorOption{
-          width: 20px;
-          height: 20px;
-          border-radius: 5px;
-          border: 1px solid #7451f8;
-          cursor: pointer;
-          margin: 5px;
+    .colorOption {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      border: 1px solid var(--highlight-border-color);
+      cursor: pointer;
+      margin: 5px;
 
-          &:nth-child(1){
-              background-color: whitesmoke;
-          }
-          &:nth-child(2){
-              background-color: #333;
-          }
-          &:nth-child(3){
-              background-color: darkblue;
-          }
+      &:nth-child(1) {
+        background-color: var(--color-option-1);
       }
+      &:nth-child(2) {
+        background-color: var(--color-option-2);
+      }
+      &:nth-child(3) {
+        background-color: var(--color-option-3);
+      }
+    }
   }
 }

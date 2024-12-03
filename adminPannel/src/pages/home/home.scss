@@ -1,10 +1,22 @@
 .home {
   display: flex;
-
+  background-color: rgba(255, 255, 255, 1);
   .homeContainer {
     flex: 6;
 
-    .widgets,
+    .widgets {
+      display: flex; /* Display as a flex container */
+      justify-content: space-between; /* Space items evenly */
+      flex-wrap: wrap; /* Allow wrapping of widgets */
+      gap: 20px; /* Space between widgets */
+      padding: 20px; /* Padding around the container */
+      border: 1px solid rgba(0, 0, 0, 0.1); /* Light border for the container */
+      border-top-left-radius: 55px;
+  border-top-right-radius: 55px;
+
+      /* Background color for the container */
+      margin: 20px;
+    }
     .charts {
       display: flex;
       padding: 20px;

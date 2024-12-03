@@ -1,13 +1,43 @@
+:root {
+  --bg-color-dark: #111;
+  --text-color-dark: rgb(156, 156, 156);
+  --border-color-dark: #333;
+  --hover-bg-color: #333;
+  --input-bg-color: transparent;
+  --icon-color: #999;
+  --table-bg-color: #111;
+  --grid-stroke-color: rgba(228, 228, 228, 0.219);
+}
+
 .app.dark {
-  background-color: #111;
-  color: rgb(156, 156, 156);
+  background-color: var(--bg-color-dark);
+  color: var(--text-color-dark);
 
   .chartGrid {
-    stroke: rgba(228, 228, 228, 0.219);
+    stroke: var(--grid-stroke-color);
+  }
+  .widget{
+    background-color: var(--bg-color-dark);
+    color: var(--text-color-dark);
+    border-color: var(--border-color-dark);
+    .left{
+      .title{
+        color: var(--text-color-dark);
+      }
+      .counter{
+        color: var(--text-color-dark);
+      }
+    }
+    
+    .right{
+      .icon{
+        color: var(--icon-color);
+      }
+    }
   }
 
   .table {
-    background-color: #111;
+    background-color: var(--table-bg-color);
 
     .tableCell {
       color: gray;
@@ -15,8 +45,8 @@
   }
 
   .navbar {
-    color: #999;
-    border-color: #333;
+    color: var(--text-color-dark);
+    border-color: var(--border-color-dark);
 
     .search {
       border-color: gray;
@@ -24,26 +54,28 @@
   }
 
   .sidebar {
-    background-color: #111;
-    border-color: #333;
+    background-color: var(--bg-color-dark);
+    border-color: var(--border-color-dark);
 
     .top {
       .logo {
-        color: #999;
+        color: var(--text-color-dark);
       }
     }
+
     hr {
-      border-color: #333;
+      border-color: var(--border-color-dark);
     }
 
     ul {
       li {
         &:hover {
-          background-color: #333;
+          background-color: var(--hover-bg-color);
+          transition: background-color 0.3s ease; // Add transition for hover effect
         }
 
         .icon {
-          color: #999;
+          color: var(--icon-color);
         }
       }
     }
@@ -59,11 +91,19 @@
       .cellWithStatus {
         color: gray;
         border: none;
+        transition: color 0.3s ease; // Add transition for buttons
       }
     }
   }
 
-  input{
-      background-color: transparent;
+  input {
+    background-color: var(--input-bg-color);
+    color: var(--text-color-dark); // Set input text color for dark mode
+
+    &:focus {
+      outline: none; // Remove default outline
+      border: 1px solid gray; // Add a border on focus for visibility
+      background-color: rgba(255, 255, 255, 0.1); // Light background on focus for contrast
+    }
   }
 }
