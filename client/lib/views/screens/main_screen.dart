@@ -23,16 +23,18 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<NavigatorProvider>(
       builder: (context, navigatorProvider, child) {
-        return Scaffold(
-          body: (navigatorProvider.currentIndex >= 0 &&
-                  navigatorProvider.currentIndex < _pages.length)
-              ? _pages[navigatorProvider.currentIndex]
-              : Dashboard(),
-          bottomNavigationBar: BottomNavbar(
-            currentIndex: navigatorProvider.currentIndex,
-            onTap: (int index) {
-              navigatorProvider.setCurrentIndex(index);
-            },
+        return Material(
+          child: Scaffold(
+            body: (navigatorProvider.currentIndex >= 0 &&
+                    navigatorProvider.currentIndex < _pages.length)
+                ? _pages[navigatorProvider.currentIndex]
+                : Dashboard(),
+            bottomNavigationBar: BottomNavbar(
+              currentIndex: navigatorProvider.currentIndex,
+              onTap: (int index) {
+                navigatorProvider.setCurrentIndex(index);
+              },
+            ),
           ),
         );
       }, // Closing parenthesis for Consumer
