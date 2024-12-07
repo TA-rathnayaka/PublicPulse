@@ -8,7 +8,7 @@ import 'package:client/views/components/top_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:client/views/components/primary_button.dart';
-import 'package:client/providers/login_validation_provider.dart'; // Import PrimaryButton
+import 'package:client/providers/login_validation_provider.dart';
 
 class Login extends StatelessWidget {
   static const id = '/login';
@@ -88,66 +88,49 @@ class Login extends StatelessWidget {
                 children: <Widget>[
                   FadeInUp(
                     duration: Duration(milliseconds: 1800),
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(color: kPrimaryColor),
-                        boxShadow: [
-                          BoxShadow(
-                            color: kPrimaryColor.withOpacity(0.2),
-                            blurRadius: 20.0,
-                            offset: Offset(0, 10),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        children: <Widget>[
-                          Container(
-                            padding: EdgeInsets.all(8.0),
-                            decoration: BoxDecoration(
-                              border: Border(bottom: BorderSide(color: kPrimaryColor)),
-                            ),
-                            child: TextField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Email or Phone number",
-                                hintStyle: TextStyle(color: Colors.grey[700]),
-                              ),
+                    child: Column(
+                      children: <Widget>[
+                        // Email TextField
+                        TextField(
+                          controller: _emailController,
+                          decoration: kTextFieldDecoration.copyWith(
+                            hintText: 'User name or email',
+                            suffixIcon: Icon(
+                              Icons.person,
+                              color: kTextFieldHintColor,
                             ),
                           ),
-                          Consumer<LoginValidationProvider>(
-                            builder: (context, provider, child) {
-                              return Text(
-                                provider.emailError ?? "",
-                                style: TextStyle(color: Colors.red, fontSize: 14),
-                              );
-                            },
-                          ),
-                          Container(
-                            padding: EdgeInsets.all(8.0),
-                            child: TextField(
-                              controller: _passwordController,
-                              obscureText: true,
-                              decoration: InputDecoration(
-                                border: InputBorder.none,
-                                hintText: "Password",
-                                hintStyle: TextStyle(color: Colors.grey[700]),
-                              ),
+                        ),
+                        Consumer<LoginValidationProvider>(
+                          builder: (context, provider, child) {
+                            return Text(
+                              provider.emailError ?? "",
+                              style: TextStyle(color: Colors.red, fontSize: 14),
+                            );
+                          },
+                        ),
+
+                        // Password TextField
+                        TextField(
+                          controller: _passwordController,
+                          obscureText: true,
+                          decoration: kTextFieldDecoration.copyWith(
+                            hintText: 'Password',
+                            suffixIcon: Icon(
+                              Icons.lock,
+                              color: kTextFieldHintColor,
                             ),
                           ),
-                          Consumer<LoginValidationProvider>(
-                            builder: (context, provider, child) {
-                              return Text(
-                                provider.passwordError ?? "",
-                                style: TextStyle(color: Colors.red, fontSize: 14),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
+                        ),
+                        Consumer<LoginValidationProvider>(
+                          builder: (context, provider, child) {
+                            return Text(
+                              provider.passwordError ?? "",
+                              style: TextStyle(color: Colors.red, fontSize: 14),
+                            );
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: 30),

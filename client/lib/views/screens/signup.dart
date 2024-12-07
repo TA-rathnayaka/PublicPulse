@@ -102,72 +102,40 @@ class Signup extends StatelessWidget {
   Widget _buildEmailPasswordFields(BuildContext context) {
     return FadeInUp(
       duration: Duration(milliseconds: 1800),
-      child: Container(
-        padding: EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: kPrimaryColor),
-          boxShadow: [
-            BoxShadow(
-              color: kPrimaryColor.withOpacity(0.2),
-              blurRadius: 20.0,
-              offset: Offset(0, 10),
-            ),
-          ],
-        ),
-        child: Column(
-          children: <Widget>[
-            _buildTextField(
-              controller: _emailController,
-              hintText: "Email or Phone number",
-              obscureText: false,
-              errorMessage: context.watch<SignupValidationProvider>().emailError,
-            ),
-            _buildTextField(
-              controller: _passwordController,
-              hintText: "Password",
-              obscureText: true,
-              errorMessage: context.watch<SignupValidationProvider>().passwordError,
-            ),
-          ],
+      child: Column(
+        children: <Widget>[
+          _buildEmailTextField(context),
+          SizedBox(height: 20),  // Add spacing between email and password fields
+          _buildPasswordTextField(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmailTextField(BuildContext context) {
+    return TextField(
+      controller: _emailController,
+      decoration: kTextFieldDecoration.copyWith(
+        hintText: 'User name or email',
+        suffixIcon: Icon(
+          Icons.person,
+          color: kTextFieldHintColor,
         ),
       ),
     );
   }
 
-  Widget _buildTextField({
-    required TextEditingController controller,
-    required String hintText,
-    required bool obscureText,
-    String? errorMessage,
-  }) {
-    return Column(
-      children: [
-        Container(
-          padding: EdgeInsets.all(8.0),
-          decoration: BoxDecoration(
-            border: Border(bottom: BorderSide(color: kPrimaryColor)),
-          ),
-          child: TextField(
-            controller: controller,
-            obscureText: obscureText,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              hintText: hintText,
-              hintStyle: TextStyle(color: Colors.grey[700]),
-            ),
-          ),
+  Widget _buildPasswordTextField(BuildContext context) {
+    return TextField(
+      controller: _passwordController,
+      obscureText: true,
+      decoration: kTextFieldDecoration.copyWith(
+        hintText: 'Password',
+        suffixIcon: Icon(
+          Icons.lock,
+          color: kTextFieldHintColor,
         ),
-        if (errorMessage != null && errorMessage.isNotEmpty)
-          Padding(
-            padding: EdgeInsets.only(left: 8.0, top: 4.0),
-            child: Text(
-              errorMessage,
-              style: TextStyle(color: Colors.red, fontSize: 14),
-            ),
-          ),
-      ],
+      ),
     );
   }
 
