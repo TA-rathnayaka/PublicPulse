@@ -6,27 +6,25 @@ import 'package:client/views/constants/constants.dart';
 import 'package:client/views/components/top_navigation_bar.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:client/views/components/primary_button.dart';
+import 'package:client/providers/user_provider.dart';
 import 'package:client/providers/siginup_validation_provider.dart';
 
 class Signup extends StatelessWidget {
   static const id = '/signup';
 
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _repeatPasswordController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildBackgroundSection(),
-            _buildFormSection(context),
-          ],
+    return ChangeNotifierProvider(
+      create: (_) => SignupValidationProvider(),
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SingleChildScrollView(
+          child: Column(
+            children: [
+              _buildBackgroundSection(),
+              _buildFormSection(context),
+            ],
+          ),
         ),
       ),
     );
@@ -108,21 +106,33 @@ class Signup extends StatelessWidget {
       child: Column(
         children: <Widget>[
           _buildTextField(
-            _firstNameController,
+            context,
             'First Name',
             Icons.person,
+                (value) {
+              context.read<SignupValidationProvider>().validateFirstName(value);
+            },
+            errorText: context.watch<SignupValidationProvider>().firstNameError,
           ),
           SizedBox(height: 20),
           _buildTextField(
-            _lastNameController,
+            context,
             'Last Name',
             Icons.person,
+                (value) {
+              context.read<SignupValidationProvider>().validateLastName(value);
+            },
+            errorText: context.watch<SignupValidationProvider>().lastNameError,
           ),
           SizedBox(height: 20),
           _buildTextField(
-            _emailController,
+            context,
             'Email',
             Icons.email,
+                (value) {
+              context.read<SignupValidationProvider>().validateEmail(value);
+            },
+            errorText: context.watch<SignupValidationProvider>().emailError,
           ),
           SizedBox(height: 20),
           _buildPasswordTextField(context),
@@ -133,22 +143,33 @@ class Signup extends StatelessWidget {
     );
   }
 
-  Widget _buildTextField(TextEditingController controller, String hintText, IconData icon) {
-    return TextField(
-      controller: controller,
-      decoration: kTextFieldDecoration.copyWith(
-        hintText: hintText,
-        suffixIcon: Icon(
-          icon,
-          color: kTextFieldHintColor,
+  Widget _buildTextField(BuildContext context, String hintText, IconData icon, Function(String) onChanged, {String? errorText}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        TextField(
+          controller: context.read<SignupValidationProvider>().getController(hintText),
+          decoration: kTextFieldDecoration.copyWith(
+            hintText: hintText,
+            suffixIcon: Icon(
+              icon,
+              color: kTextFieldHintColor,
+            ),
+          ),
+          onChanged: onChanged,
         ),
-      ),
+        if (errorText != null)
+          Text(
+            errorText,
+            style: TextStyle(color: Colors.red, fontSize: 12),
+          ),
+      ],
     );
   }
 
   Widget _buildPasswordTextField(BuildContext context) {
     return TextField(
-      controller: _passwordController,
+      controller: context.read<SignupValidationProvider>().passwordController,
       obscureText: true,
       decoration: kTextFieldDecoration.copyWith(
         hintText: 'Password',
@@ -157,12 +178,15 @@ class Signup extends StatelessWidget {
           color: kTextFieldHintColor,
         ),
       ),
+      onChanged: (value) {
+        context.read<SignupValidationProvider>().validatePassword(value);
+      },
     );
   }
 
   Widget _buildRepeatPasswordTextField(BuildContext context) {
     return TextField(
-      controller: _repeatPasswordController,
+      controller: context.read<SignupValidationProvider>().repeatPasswordController,
       obscureText: true,
       decoration: kTextFieldDecoration.copyWith(
         hintText: 'Repeat Password',
@@ -171,6 +195,9 @@ class Signup extends StatelessWidget {
           color: kTextFieldHintColor,
         ),
       ),
+      onChanged: (value) {
+        context.read<SignupValidationProvider>().validateRepeatPassword();
+      },
     );
   }
 
@@ -179,35 +206,29 @@ class Signup extends StatelessWidget {
       duration: Duration(milliseconds: 1900),
       child: PrimaryButton(
         label: "Sign Up",
-        onPressed: () {
-          if (_validateInputs()) {
-            context.read<MyAuthProvider>().registerUserAndPassword(
-              _emailController.text,
-              _passwordController.text,
-              _firstNameController.text,
-              _lastNameController.text,
-            ).then((_) {
-              if (context.read<MyAuthProvider>().user != null) {
-                Navigator.pushNamed(context, Dashboard.id);
-              }
-            });
+        onPressed: () async {
+          if (context.read<SignupValidationProvider>().canProceed()) {
+            String email = context.read<SignupValidationProvider>().emailController.text;
+            String password = context.read<SignupValidationProvider>().passwordController.text;
+
+            // Register user via MyAuthProvider
+            await context.read<MyAuthProvider>().registerUserAndPassword(email, password);
+
+            // After successful registration, store user details in UserProvider
+            String uid = context.read<MyAuthProvider>().user!.uid;  // Assuming user is authenticated
+            String firstName = context.read<SignupValidationProvider>().firstNameController.text;
+            String lastName = context.read<SignupValidationProvider>().lastNameController.text;
+
+            await context.read<UserProvider>().storeUserDetails(uid, firstName, lastName, email);
+
+            // Navigate to home or another screen
+            Navigator.pushReplacementNamed(context, Dashboard.id); // Adjust based on your app's flow
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill in all the fields correctly")));
           }
         },
       ),
     );
-  }
-
-  bool _validateInputs() {
-    // Here you can validate the form inputs
-    if (_firstNameController.text.isEmpty || _lastNameController.text.isEmpty ||
-        _emailController.text.isEmpty || _passwordController.text.isEmpty ||
-        _repeatPasswordController.text.isEmpty) {
-      return false;
-    }
-    if (_passwordController.text != _repeatPasswordController.text) {
-      return false;
-    }
-    return true;
   }
 
   Widget _buildLoginButton(BuildContext context) {

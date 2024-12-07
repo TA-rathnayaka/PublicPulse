@@ -1,3 +1,4 @@
+import 'package:client/Providers/navigator_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:client/views/screens/_all.dart';
 import 'package:provider/provider.dart';
@@ -8,12 +9,18 @@ final routes = {
   SplashScreen.id: (context) => SplashScreen(),
   Dashboard.id: (context) => Dashboard(),
   PollCreationScreen.id: (context) => PollCreationScreen(),
+  MainScreen.id: (context) => ChangeNotifierProvider(
+        create: (context) => NavigatorProvider(),
+        child: MainScreen(),
+      ),
   Signup.id: (context) => ChangeNotifierProvider(
-    create: (context) => SignupValidationProvider(), // Provide SignupValidationProvider locally
-    child: Signup(),
-  ),
+        create: (context) => SignupValidationProvider(),
+        // Provide SignupValidationProvider locally
+        child: Signup(),
+      ),
   Login.id: (context) => ChangeNotifierProvider(
-    create: (context) => LoginValidationProvider(), // Provide LoginValidationProvider locally
-    child: Login(),
-  ),
+        create: (context) => LoginValidationProvider(),
+        // Provide LoginValidationProvider locally
+        child: Login(),
+      ),
 };
