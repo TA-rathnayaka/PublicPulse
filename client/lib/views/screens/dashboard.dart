@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:client/views/components/search_button.dart';
 import 'package:client/views/components/dashboard_list_tile.dart';
-import 'package:client/models/polls_provider.dart';
+import 'package:client/Providers/polls_provider.dart';
 import 'package:provider/provider.dart';
 
 class Dashboard extends StatelessWidget {
