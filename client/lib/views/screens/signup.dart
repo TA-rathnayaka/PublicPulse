@@ -11,8 +11,11 @@ import 'package:client/providers/siginup_validation_provider.dart';
 class Signup extends StatelessWidget {
   static const id = '/signup';
 
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _repeatPasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -87,7 +90,7 @@ class Signup extends StatelessWidget {
       padding: EdgeInsets.all(30.0),
       child: Column(
         children: <Widget>[
-          _buildEmailPasswordFields(context),
+          _buildFormFields(context),
           SizedBox(height: 30),
           _buildSignupButton(context),
           SizedBox(height: 20),
@@ -99,26 +102,44 @@ class Signup extends StatelessWidget {
     );
   }
 
-  Widget _buildEmailPasswordFields(BuildContext context) {
+  Widget _buildFormFields(BuildContext context) {
     return FadeInUp(
       duration: Duration(milliseconds: 1800),
       child: Column(
         children: <Widget>[
-          _buildEmailTextField(context),
-          SizedBox(height: 20),  // Add spacing between email and password fields
+          _buildTextField(
+            _firstNameController,
+            'First Name',
+            Icons.person,
+          ),
+          SizedBox(height: 20),
+          _buildTextField(
+            _lastNameController,
+            'Last Name',
+            Icons.person,
+          ),
+          SizedBox(height: 20),
+          _buildTextField(
+            _emailController,
+            'Email',
+            Icons.email,
+          ),
+          SizedBox(height: 20),
           _buildPasswordTextField(context),
+          SizedBox(height: 20),
+          _buildRepeatPasswordTextField(context),
         ],
       ),
     );
   }
 
-  Widget _buildEmailTextField(BuildContext context) {
+  Widget _buildTextField(TextEditingController controller, String hintText, IconData icon) {
     return TextField(
-      controller: _emailController,
+      controller: controller,
       decoration: kTextFieldDecoration.copyWith(
-        hintText: 'User name or email',
+        hintText: hintText,
         suffixIcon: Icon(
-          Icons.person,
+          icon,
           color: kTextFieldHintColor,
         ),
       ),
@@ -139,29 +160,54 @@ class Signup extends StatelessWidget {
     );
   }
 
+  Widget _buildRepeatPasswordTextField(BuildContext context) {
+    return TextField(
+      controller: _repeatPasswordController,
+      obscureText: true,
+      decoration: kTextFieldDecoration.copyWith(
+        hintText: 'Repeat Password',
+        suffixIcon: Icon(
+          Icons.lock,
+          color: kTextFieldHintColor,
+        ),
+      ),
+    );
+  }
+
   Widget _buildSignupButton(BuildContext context) {
     return FadeInUp(
       duration: Duration(milliseconds: 1900),
       child: PrimaryButton(
         label: "Sign Up",
         onPressed: () {
-          context.read<SignupValidationProvider>().validateEmail(_emailController.text);
-          context.read<SignupValidationProvider>().validatePassword(_passwordController.text);
-
-          if (context.read<SignupValidationProvider>().isValid) {
-            context.read<MyAuthProvider>().signInEmailAndPassword(
-              _emailController.text, _passwordController.text,
+          if (_validateInputs()) {
+            context.read<MyAuthProvider>().registerUserAndPassword(
+              _emailController.text,
+              _passwordController.text,
+              _firstNameController.text,
+              _lastNameController.text,
             ).then((_) {
               if (context.read<MyAuthProvider>().user != null) {
                 Navigator.pushNamed(context, Dashboard.id);
-              } else {
-                context.read<SignupValidationProvider>().validatePassword('');
               }
             });
           }
         },
       ),
     );
+  }
+
+  bool _validateInputs() {
+    // Here you can validate the form inputs
+    if (_firstNameController.text.isEmpty || _lastNameController.text.isEmpty ||
+        _emailController.text.isEmpty || _passwordController.text.isEmpty ||
+        _repeatPasswordController.text.isEmpty) {
+      return false;
+    }
+    if (_passwordController.text != _repeatPasswordController.text) {
+      return false;
+    }
+    return true;
   }
 
   Widget _buildLoginButton(BuildContext context) {
