@@ -5,6 +5,8 @@ import 'package:client/views/components/search_button.dart';
 import 'package:client/views/components/dashboard_list_tile.dart';
 import 'package:client/Providers/polls_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:client/providers/poll_screen_provider.dart';
+import 'package:animate_do/animate_do.dart';
 
 class Dashboard extends StatelessWidget {
   static String id = '/dashboard';
@@ -40,18 +42,25 @@ class Dashboard extends StatelessWidget {
                     itemCount: pollsProvider.polls.length,
                     itemBuilder: (context, index) {
                       final poll = pollsProvider.polls[index];
-                      return DashboardListTile(
-                        title: poll.title,
-                        description: poll.description,
-                        imageUrl: poll.imageUrl ?? 'default_image_url',
-                        onTap: () {
-                          Navigator.push(
+                      return FadeInUp(
+                        duration: Duration(milliseconds: 1600),
+                        child: DashboardListTile(
+                          title: poll.title,
+                          description: poll.description,
+                          imageUrl: poll.imageUrl ?? 'default_image_url',
+                          onTap: () {
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                      PollScreen(poll: poll)));
-                        },
-                        // Adjust colors for DashboardListTile to suit a light theme
+                                builder: (context) => ChangeNotifierProvider(
+                                  create: (_) => PollScreenProvider(),
+                                  child: PollScreen(poll: poll),
+                                ),
+                              ),
+                            );
+                          },
+                          // Adjust colors for DashboardListTile to suit a light theme
+                        ),
                       );
                     },
                   );

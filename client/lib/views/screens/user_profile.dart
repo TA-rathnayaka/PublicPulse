@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:client/views/components/identity.dart';
+import 'package:client/views/components/profile_menu_row.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/profile_constants.dart';
 
 class UserProfileScreen extends StatefulWidget {
-  static const id = '/userProfile';
+  static const id = '/combinedProfile';
+
+  const UserProfileScreen({super.key});
 
   @override
   _UserProfileScreenState createState() => _UserProfileScreenState();
@@ -40,6 +45,54 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     // Handle save action
   }
 
+  void _showBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.7, // Adjust this value to control the height
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 20,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTextField(label: "Your Name", controller: _nameController),
+                  _buildTextField(label: "User Name", controller: _usernameController),
+                  _buildTextField(label: "Email", controller: _emailController),
+                  _buildTextField(label: "Password", controller: _passwordController, obscureText: true),
+                  _buildTextField(label: "Date of Birth", controller: _dobController, isDate: true),
+                  _buildTextField(label: "Present Address", controller: _presentAddressController),
+                  _buildTextField(label: "Permanent Address", controller: _permanentAddressController),
+                  _buildTextField(label: "City", controller: _cityController),
+                  _buildTextField(label: "Postal Code", controller: _postalCodeController),
+                  _buildTextField(label: "Country", controller: _countryController),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: PrimaryButton(
+                      label: 'Save',
+                      onPressed: _handleSave,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget _buildTextField({
     required String label,
     required TextEditingController controller,
@@ -71,67 +124,73 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: kPaddingHorizontalUserProfileScreen),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            Center(
-              child: Stack(
+    Widget build(BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text('Profile'),
+          centerTitle: true,
+          backgroundColor: Colors.white,
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 20),
+              Row(
                 children: [
-                  CircleAvatar(
-                    radius: kCircleAvatarRadiusUserProfileScreen,
-                    backgroundImage: NetworkImage(
-                      'https://example.com/profile_image.jpg', // Replace with actual image URL
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 4,
-                    child: CircleAvatar(
-                      radius: kEditIconRadiusUserProfileScreen,
-                      backgroundColor: Colors.blue,
-                      child: Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                        size: 16,
-                      ),
+                  Text(
+                    "Account",
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 28,
                     ),
                   ),
                 ],
               ),
-            ),
-            SizedBox(height: 20),
-            _buildTextField(label: "Your Name", controller: _nameController),
-            _buildTextField(label: "User Name", controller: _usernameController),
-            _buildTextField(label: "Email", controller: _emailController),
-            _buildTextField(label: "Password", controller: _passwordController, obscureText: true),
-            _buildTextField(label: "Date of Birth", controller: _dobController, isDate: true),
-            _buildTextField(label: "Present Address", controller: _presentAddressController),
-            _buildTextField(label: "Permanent Address", controller: _permanentAddressController),
-            _buildTextField(label: "City", controller: _cityController),
-            _buildTextField(label: "Postal Code", controller: _postalCodeController),
-            _buildTextField(label: "Country", controller: _countryController),
-            SizedBox(height: 30),
-            Center(
-              child: PrimaryButton(
-                label: 'Save',
-                onPressed: _handleSave,
+              const SizedBox(height: 20),
+              Identity(
+                imagePath: "assets/toji.jpg",
+                name: "Toji Fushiguro",
+                email: "tojifushiguro@gmail.com",
+                phoneNumber: "+123 456-789",
+                onTap: _showBottomSheet,
               ),
-            ),
-            SizedBox(height: 30),
-          ],
+              const SizedBox(height: 20),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Padding(
+                  padding: EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      MenuRow(icon: Icons.dark_mode, text: "Dark Mode"),
+                      Divider(),
+                      MenuRow(
+                          icon: Icons.card_giftcard_outlined, text: "Orders"),
+                      Divider(),
+                      MenuRow(icon: Icons.history, text: "Purchase History"),
+                      Divider(),
+                      MenuRow(icon: Icons.payment, text: "Payment Methods"),
+                      Divider(),
+                      MenuRow(icon: Icons.privacy_tip, text: "Privacy"),
+                      Divider(),
+                      MenuRow(icon: Icons.person, text: "Personal Info"),
+                      Divider(),
+                      MenuRow(icon: Icons.reviews_sharp, text: "Rewards"),
+                      Divider(),
+                      MenuRow(icon: Icons.settings, text: "Settings"),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
