@@ -7,6 +7,9 @@ import 'package:client/views/constants/constants.dart';
 import 'package:client/models/poll.dart'; // Assuming Poll class is imported from here
 
 class PollScreen extends StatelessWidget {
+
+  static String id = '/poll-screen';
+  
   final Poll poll;  // Now accepting Poll object directly
 
   PollScreen({required this.poll}); // Constructor updated to accept Poll object
