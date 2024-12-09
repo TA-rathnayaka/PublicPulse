@@ -1,62 +1,62 @@
-// import 'package:client/Providers/polls_provider.dart';
-// import 'package:client/views/screens/_all.dart';
-// import 'package:flutter/material.dart';
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:client/config/app_routes.dart';
-// import 'package:client/config/app_theme.dart';
-// import 'package:provider/provider.dart';
-// import 'package:client/providers/navigator_provider.dart';
-// import 'package:client/providers/auth_provider.dart';
-// import 'package:client/models/user.dart';
-// import 'package:client/models/poll.dart';
-//
-// void main() async {
-//   WidgetsFlutterBinding.ensureInitialized();
-//   await Firebase.initializeApp();
-//
-//   runApp(MyApp());
-// }
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MultiProvider(
-//       providers: [
-//         ChangeNotifierProvider<PollsProvider>(create: (context) => PollsProvider()),
-//         ChangeNotifierProvider(create: (context) => MyAuthProvider())// Add your additional providers here
-//         // Add more providers as needed
-//       ],
-//       child: MaterialApp(
-//         theme: KLightTheme,
-//         routes: routes,
-//       ),
-//     );
-//   }
-// }
-
-import 'package:animate_do/animate_do.dart';
-import 'package:client/providers/poll_screen_provider.dart';
+import 'package:client/Providers/polls_provider.dart';
+import 'package:client/views/screens/_all.dart';
 import 'package:flutter/material.dart';
-import 'package:client/views/screens/test.dart';
-
-import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:client/config/app_routes.dart';
+import 'package:client/config/app_theme.dart';
 import 'package:provider/provider.dart';
-import 'providers/polls_provider.dart'; // Import your PollsProvider
-import 'package:client/views/screens/test.dart';      // Import your PollScreen
+import 'package:client/providers/navigator_provider.dart';
+import 'package:client/providers/auth_provider.dart';
+import 'package:client/models/user.dart';
+import 'package:client/models/poll.dart';
 
-void main() => runApp(
-  MultiProvider(
-    providers: [
-      ChangeNotifierProvider(create: (context) => PollScreenProvider()),
-      // Add additional providers here if needed
-    ],
-    child: MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: PollScreen(question: "this is the question", pollImages: ["https://img.freepik.com/free-photo/side-view-smiley-couple-indoors_23-2149903726.jpg?t=st=1733576170~exp=1733579770~hmac=3977e1fc2b3df0c0b258b83d954cc052d2159abf463730282592a92f6e96c904&w=1800"], votes: "10",description: "this is the description",),
-    ),
-  ),
-);
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
 
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<PollsProvider>(create: (context) => PollsProvider()),
+        ChangeNotifierProvider(create: (context) => MyAuthProvider())// Add your additional providers here
+        // Add more providers as needed
+      ],
+      child: MaterialApp(
+        theme: KLightTheme,
+        routes: routes,
+      ),
+    );
+  }
+}
+
+//import 'package:animate_do/animate_do.dart';
+//import 'package:client/providers/poll_screen_provider.dart';
+//import 'package:flutter/material.dart';
+//import 'package:client/views/screens/test.dart';
+//
+//import 'package:flutter/material.dart';
+//import 'package:provider/provider.dart';
+//import 'providers/polls_provider.dart'; // Import your PollsProvider
+//import 'package:client/views/screens/test.dart';      // Import your PollScreen
+//
+//void main() => runApp(
+//  MultiProvider(
+//    providers: [
+//      ChangeNotifierProvider(create: (context) => PollScreenProvider()),
+//      // Add additional providers here if needed
+//    ],
+//    child: MaterialApp(
+//      debugShowCheckedModeBanner: false,
+//      home: PollScreen(question: "this is the question", pollImages: ["https://img.freepik.com/free-photo/side-view-smiley-couple-indoors_23-2149903726.jpg?t=st=1733576170~exp=1733579770~hmac=3977e1fc2b3df0c0b258b83d954cc052d2159abf463730282592a92f6e96c904&w=1800"], votes: "10",description: "this is the description",),
+//    ),
+//  ),
+//);
+//
 // class HomePage extends StatefulWidget {
 //   @override
 //   _HomePageState createState() => _HomePageState();
