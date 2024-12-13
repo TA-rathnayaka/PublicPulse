@@ -7,12 +7,7 @@ import 'package:client/providers/screens_providers/login_validation_provider.dar
 
 final routes = {
   SplashScreen.id: (context) => SplashScreen(),
-  Dashboard.id: (context) => Dashboard(),
-  PollCreationScreen.id: (context) => PollCreationScreen(),
-  MainScreen.id: (context) => ChangeNotifierProvider(
-        create: (context) => NavigatorProvider(),
-        child: MainScreen(),
-      ),
+  MainScreen.id: (context) => MainScreen(),
   Signup.id: (context) => ChangeNotifierProvider(
         create: (context) => SignupValidationProvider(),
         // Provide SignupValidationProvider locally

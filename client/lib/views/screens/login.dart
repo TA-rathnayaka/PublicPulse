@@ -148,7 +148,7 @@ class Login extends StatelessWidget {
                           context.read<MyAuthProvider>().signInEmailAndPassword(
                               _emailController.text, _passwordController.text).then((_) {
                             if (context.read<MyAuthProvider>().user != null) {
-                              Navigator.pushNamed(context, MainScreen.id);
+                              Navigator.pushReplacementNamed(context, MainScreen.id);
                             } else {
                               // Show error if login failed
                               context.read<LoginValidationProvider>().validatePassword('');

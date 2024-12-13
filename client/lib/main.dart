@@ -21,11 +21,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<PollsProvider>(create: (context) => PollsProvider()),
-        ChangeNotifierProvider(create: (context) => MyAuthProvider()),
-        ChangeNotifierProvider(create: (context) => UserProvider())
-// Add your additional providers here
-        // Add more providers as needed
+        ChangeNotifierProvider<MyAuthProvider>(create: (context) => MyAuthProvider()),
       ],
       child: MaterialApp(
         theme: KLightTheme,

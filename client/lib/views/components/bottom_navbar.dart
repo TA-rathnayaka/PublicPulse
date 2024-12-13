@@ -1,51 +1,61 @@
-import 'package:client/views/constants/bottom_navbar_constants.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavbar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
+  final List<BottomNavbarItem> items;
+  final double iconSize;
+  final Color backgroundColor;
+  final Color selectedItemColor;
+  final Color unselectedItemColor;
+  final double elevation;
+  final double borderRadius;
 
   const BottomNavbar({
     required this.currentIndex,
     required this.onTap,
+    required this.items,
+    this.iconSize = 28.0,
+    this.backgroundColor = const Color(0xFFF5F5F5), // Default background color
+    this.selectedItemColor = const Color(0xFF6200EE), // Default selected item color
+    this.unselectedItemColor = const Color(0xFF9E9E9E), // Default unselected item color
+    this.elevation = 10.0, // Default elevation
+    this.borderRadius = 24.0, // Default border radius
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: kBackgroundColorBottomNavbar,
+        color: backgroundColor,
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+          topLeft: Radius.circular(borderRadius),
+          topRight: Radius.circular(borderRadius),
         ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.2),
-            blurRadius: 10,
+            blurRadius: elevation,
             spreadRadius: 1,
           ),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(24),
-          topRight: Radius.circular(24),
+          topLeft: Radius.circular(borderRadius),
+          topRight: Radius.circular(borderRadius),
         ),
         child: BottomNavigationBar(
           type: BottomNavigationBarType.fixed,
-          backgroundColor: kBackgroundColorBottomNavbar,
+          backgroundColor: backgroundColor,
           elevation: 0,
           currentIndex: currentIndex,
           onTap: onTap,
           showSelectedLabels: false,
           showUnselectedLabels: false,
-          items: [
-            _buildNavItem(Icons.home, 0),
-            _buildNavItem(Icons.create, 1),
-            _buildNavItem(Icons.favorite, 2),
-            _buildNavItem(Icons.settings, 3),
-          ],
+          items: items.map((item) {
+            return _buildNavItem(item.icon, item.index);
+          }).toList(),
         ),
       ),
     );
@@ -61,13 +71,20 @@ class BottomNavbar extends StatelessWidget {
         ),
         child: Icon(
           icon,
-          size: 28,
+          size: iconSize,
           color: currentIndex == index
-              ? kSelectedItemColorBottomNavbar
-              : Colors.grey.withOpacity(0.6),
+              ? selectedItemColor
+              : unselectedItemColor,
         ),
       ),
       label: '',
     );
   }
+}
+
+class BottomNavbarItem {
+  final IconData icon;
+  final int index;
+
+  BottomNavbarItem({required this.icon, required this.index});
 }
