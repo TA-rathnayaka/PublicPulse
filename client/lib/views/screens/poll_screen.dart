@@ -1,3 +1,4 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
@@ -5,11 +6,11 @@ import 'package:client/providers/poll_screen_provider.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:client/models/poll.dart'; // Assuming Poll class is imported from here
-
+import 'package:firebase_core/firebase_core.dart';
 class PollScreen extends StatelessWidget {
 
   static String id = '/poll-screen';
-  
+
   final Poll poll;  // Now accepting Poll object directly
 
   PollScreen({required this.poll}); // Constructor updated to accept Poll object
@@ -211,6 +212,8 @@ class PollDetails extends StatelessWidget {
                 duration: Duration(milliseconds: 1700),
                 child: PrimaryButton(
                   onPressed: () {
+                    final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+                    analytics.logEvent(name: "test click");
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Vote button pressed')),
                     );
