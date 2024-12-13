@@ -28,17 +28,12 @@ class PollCreationScreen extends StatelessWidget {
               SizedBox(height: kSizedBoxHeight),
               Consumer<PollCreationValidationProvider>(
                 builder: (context, provider, child) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: provider.titleController,
-                        decoration: kTextFieldDecoration.copyWith(
-                          hintText: 'Enter poll title',
-                          errorText: provider.titleError,
-                        ),
-                      ),
-                    ],
+                  return TextField(
+                    controller: provider.titleController,
+                    decoration: kTextFieldDecoration.copyWith(
+                      hintText: 'Enter poll title',
+                      errorText: provider.titleError,
+                    ),
                   );
                 },
               ),
@@ -49,18 +44,13 @@ class PollCreationScreen extends StatelessWidget {
               SizedBox(height: kSizedBoxHeight),
               Consumer<PollCreationValidationProvider>(
                 builder: (context, provider, child) {
-                  return Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: provider.descriptionController,
-                        maxLines: 3,
-                        decoration: kTextFieldDecoration.copyWith(
-                          hintText: 'Enter poll description',
-                          errorText: provider.descriptionError,
-                        ),
-                      ),
-                    ],
+                  return TextField(
+                    controller: provider.descriptionController,
+                    maxLines: 3,
+                    decoration: kTextFieldDecoration.copyWith(
+                      hintText: 'Enter poll description',
+                      errorText: provider.descriptionError,
+                    ),
                   );
                 },
               ),
@@ -121,6 +111,22 @@ class PollCreationScreen extends StatelessWidget {
               ),
               SizedBox(height: kSizedBoxHeight),
 
+              // Poll Image URL
+              Text('Poll Image URL', style: kHeadlineStyle),
+              SizedBox(height: kSizedBoxHeight),
+              Consumer<PollCreationValidationProvider>(
+                builder: (context, provider, child) {
+                  return TextField(
+                    controller: provider.imageUrlController,
+                    decoration: kTextFieldDecoration.copyWith(
+                      hintText: 'Enter image URL',
+                      errorText: provider.imageUrlError,
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: kSizedBoxHeight),
+
               // Create Poll Button
               Consumer<PollCreationValidationProvider>(
                 builder: (context, provider, child) {
@@ -152,6 +158,9 @@ class PollCreationScreen extends StatelessWidget {
         .where((controller) => controller.text.trim().isNotEmpty)
         .map((controller) => {controller.text.trim(): 0})
         .toList();
+    final imageUrl = provider.imageUrlController.text.trim().isEmpty
+        ? 'https://via.placeholder.com/150'
+        : provider.imageUrlController.text.trim();
 
     final newPoll = Poll(
       title: title,
@@ -159,7 +168,7 @@ class PollCreationScreen extends StatelessWidget {
       options: options,
       createDate: DateTime.now(),
       duration: Duration(days: 7),
-      imageUrl: 'https://via.placeholder.com/150',
+      imageUrl: imageUrl,
     );
 
     // Add poll to the provider and sync with Firestore
