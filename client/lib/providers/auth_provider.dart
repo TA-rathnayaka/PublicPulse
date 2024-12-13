@@ -11,6 +11,11 @@ class MyAuthProvider with ChangeNotifier {
 
   Stream<User?> get userStream => _authService.userStream;
 
+  Future<void> signInWithGoogle() async {
+      _user = await _authService.signInWithGoogle();
+      notifyListeners();
+  }
+
   Future<void> signInEmailAndPassword(String email, String password) async {
     _user = await _authService.signInEmailAndPassword(email, password);
     notifyListeners();

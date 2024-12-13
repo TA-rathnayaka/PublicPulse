@@ -31,6 +31,8 @@ dependencies:
   flutter:
     sdk: flutter
   avatars: ^2.0.0
+  google_sign_in:  ^5.4.0
+  google_fonts: ^5.0.0 # Use the latest version
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -41,7 +43,6 @@ dependencies:
   cloud_firestore: ^5.4.4
   provider: ^6.1.2
   animate_do: ^3.3.4
-  google_sign_in: ^5.4.0
 
 
 dev_dependencies:

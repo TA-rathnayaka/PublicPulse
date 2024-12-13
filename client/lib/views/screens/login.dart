@@ -9,7 +9,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/providers/login_validation_provider.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 class Login extends StatelessWidget {
   static const id = '/login';
@@ -17,22 +16,7 @@ class Login extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> _signInWithGoogle(BuildContext context) async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-    try {
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser != null) {
-        // Handle Google sign-in logic here
-        print("Google User Signed In: ${googleUser.displayName}");
-        Navigator.pushNamed(context, Dashboard.id); // Navigate to Dashboard on success
-      }
-    } catch (error) {
-      print("Error during Google Sign-In: $error");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Google Sign-In failed. Please try again.")),
-      );
-    }
-  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,7 +149,7 @@ class Login extends StatelessWidget {
                           context.read<MyAuthProvider>().signInEmailAndPassword(
                               _emailController.text, _passwordController.text).then((_) {
                             if (context.read<MyAuthProvider>().user != null) {
-                              Navigator.pushNamed(context, Dashboard.id);
+                              Navigator.pushNamed(context, MainScreen.id);
                             } else {
                               // Show error if login failed
                               context.read<LoginValidationProvider>().validatePassword('');
@@ -190,29 +174,54 @@ class Login extends StatelessWidget {
                   SizedBox(height: 30),
                   // Google Login Button
                   FadeInUp(
-                    duration: Duration(milliseconds: 1900),
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        // Button text color
-                        padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                        side: BorderSide(color: Colors.grey.shade300, width: 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                      duration: const Duration(milliseconds: 1900),
+                      child: ElevatedButton.icon(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                          side: BorderSide(color: Colors.grey.shade300, width: 1),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
                         ),
-                      ),
-                      onPressed: () => _signInWithGoogle(context),
-                      icon: Image.network(
-                        "https://cdn-icons-png.flaticon.com/128/300/300221.png",
-                        height: 20,
-                      ),
-                      label: Text(
-                        "Sign in with Google",
-                        style: TextStyle(
-                            color: Colors.black
+                        onPressed: () {
+                          // Validate any preconditions if needed
+                          if (context.read<LoginValidationProvider>().isValid) {
+                            // Proceed with Google sign-in
+                            context.read<MyAuthProvider>().signInWithGoogle().then((_) {
+                              if (context.read<MyAuthProvider>().user != null) {
+                                // Navigate to the dashboard on success
+                                Navigator.pushNamed(context, MainScreen.id);
+                              } else {
+                                // Show error if Google sign-in failed
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text("Google Sign-In failed")),
+                                );
+                              }
+                            }).catchError((error) {
+                              // Handle any error that might occur during Google sign-in
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Error: ${error.toString()}")),
+                              );
+                            });
+                          } else {
+                            // Show validation error or feedback to the user if needed
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text("Please fix validation issues before proceeding.")),
+                            );
+                          }
+                        },
+
+                        icon: Image.network(
+                          "https://cdn-icons-png.flaticon.com/128/300/300221.png",
+                          height: 20,
                         ),
-                      ),
-                    ),
-                  ),
+                        label: const Text(
+                          "Sign in with Google",
+                          style: TextStyle(
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),),
                   SizedBox(height: 70),
                   FadeInUp(
                     duration: Duration(milliseconds: 2000),
