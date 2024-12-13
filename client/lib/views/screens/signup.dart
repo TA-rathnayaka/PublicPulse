@@ -7,7 +7,7 @@ import 'package:client/views/components/top_navigation_bar.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/providers/user_provider.dart';
-import 'package:client/providers/siginup_validation_provider.dart';
+import 'package:client/providers/screens_providers/siginup_validation_provider.dart';
 
 class Signup extends StatelessWidget {
   static const id = '/signup';

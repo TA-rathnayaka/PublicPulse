@@ -17,17 +17,22 @@ class DashboardListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( // Use GestureDetector to detect taps
-      onTap: onTap, // Call the onTap callback when tapped
+    return GestureDetector(
+      onTap: onTap,
       child: Card(
-        color: kCardBackgroundColor, // Use the background color constant
+        elevation: 6,
+        shadowColor: Colors.black.withOpacity(0.2),
         shape: RoundedRectangleBorder(
           borderRadius: kImageBorderRadius,
         ),
         child: Container(
-          margin: EdgeInsets.all(kCardMargin),
-          height: kImageContainerHeight,
+          padding: EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: kCardBackgroundColor,
+            borderRadius: kImageBorderRadius,
+          ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
                 borderRadius: kImageBorderRadius,
@@ -35,12 +40,18 @@ class DashboardListTile extends StatelessWidget {
                   height: kImageContainerHeight,
                   width: kImageContainerWidth,
                   decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imageUrl != null
-                          ? NetworkImage(imageUrl!)
-                          : AssetImage('images/placeholder.png'), // Fixed path without leading './'
-                      fit: BoxFit.cover,
-                    ),
+                    border: Border.all(color: Colors.grey.shade300, width: 2),
+                  ),
+                  child: imageUrl != null
+                      ? Image.network(
+                    imageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Image.asset('images/placeholder.png'),
+                  )
+                      : Image.asset(
+                    'images/placeholder.png',
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
@@ -52,18 +63,21 @@ class DashboardListTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: kTitleTextStyle,
+                      style: kTitleTextStyle.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
                     SizedBox(height: kSpaceBetweenTitleAndDescription),
-                    Flexible(
-                      child: Text(
-                        description,
-                        style: kDescriptionTextStyle,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
+                    Text(
+                      description,
+                      style: kDescriptionTextStyle.copyWith(
+                        color: Colors.grey.shade700,
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
                   ],
                 ),

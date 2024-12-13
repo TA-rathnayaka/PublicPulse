@@ -1,9 +1,13 @@
+import 'package:client/views/screens/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:client/views/components/identity.dart';
 import 'package:client/views/components/profile_menu_row.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/profile_constants.dart';
+import 'package:client/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:client/providers/user_provider.dart';
 
 class UserProfileScreen extends StatefulWidget {
   static const id = '/combinedProfile';
@@ -41,8 +45,21 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     super.dispose();
   }
 
+  @override
+  void initState() {
+    super.initState();
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final userId = "userId"; // Replace with actual user ID logic
+    userProvider.getUserDetails(userId); // Fetch user details on init
+  }
+
   void _handleSave() {
     // Handle save action
+  }
+
+  void _signOut(BuildContext context) {
+    Provider.of<MyAuthProvider>(context, listen: false).signOut();
+    Navigator.pushReplacementNamed(context, SplashScreen.id);
   }
 
   void _showBottomSheet() {
@@ -54,7 +71,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       ),
       builder: (context) {
         return FractionallySizedBox(
-          heightFactor: 0.7, // Adjust this value to control the height
+          heightFactor: 0.7,
           child: Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
@@ -124,73 +141,83 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   }
 
   @override
-    Widget build(BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Profile'),
-          centerTitle: true,
-          backgroundColor: Colors.white,
-          elevation: 0,
-        ),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Text(
-                    "Account",
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Profile'),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Text(
+                  "Account",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 28,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            Identity(
+              imagePath: "assets/toji.jpg",
+              name: "Toji Fushiguro",
+              email: "tojifushiguro@gmail.com",
+              phoneNumber: "+123 456-789",
+              onTap: _showBottomSheet,
+            ),
+            const SizedBox(height: 20),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    MenuRow(icon: Icons.dark_mode, text: "Dark Mode"),
+                    Divider(),
+                    MenuRow(icon: Icons.card_giftcard_outlined, text: "Orders"),
+                    Divider(),
+                    MenuRow(icon: Icons.history, text: "Purchase History"),
+                    Divider(),
+                    MenuRow(icon: Icons.payment, text: "Payment Methods"),
+                    Divider(),
+                    MenuRow(icon: Icons.privacy_tip, text: "Privacy"),
+                    Divider(),
+                    MenuRow(icon: Icons.person, text: "Personal Info"),
+                    Divider(),
+                    MenuRow(icon: Icons.reviews_sharp, text: "Rewards"),
+                    Divider(),
+                    MenuRow(icon: Icons.settings, text: "Settings"),
+                    Divider(),
+                    // Sign-out option using Consumer
+                    Consumer<MyAuthProvider>(
+                      builder: (context, authProvider, child) {
+                        return MenuRow(
+                          icon: Icons.exit_to_app,
+                          text: "Sign Out",
+                          onTap: () => _signOut(context),
+                        );
+                      },
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              Identity(
-                imagePath: "assets/toji.jpg",
-                name: "Toji Fushiguro",
-                email: "tojifushiguro@gmail.com",
-                phoneNumber: "+123 456-789",
-                onTap: _showBottomSheet,
-              ),
-              const SizedBox(height: 20),
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Padding(
-                  padding: EdgeInsets.all(20),
-                  child: Column(
-                    children: [
-                      MenuRow(icon: Icons.dark_mode, text: "Dark Mode"),
-                      Divider(),
-                      MenuRow(
-                          icon: Icons.card_giftcard_outlined, text: "Orders"),
-                      Divider(),
-                      MenuRow(icon: Icons.history, text: "Purchase History"),
-                      Divider(),
-                      MenuRow(icon: Icons.payment, text: "Payment Methods"),
-                      Divider(),
-                      MenuRow(icon: Icons.privacy_tip, text: "Privacy"),
-                      Divider(),
-                      MenuRow(icon: Icons.person, text: "Personal Info"),
-                      Divider(),
-                      MenuRow(icon: Icons.reviews_sharp, text: "Rewards"),
-                      Divider(),
-                      MenuRow(icon: Icons.settings, text: "Settings"),
-                    ],
-                  ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
-            ],
-          ),
+            ),
+            const SizedBox(height: 20),
+          ],
         ),
-      );
-    }
+      ),
+    );
   }
+}

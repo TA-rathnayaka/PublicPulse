@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:client/providers/poll_screen_provider.dart';
+import 'package:client/providers/screens_providers/poll_screen_provider.dart';
+import 'package:client/providers/polls_provider.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/constants.dart';
-import 'package:client/models/poll.dart'; // Assuming Poll class is imported from here
+import 'package:client/models/poll.dart';
 
 class PollScreen extends StatelessWidget {
-
   static String id = '/poll-screen';
-  
-  final Poll poll;  // Now accepting Poll object directly
+
+  final Poll poll;
 
   PollScreen({required this.poll}); // Constructor updated to accept Poll object
 
@@ -25,7 +25,7 @@ class PollScreen extends StatelessWidget {
               child: Column(
                 children: <Widget>[
                   PollCarousel(
-                    images: poll.imageUrl != null ? [poll.imageUrl!] : [],  // Use poll.imageUrl for images
+                    images: poll.imageUrl != null ? [poll.imageUrl!] : [],
                     currentIndex: pollProvider.currentIndex,
                     onNext: pollProvider.next,
                     onPrevious: pollProvider.previous,
@@ -33,9 +33,10 @@ class PollScreen extends StatelessWidget {
                   Transform.translate(
                     offset: Offset(0, -40),
                     child: PollDetails(
-                      question: poll.title,  // Using poll.title as the question
-                      votes: _calculateVotes(poll.options),  // Calculate votes from options
-                      description: poll.description,  // Using poll.description
+                      question: poll.title,
+                      votes: _calculateVotes(poll.options),
+                      description: poll.description,
+                      options: poll.options,  // Pass options to PollDetails
                     ),
                   ),
                 ],
@@ -51,9 +52,149 @@ class PollScreen extends StatelessWidget {
   String _calculateVotes(List<Map<String, int>> options) {
     int totalVotes = 0;
     for (var option in options) {
-      totalVotes += option.values.first;  // Assuming only one value per option map
+      totalVotes += option.values.first;
     }
     return totalVotes.toString();
+  }
+}
+
+class PollDetails extends StatefulWidget {
+  final String question;
+  final String votes;
+  final String description;
+  final List<Map<String, int>> options;  // Add options as parameter
+
+  PollDetails({
+    required this.question,
+    required this.votes,
+    required this.description,
+    required this.options,
+  });
+
+  @override
+  _PollDetailsState createState() => _PollDetailsState();
+}
+
+class _PollDetailsState extends State<PollDetails> {
+  String? selectedOption;
+
+  @override
+  Widget build(BuildContext context) {
+    final safeVotes = int.tryParse(widget.votes) ?? 0;
+
+    return FadeInUp(
+      duration: Duration(milliseconds: 1000),
+      child: ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(30),
+          topRight: Radius.circular(30),
+        ),
+        child: Container(
+          width: double.infinity,
+          padding: EdgeInsets.all(30),
+          decoration: BoxDecoration(
+            color: Colors.white,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _buildText(widget.question, 26, FontWeight.bold, Colors.grey[800], 1300),
+              SizedBox(height: 15),
+              _buildText("$safeVotes Votes", 22, FontWeight.bold, kPrimaryColor, 1500),
+              SizedBox(height: 15),
+              _buildText(widget.description, 18, FontWeight.normal, Colors.grey[600], 1700),
+              SizedBox(height: 20),
+              _buildOptions(),
+              SizedBox(height: 20),
+              _buildVoteButton(),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Helper function to build text with animations
+  Widget _buildText(String text, double fontSize, FontWeight fontWeight, Color? color, int duration) {
+    return FadeInUp(
+      duration: Duration(milliseconds: duration),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontSize: fontSize,
+          fontWeight: fontWeight,
+        ),
+      ),
+    );
+  }
+
+  // Helper function to render poll options
+  Widget _buildOptions() {
+    return FadeInUp(
+      duration: Duration(milliseconds: 1700),
+      child: Column(
+        children: widget.options.map((option) {
+          String optionName = option.keys.first;
+          return GestureDetector(
+            onTap: () {
+              setState(() {
+                selectedOption = optionName;
+              });
+            },
+            child: Container(
+              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              margin: EdgeInsets.symmetric(vertical: 5),
+              decoration: BoxDecoration(
+                color: selectedOption == optionName
+                    ? Colors.blueAccent
+                    : Colors.grey.shade200,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                "$optionName - ${option[optionName]} votes",
+                style: TextStyle(
+                  fontSize: 18,
+                  color: selectedOption == optionName
+                      ? Colors.white
+                      : Colors.black,
+                ),
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  // Helper function to handle vote button click
+  Widget _buildVoteButton() {
+    return FadeInUp(
+      duration: Duration(milliseconds: 1700),
+      child: PrimaryButton(
+        onPressed: () {
+          if (selectedOption != null) {
+            // Handle vote submission
+            _voteForOption(selectedOption!);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Voted for $selectedOption')),
+            );
+          }
+        },
+        label: "Vote Now",
+      ),
+    );
+  }
+
+  // Helper function to vote for the selected option
+  void _voteForOption(String optionName) {
+    setState(() {
+      for (var option in widget.options) {
+        if (option.containsKey(optionName)) {
+          option[optionName] = (option[optionName] ?? 0) + 1;  // Increment vote count
+        }
+      }
+    });
   }
 }
 
@@ -81,7 +222,6 @@ class PollCarousel extends StatelessWidget {
       );
     }
 
-    // Ensure currentIndex is within bounds
     final safeIndex = currentIndex.clamp(0, images.length - 1);
 
     return GestureDetector(
@@ -132,93 +272,6 @@ class PollCarousel extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PollDetails extends StatelessWidget {
-  final String question;
-  final String votes;
-  final String description; // Added description parameter
-
-  PollDetails({
-    required this.question,
-    required this.votes,
-    required this.description, // Required description in constructor
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final safeVotes = int.tryParse(votes) ?? 0;
-
-    return FadeInUp(
-      duration: Duration(milliseconds: 1000),
-      child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-        child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(30),
-          decoration: BoxDecoration(
-            color: Colors.white,
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              FadeInUp(
-                duration: Duration(milliseconds: 1300),
-                child: Text(
-                  question,
-                  style: TextStyle(
-                    color: Colors.grey[800],
-                    fontSize: 26,  // Increased font size for better readability
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              SizedBox(height: 15),
-              FadeInUp(
-                duration: Duration(milliseconds: 1500),
-                child: Text(
-                  "$safeVotes Votes",
-                  style: TextStyle(
-                    color: kPrimaryColor,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 22,  // Slightly larger font for votes
-                  ),
-                ),
-              ),
-              SizedBox(height: 15),
-              // Adding a vote description here
-              FadeInUp(
-                duration: Duration(milliseconds: 1700),
-                child: Text(
-                  description, // Using the passed description here
-                  style: TextStyle(
-                    color: Colors.grey[600],
-                    fontSize: 18,  // Improved readability for description
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-              SizedBox(height: 20),
-              FadeInUp(
-                duration: Duration(milliseconds: 1700),
-                child: PrimaryButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Vote button pressed')),
-                    );
-                  },
-                  label: "Vote Now",
-                ),
-              ),
-            ],
           ),
         ),
       ),

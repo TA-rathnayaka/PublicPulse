@@ -24,4 +24,4 @@ const TextStyle kDescriptionTextStyle = TextStyle(
 );
 
 // Background color constant
-const Color kCardBackgroundColor = kCommonGrayColor; // Example: Semi-transparent white
+const Color kCardBackgroundColor = Colors.white; // Example: Semi-transparent white

@@ -8,7 +8,7 @@ import 'package:client/views/components/top_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:client/views/components/primary_button.dart';
-import 'package:client/providers/login_validation_provider.dart';
+import 'package:client/providers/screens_providers/login_validation_provider.dart';
 
 class Login extends StatelessWidget {
   static const id = '/login';
@@ -148,7 +148,7 @@ class Login extends StatelessWidget {
                           context.read<MyAuthProvider>().signInEmailAndPassword(
                               _emailController.text, _passwordController.text).then((_) {
                             if (context.read<MyAuthProvider>().user != null) {
-                              Navigator.pushNamed(context, Dashboard.id);
+                              Navigator.pushNamed(context, MainScreen.id);
                             } else {
                               // Show error if login failed
                               context.read<LoginValidationProvider>().validatePassword('');

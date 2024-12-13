@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:client/views/screens/_all.dart';
 import 'package:client/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import 'package:client/providers/login_validation_provider.dart'; // Import the provider
+import 'package:client/providers/screens_providers/login_validation_provider.dart'; // Import the provider
 
 class SplashScreen extends StatelessWidget {
   static String id = '/';

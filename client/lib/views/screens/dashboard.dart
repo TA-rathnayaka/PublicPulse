@@ -5,7 +5,7 @@ import 'package:client/views/components/search_button.dart';
 import 'package:client/views/components/dashboard_list_tile.dart';
 import 'package:client/Providers/polls_provider.dart';
 import 'package:provider/provider.dart';
-import 'package:client/providers/poll_screen_provider.dart';
+import 'package:client/providers/screens_providers/poll_screen_provider.dart';
 import 'package:animate_do/animate_do.dart';
 
 class Dashboard extends StatelessWidget {
@@ -20,20 +20,21 @@ class Dashboard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 10),
-              const Text(
+              SizedBox(height: 20),
+              Text(
                 "Polls",
-                style:
-                    kHeadlineStyle, // Make sure this style suits a light theme
+                style: kHeadlineStyle.copyWith(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
               ),
-              SizedBox(height: 12),
+              SizedBox(height: 16),
               SearchButton(
-                hintText: "Search",
-                onChanged: (id) {},
-                // Adjust colors for the SearchButton to fit a light theme
+                hintText: "Search polls...",
+                onChanged: (value) {},
               ),
-              const SizedBox(height: 16),
-              // Use Consumer to listen for changes in PollsProvider
+              SizedBox(height: 20),
               Consumer<PollsProvider>(
                 builder: (context, pollsProvider, child) {
                   return ListView.builder(
@@ -43,11 +44,11 @@ class Dashboard extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final poll = pollsProvider.polls[index];
                       return FadeInUp(
-                        duration: Duration(milliseconds: 1600),
+                        duration: Duration(milliseconds: 1200 + index * 100),
                         child: DashboardListTile(
                           title: poll.title,
                           description: poll.description,
-                          imageUrl: poll.imageUrl ?? 'default_image_url',
+                          imageUrl: poll.imageUrl ?? 'images/placeholder.png',
                           onTap: () {
                             Navigator.push(
                               context,
@@ -59,13 +60,13 @@ class Dashboard extends StatelessWidget {
                               ),
                             );
                           },
-                          // Adjust colors for DashboardListTile to suit a light theme
                         ),
                       );
                     },
                   );
                 },
               ),
+              SizedBox(height: 20),
             ],
           ),
         ),

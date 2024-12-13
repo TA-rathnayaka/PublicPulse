@@ -13,46 +13,61 @@ class BottomNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black, // Set background color for the navbar
-      child: BottomNavigationBar(
-        showSelectedLabels: false, // Hide selected labels
-        showUnselectedLabels: false, // Hide unselected labels
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: kBackgroundColorBottomNavbar, // Match navbar background color
-        elevation: 0,
-        currentIndex: currentIndex,
-        onTap: onTap,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              color: currentIndex == 0 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
-            ),
-            label: 'Home', // Keep label for the sake of structure but won't be displayed
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.shopify,
-              color: currentIndex == 1 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
-            ),
-            label: 'Shop', // Keep label for the sake of structure but won't be displayed
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.favorite,
-              color: currentIndex == 2 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
-            ),
-            label: 'Favourite', // Keep label for the sake of structure but won't be displayed
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notification_add,
-              color: currentIndex == 3 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
-            ),
-            label: 'Notification', // Keep label for the sake of structure but won't be displayed
+      decoration: BoxDecoration(
+        color: kBackgroundColorBottomNavbar,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: 10,
+            spreadRadius: 1,
           ),
         ],
       ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(24),
+          topRight: Radius.circular(24),
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: kBackgroundColorBottomNavbar,
+          elevation: 0,
+          currentIndex: currentIndex,
+          onTap: onTap,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          items: [
+            _buildNavItem(Icons.home, 0),
+            _buildNavItem(Icons.create, 1),
+            _buildNavItem(Icons.favorite, 2),
+            _buildNavItem(Icons.settings, 3),
+          ],
+        ),
+      ),
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(IconData icon, int index) {
+    return BottomNavigationBarItem(
+      icon: AnimatedContainer(
+        duration: Duration(milliseconds: 200),
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          icon,
+          size: 28,
+          color: currentIndex == index
+              ? kSelectedItemColorBottomNavbar
+              : Colors.grey.withOpacity(0.6),
+        ),
+      ),
+      label: '',
     );
   }
 }
