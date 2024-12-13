@@ -1,10 +1,10 @@
-import 'package:client/models/navigator_provider.dart';
+import 'package:client/Providers/navigator_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:client/views/screens/_all.dart';
 import 'package:client/views/components/bottom_navbar.dart';
 import 'package:provider/provider.dart';
-import 'package:client/models/polls_provider.dart';
-import 'package:client/models/notification_provider.dart';
+import 'package:client/Providers/polls_provider.dart';
+import 'package:client/Providers/notification_provider.dart';
 
 class MainScreen extends StatelessWidget {
   static String id = '/main-screen';

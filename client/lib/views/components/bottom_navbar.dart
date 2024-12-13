@@ -32,21 +32,21 @@ class BottomNavbar extends StatelessWidget {
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.shopify,
+              Icons.poll,
               color: currentIndex == 1 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
             ),
             label: 'Shop', // Keep label for the sake of structure but won't be displayed
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.favorite,
+              Icons.policy,
               color: currentIndex == 2 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
             ),
             label: 'Favourite', // Keep label for the sake of structure but won't be displayed
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.notification_add,
+              Icons.account_circle,
               color: currentIndex == 3 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
             ),
             label: 'Notification', // Keep label for the sake of structure but won't be displayed

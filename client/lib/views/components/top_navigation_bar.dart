@@ -8,14 +8,17 @@ class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: kTopNavBarBackgroundColor,
-      elevation: kTopNavBarElevation,
-      leading: Padding(
+      backgroundColor: Navigator.canPop(context)
+          ? kTopNavBarBackgroundColor
+          : Colors.transparent, // Set background transparent if no back button
+      elevation: Navigator.canPop(context) ? kTopNavBarElevation : 0, // Remove elevation if no back button
+      leading: Navigator.canPop(context)
+          ? Padding(
         padding: kLeadingButtonPadding,
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: kLeadingButtonColor,
+            color: kLeadingButtonColor, // The button itself has a color
             boxShadow: [
               BoxShadow(
                 color: kLeadingButtonShadowColor.withOpacity(kLeadingButtonShadowOpacity),
@@ -26,13 +29,18 @@ class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           child: IconButton(
-            icon: Icon(Icons.arrow_back_ios_new, color: kLeadingButtonIconColor, size: kLeadingButtonIconSize),
+            icon: Icon(
+              Icons.arrow_back_ios_new,
+              color: kLeadingButtonIconColor,
+              size: kLeadingButtonIconSize,
+            ),
             onPressed: () {
               Navigator.pop(context);
             },
           ),
         ),
-      ),
+      )
+          : null, // Only show back button if there's a screen to pop
       title: const SizedBox.shrink(),
     );
   }

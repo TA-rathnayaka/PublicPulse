@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:client/models/notification_provider.dart';
+import 'package:client/Providers/notification_provider.dart';
 
 class NotificationScreen extends StatelessWidget {
   @override
