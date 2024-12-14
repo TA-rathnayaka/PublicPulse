@@ -10,7 +10,7 @@ class PollCard extends StatelessWidget {
   final Color avatarBackgroundColor;
   final String imageUrl;
 
-  PollCard({
+  const PollCard({super.key, 
     required this.title,
     required this.subtitle,
     required this.label,
@@ -27,7 +27,7 @@ class PollCard extends StatelessWidget {
       },
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.all(16.0),
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: kBorderRadiusPollCard,
         ),
       ),

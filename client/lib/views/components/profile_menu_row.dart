@@ -4,11 +4,13 @@ import 'package:google_fonts/google_fonts.dart';
 class MenuRow extends StatefulWidget {
   final IconData icon;
   final String text;
+  final VoidCallback? onTap; // Optional onTap callback
 
   const MenuRow({
     super.key,
     required this.icon,
     required this.text,
+    this.onTap, // Optional parameter
   });
 
   @override
@@ -17,22 +19,22 @@ class MenuRow extends StatefulWidget {
 
 class _MenuRowState extends State<MenuRow> {
   void showSnackbar() {
-    void show(BuildContext context) {
-      const snackBar = SnackBar(
-        content: Text("Not available for the moment"),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-
-    show(context);
+    const snackBar = SnackBar(
+      content: Text("Not available for the moment"),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
   Widget build(BuildContext context) {
+    // Get the current theme's background color
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+
     return GestureDetector(
-      onTap: showSnackbar,
+      onTap: widget.onTap ?? showSnackbar, // Use the provided onTap or default to showSnackbar
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
+        color: backgroundColor, // Apply the current theme's background color
         child: Row(
           children: [
             Icon(widget.icon, size: 30),

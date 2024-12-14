@@ -9,12 +9,12 @@ class DashBoardStatusCard extends StatelessWidget {
   final int dormantCount;
 
   const DashBoardStatusCard({
-    Key? key,
+    super.key,
     required this.activeCount,
     required this.endedCount,
     required this.recentCount,
     required this.dormantCount,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,15 +39,15 @@ class DashBoardStatusCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                const Icon(
+                Icon(
                   Icons.hourglass_bottom_sharp,
                   color: kIconColorDashBoardStatusCard,
                   size: 32,
                 ),
-                const SizedBox(width: 12),
-                const Text(
+                SizedBox(width: 12),
+                Text(
                   'Going on Poles',
                   style: TextStyle(
                     color: kTitleTextColorDashBoardStatusCard,

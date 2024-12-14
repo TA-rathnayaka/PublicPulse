@@ -8,26 +8,34 @@ class DashboardListTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const DashboardListTile({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
     this.imageUrl,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector( // Use GestureDetector to detect taps
-      onTap: onTap, // Call the onTap callback when tapped
+    final ThemeData theme = Theme.of(context); // Get the current theme
+
+    return GestureDetector(
+      onTap: onTap,
       child: Card(
-        color: kCardBackgroundColor, // Use the background color constant
-        shape: RoundedRectangleBorder(
+        elevation: 8, // Slightly higher elevation to create separation
+        shadowColor: theme.shadowColor.withOpacity(0.4), // Adding more shadow to separate card
+        shape: const RoundedRectangleBorder(
           borderRadius: kImageBorderRadius,
         ),
+        color: theme.colorScheme.surface, // Set the card color to 'surface' for better distinction
         child: Container(
-          margin: EdgeInsets.all(kCardMargin),
-          height: kImageContainerHeight,
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface, // Match container color to card color for consistency
+            borderRadius: kImageBorderRadius,
+          ),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ClipRRect(
                 borderRadius: kImageBorderRadius,
@@ -35,16 +43,25 @@ class DashboardListTile extends StatelessWidget {
                   height: kImageContainerHeight,
                   width: kImageContainerWidth,
                   decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: imageUrl != null
-                          ? NetworkImage(imageUrl!)
-                          : AssetImage('images/placeholder.png'), // Fixed path without leading './'
-                      fit: BoxFit.cover,
+                    border: Border.all(
+                      color: Colors.transparent, // Border color for the image
+                      width: 1,
                     ),
+                  ),
+                  child: imageUrl != null
+                      ? Image.network(
+                    imageUrl!,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) =>
+                        Image.asset('images/placeholder.png'),
+                  )
+                      : Image.asset(
+                    'images/placeholder.png',
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
-              SizedBox(width: kSpaceBetweenImageAndText),
+              const SizedBox(width: kSpaceBetweenImageAndText),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,18 +69,22 @@ class DashboardListTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: kTitleTextStyle,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: theme.colorScheme.primary, // Title text color
+                      ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
-                    SizedBox(height: kSpaceBetweenTitleAndDescription),
-                    Flexible(
-                      child: Text(
-                        description,
-                        style: kDescriptionTextStyle,
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
+                    const SizedBox(height: kSpaceBetweenTitleAndDescription),
+                    Text(
+                      description,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.secondary, // Description text color
                       ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 2,
                     ),
                   ],
                 ),

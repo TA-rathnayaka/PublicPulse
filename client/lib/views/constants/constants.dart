@@ -27,7 +27,7 @@ const TextStyle kHeadlineStyle = TextStyle(
   color: Colors.black,
 );
 
-final InputDecoration kTextFieldDecoration = InputDecoration(
+const InputDecoration kTextFieldDecoration = InputDecoration(
   filled: true,
   fillColor: kTextFieldBackgroundColor,
   border: OutlineInputBorder(

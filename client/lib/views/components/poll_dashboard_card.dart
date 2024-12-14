@@ -9,11 +9,11 @@ class PollDashBoardCard extends StatelessWidget {
   final String imageUrl;
 
   const PollDashBoardCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     required this.imageUrl,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class PollDashBoardCard extends StatelessWidget {
                 imageUrl: imageUrl, // replace with actual imageUrl
                 options: [], // replace with actual options if available
                 createDate: DateTime.now(), // replace with actual createDate if needed
-                duration: Duration(days: 7), // example duration
+                duration: const Duration(days: 7), // example duration
               ), // Pass actual comments if available
             ),
           ),
@@ -37,7 +37,7 @@ class PollDashBoardCard extends StatelessWidget {
       },
       child: Card(
         elevation: kCardElevationPollDashBoardCard, // Use extracted elevation
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: kCardBorderRadiusPollDashBoardCard, // Rounded corners
         ),
         child: Padding(
@@ -80,7 +80,7 @@ class PollDashBoardCard extends StatelessWidget {
                       style: ElevatedButton.styleFrom(
                         side: kButtonBorderSidePollDashBoardCard, // Use extracted button border style
                         backgroundColor: kButtonBackgroundColorPollDashBoardCard, // Use extracted button background
-                        shape: RoundedRectangleBorder(
+                        shape: const RoundedRectangleBorder(
                           borderRadius: kButtonBorderRadiusPollDashBoardCard, // Use extracted button border radius
                         ),
                         padding: kButtonPaddingPollDashBoardCard, // Use extracted button padding

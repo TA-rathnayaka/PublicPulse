@@ -5,7 +5,7 @@ import '../constants/constants.dart';
 class PollTopicInput extends StatelessWidget {
   final String label;
 
-  const PollTopicInput({Key? key, required this.label}) : super(key: key);
+  const PollTopicInput({super.key, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class PollTopicInput extends StatelessWidget {
           label,
           style: kHeadlineStyle,
         ),
-        SizedBox(height: kSizedBoxHeight),
+        const SizedBox(height: kSizedBoxHeight),
         TextField(
           decoration: kTextFieldDecoration.copyWith(hintText: 'Write a Topic'),
         ),
@@ -26,16 +26,18 @@ class PollTopicInput extends StatelessWidget {
 }
 
 class PollDescriptionInput extends StatelessWidget {
+  const PollDescriptionInput({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
+        const Text(
           'Poll Description',
           style: kHeadlineStyle,
         ),
-        SizedBox(height: kSizedBoxHeight),
+        const SizedBox(height: kSizedBoxHeight),
         TextField(
           maxLines: 5,
           decoration:
@@ -47,9 +49,11 @@ class PollDescriptionInput extends StatelessWidget {
 }
 
 class PollResultsSection extends StatelessWidget {
+  const PollResultsSection({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return const Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -71,6 +75,8 @@ class PollResultsSection extends StatelessWidget {
 }
 
 class CreatePollButton extends StatelessWidget {
+  const CreatePollButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -85,7 +91,7 @@ class CreatePollButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(kButtonRadius),
           ),
         ),
-        child: Text(
+        child: const Text(
           'Create Poll',
           style: kButtonTextStyle,
         ),

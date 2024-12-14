@@ -3,21 +3,22 @@ import 'package:animate_do/animate_do.dart';
 import 'package:provider/provider.dart';
 import 'package:client/views/screens/_all.dart';
 import 'package:client/views/constants/constants.dart';
-import 'package:client/views/components/top_navigation_bar.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/providers/user_provider.dart';
-import 'package:client/providers/siginup_validation_provider.dart';
+import 'package:client/providers/screens_providers/siginup_validation_provider.dart';
 
 class Signup extends StatelessWidget {
   static const id = '/signup';
+
+  const Signup({super.key});
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (_) => SignupValidationProvider(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Theme-based background
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -33,7 +34,7 @@ class Signup extends StatelessWidget {
   Widget _buildBackgroundSection() {
     return Container(
       height: 400,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage('images/background.png'),
           fit: BoxFit.fill,
@@ -65,10 +66,10 @@ class Signup extends StatelessWidget {
   Widget _buildTitleText() {
     return Positioned(
       child: FadeInUp(
-        duration: Duration(milliseconds: 1600),
+        duration: const Duration(milliseconds: 1600),
         child: Container(
-          margin: EdgeInsets.only(top: 50),
-          child: Center(
+          margin: const EdgeInsets.only(top: 50),
+          child: const Center(
             child: Text(
               "Sign Up",
               style: TextStyle(
@@ -85,15 +86,15 @@ class Signup extends StatelessWidget {
 
   Widget _buildFormSection(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.all(30.0),
+      padding: const EdgeInsets.all(30.0),
       child: Column(
         children: <Widget>[
           _buildFormFields(context),
-          SizedBox(height: 30),
+          const SizedBox(height: 30),
           _buildSignupButton(context),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _buildLoginButton(context),
-          SizedBox(height: 70),
+          const SizedBox(height: 70),
           _buildForgotPasswordButton(),
         ],
       ),
@@ -102,7 +103,7 @@ class Signup extends StatelessWidget {
 
   Widget _buildFormFields(BuildContext context) {
     return FadeInUp(
-      duration: Duration(milliseconds: 1800),
+      duration: const Duration(milliseconds: 1800),
       child: Column(
         children: <Widget>[
           _buildTextField(
@@ -114,7 +115,7 @@ class Signup extends StatelessWidget {
             },
             errorText: context.watch<SignupValidationProvider>().firstNameError,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _buildTextField(
             context,
             'Last Name',
@@ -124,7 +125,7 @@ class Signup extends StatelessWidget {
             },
             errorText: context.watch<SignupValidationProvider>().lastNameError,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _buildTextField(
             context,
             'Email',
@@ -134,9 +135,9 @@ class Signup extends StatelessWidget {
             },
             errorText: context.watch<SignupValidationProvider>().emailError,
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _buildPasswordTextField(context),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           _buildRepeatPasswordTextField(context),
         ],
       ),
@@ -149,19 +150,24 @@ class Signup extends StatelessWidget {
       children: [
         TextField(
           controller: context.read<SignupValidationProvider>().getController(hintText),
-          decoration: kTextFieldDecoration.copyWith(
+          decoration: InputDecoration(
             hintText: hintText,
             suffixIcon: Icon(
               icon,
-              color: kTextFieldHintColor,
+              color: Theme.of(context).hintColor,  // Use the dynamic theme's hint color
             ),
+            filled: true,
+            fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+            border: Theme.of(context).inputDecorationTheme.border,
+            enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
+            focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder,
           ),
           onChanged: onChanged,
         ),
         if (errorText != null)
           Text(
             errorText,
-            style: TextStyle(color: Colors.red, fontSize: 12),
+            style: const TextStyle(color: Colors.red, fontSize: 12),
           ),
       ],
     );
@@ -171,12 +177,17 @@ class Signup extends StatelessWidget {
     return TextField(
       controller: context.read<SignupValidationProvider>().passwordController,
       obscureText: true,
-      decoration: kTextFieldDecoration.copyWith(
+      decoration: InputDecoration(
         hintText: 'Password',
-        suffixIcon: Icon(
+        suffixIcon: const Icon(
           Icons.lock,
           color: kTextFieldHintColor,
         ),
+        filled: true,
+        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+        border: Theme.of(context).inputDecorationTheme.border,
+        enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
+        focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder,
       ),
       onChanged: (value) {
         context.read<SignupValidationProvider>().validatePassword(value);
@@ -188,12 +199,17 @@ class Signup extends StatelessWidget {
     return TextField(
       controller: context.read<SignupValidationProvider>().repeatPasswordController,
       obscureText: true,
-      decoration: kTextFieldDecoration.copyWith(
+      decoration: InputDecoration(
         hintText: 'Repeat Password',
-        suffixIcon: Icon(
+        suffixIcon: const Icon(
           Icons.lock,
           color: kTextFieldHintColor,
         ),
+        filled: true,
+        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+        border: Theme.of(context).inputDecorationTheme.border,
+        enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
+        focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder,
       ),
       onChanged: (value) {
         context.read<SignupValidationProvider>().validateRepeatPassword();
@@ -203,7 +219,7 @@ class Signup extends StatelessWidget {
 
   Widget _buildSignupButton(BuildContext context) {
     return FadeInUp(
-      duration: Duration(milliseconds: 1900),
+      duration: const Duration(milliseconds: 1900),
       child: PrimaryButton(
         label: "Sign Up",
         onPressed: () async {
@@ -224,7 +240,7 @@ class Signup extends StatelessWidget {
             // Navigate to home or another screen
             Navigator.pushReplacementNamed(context, Dashboard.id); // Adjust based on your app's flow
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fill in all the fields correctly")));
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill in all the fields correctly")));
           }
         },
       ),
@@ -233,7 +249,7 @@ class Signup extends StatelessWidget {
 
   Widget _buildLoginButton(BuildContext context) {
     return FadeInUp(
-      duration: Duration(milliseconds: 1900),
+      duration: const Duration(milliseconds: 1900),
       child: PrimaryButton(
         label: "Already have an account?",
         onPressed: () {
@@ -245,12 +261,12 @@ class Signup extends StatelessWidget {
 
   Widget _buildForgotPasswordButton() {
     return FadeInUp(
-      duration: Duration(milliseconds: 2000),
+      duration: const Duration(milliseconds: 2000),
       child: TextButton(
         onPressed: () {
           // Forgot password logic here
         },
-        child: Text(
+        child: const Text(
           "Forgot Password?",
           style: TextStyle(color: kPrimaryColor),
         ),

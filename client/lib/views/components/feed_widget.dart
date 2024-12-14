@@ -8,18 +8,18 @@ class FeedWidget extends StatelessWidget {
   final String feedImage;
 
   const FeedWidget({
-    Key? key,
+    super.key,
     required this.userName,
     required this.userImage,
     required this.feedTime,
     required this.feedText,
     required this.feedImage,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(bottom: 20),
+      margin: const EdgeInsets.only(bottom: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
@@ -39,7 +39,7 @@ class FeedWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                  SizedBox(width: 10),
+                  const SizedBox(width: 10),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
@@ -52,10 +52,10 @@ class FeedWidget extends StatelessWidget {
                           letterSpacing: 1,
                         ),
                       ),
-                      SizedBox(height: 3),
+                      const SizedBox(height: 3),
                       Text(
                         feedTime,
-                        style: TextStyle(fontSize: 15, color: Colors.grey),
+                        style: const TextStyle(fontSize: 15, color: Colors.grey),
                       ),
                     ],
                   ),
@@ -67,7 +67,7 @@ class FeedWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Text(
             feedText,
             style: TextStyle(
@@ -77,7 +77,7 @@ class FeedWidget extends StatelessWidget {
               letterSpacing: 0.7,
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           feedImage.isNotEmpty
               ? Container(
             height: 200,
@@ -90,7 +90,7 @@ class FeedWidget extends StatelessWidget {
             ),
           )
               : Container(),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -98,10 +98,10 @@ class FeedWidget extends StatelessWidget {
                 children: <Widget>[
                   makeLike(),
                   Transform.translate(
-                    offset: Offset(-5, 0),
+                    offset: const Offset(-5, 0),
                     child: makeLove(),
                   ),
-                  SizedBox(width: 5),
+                  const SizedBox(width: 5),
                   Text(
                     "2.5K",
                     style: TextStyle(fontSize: 15, color: Colors.grey[800]),
@@ -114,7 +114,7 @@ class FeedWidget extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
@@ -137,7 +137,7 @@ class FeedWidget extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white),
       ),
-      child: Center(
+      child: const Center(
         child: Icon(Icons.thumb_up, size: 12, color: Colors.white),
       ),
     );
@@ -152,7 +152,7 @@ class FeedWidget extends StatelessWidget {
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white),
       ),
-      child: Center(
+      child: const Center(
         child: Icon(Icons.favorite, size: 12, color: Colors.white),
       ),
     );
@@ -160,7 +160,7 @@ class FeedWidget extends StatelessWidget {
 
   Widget makeLikeButton({required bool isActive}) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade200),
         borderRadius: BorderRadius.circular(50),
@@ -170,7 +170,7 @@ class FeedWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Icon(Icons.thumb_up, color: isActive ? Colors.blue : Colors.grey, size: 18),
-            SizedBox(width: 5),
+            const SizedBox(width: 5),
             Text(
               "Like",
               style: TextStyle(color: isActive ? Colors.blue : Colors.grey),
@@ -183,12 +183,12 @@ class FeedWidget extends StatelessWidget {
 
   Widget makeCommentButton() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade200),
         borderRadius: BorderRadius.circular(50),
       ),
-      child: Center(
+      child: const Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -203,12 +203,12 @@ class FeedWidget extends StatelessWidget {
 
   Widget makeShareButton() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
       decoration: BoxDecoration(
         border: Border.all(color: Colors.grey.shade200),
         borderRadius: BorderRadius.circular(50),
       ),
-      child: Center(
+      child: const Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
