@@ -18,7 +18,7 @@ class Signup extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => SignupValidationProvider(),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor, // Theme-based background
         body: SingleChildScrollView(
           child: Column(
             children: [
@@ -150,12 +150,17 @@ class Signup extends StatelessWidget {
       children: [
         TextField(
           controller: context.read<SignupValidationProvider>().getController(hintText),
-          decoration: kTextFieldDecoration.copyWith(
+          decoration: InputDecoration(
             hintText: hintText,
             suffixIcon: Icon(
               icon,
-              color: kTextFieldHintColor,
+              color: Theme.of(context).hintColor,  // Use the dynamic theme's hint color
             ),
+            filled: true,
+            fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+            border: Theme.of(context).inputDecorationTheme.border,
+            enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
+            focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder,
           ),
           onChanged: onChanged,
         ),
@@ -172,12 +177,17 @@ class Signup extends StatelessWidget {
     return TextField(
       controller: context.read<SignupValidationProvider>().passwordController,
       obscureText: true,
-      decoration: kTextFieldDecoration.copyWith(
+      decoration: InputDecoration(
         hintText: 'Password',
         suffixIcon: const Icon(
           Icons.lock,
           color: kTextFieldHintColor,
         ),
+        filled: true,
+        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+        border: Theme.of(context).inputDecorationTheme.border,
+        enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
+        focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder,
       ),
       onChanged: (value) {
         context.read<SignupValidationProvider>().validatePassword(value);
@@ -189,12 +199,17 @@ class Signup extends StatelessWidget {
     return TextField(
       controller: context.read<SignupValidationProvider>().repeatPasswordController,
       obscureText: true,
-      decoration: kTextFieldDecoration.copyWith(
+      decoration: InputDecoration(
         hintText: 'Repeat Password',
         suffixIcon: const Icon(
           Icons.lock,
           color: kTextFieldHintColor,
         ),
+        filled: true,
+        fillColor: Theme.of(context).inputDecorationTheme.fillColor,
+        border: Theme.of(context).inputDecorationTheme.border,
+        enabledBorder: Theme.of(context).inputDecorationTheme.enabledBorder,
+        focusedBorder: Theme.of(context).inputDecorationTheme.focusedBorder,
       ),
       onChanged: (value) {
         context.read<SignupValidationProvider>().validateRepeatPassword();

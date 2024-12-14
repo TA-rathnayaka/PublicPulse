@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:provider/provider.dart';
-import 'package:client/views/screens/_all.dart';
-import 'package:client/views/constants/constants.dart';
 import 'package:client/providers/auth_provider.dart';
-import 'package:client/views/components/primary_button.dart';
 import 'package:client/providers/screens_providers/login_validation_provider.dart';
+import 'package:client/views/components/primary_button.dart';
+import 'package:client/views/constants/constants.dart';
+import 'package:client/views/screens/signup.dart';
+import 'package:client/views/screens/main_screen.dart';
 
 class Login extends StatelessWidget {
   static const id = '/login';
@@ -18,7 +19,8 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context)
+          .scaffoldBackgroundColor, // Dynamically set the background color
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -89,22 +91,30 @@ class Login extends StatelessWidget {
                     duration: const Duration(milliseconds: 1800),
                     child: Column(
                       children: <Widget>[
-                        // Email TextField
                         TextField(
                           controller: _emailController,
-                          decoration: kTextFieldDecoration.copyWith(
+                          decoration: InputDecoration(
                             hintText: 'User name or email',
-                            suffixIcon: const Icon(
+                            hintStyle: TextStyle(
+                                color: Theme.of(context)
+                                    .hintColor), // Set hint style dynamically
+                            suffixIcon: Icon(
                               Icons.person,
-                              color: kTextFieldHintColor,
+                              color: Theme.of(context)
+                                  .hintColor, // Use dynamic hint color
                             ),
+
                           ),
+
                         ),
                         Consumer<LoginValidationProvider>(
                           builder: (context, provider, child) {
                             return Text(
                               provider.emailError ?? "",
-                              style: const TextStyle(color: Colors.red, fontSize: 14),
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
                             );
                           },
                         ),
@@ -113,11 +123,15 @@ class Login extends StatelessWidget {
                         TextField(
                           controller: _passwordController,
                           obscureText: true,
-                          decoration: kTextFieldDecoration.copyWith(
+                          decoration: InputDecoration(
                             hintText: 'Password',
-                            suffixIcon: const Icon(
+                            hintStyle: TextStyle(
+                                color: Theme.of(context)
+                                    .hintColor),
+                            suffixIcon: Icon(
                               Icons.lock,
-                              color: kTextFieldHintColor,
+                              color: Theme.of(context)
+                                  .hintColor, // Use dynamic hint color
                             ),
                           ),
                         ),
@@ -125,7 +139,10 @@ class Login extends StatelessWidget {
                           builder: (context, provider, child) {
                             return Text(
                               provider.passwordError ?? "",
-                              style: const TextStyle(color: Colors.red, fontSize: 14),
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
                             );
                           },
                         ),
@@ -138,19 +155,26 @@ class Login extends StatelessWidget {
                     child: PrimaryButton(
                       label: "Login",
                       onPressed: () {
-                        // Validate inputs only when the button is pressed
-                        context.read<LoginValidationProvider>().validateEmail(_emailController.text);
-                        context.read<LoginValidationProvider>().validatePassword(_passwordController.text);
+                        context
+                            .read<LoginValidationProvider>()
+                            .validateEmail(_emailController.text);
+                        context
+                            .read<LoginValidationProvider>()
+                            .validatePassword(_passwordController.text);
 
                         if (context.read<LoginValidationProvider>().isValid) {
-                          // If valid, proceed with login
-                          context.read<MyAuthProvider>().signInEmailAndPassword(
-                              _emailController.text, _passwordController.text).then((_) {
+                          context
+                              .read<MyAuthProvider>()
+                              .signInEmailAndPassword(_emailController.text,
+                                  _passwordController.text)
+                              .then((_) {
                             if (context.read<MyAuthProvider>().user != null) {
-                              Navigator.pushReplacementNamed(context, MainScreen.id);
+                              Navigator.pushReplacementNamed(
+                                  context, MainScreen.id);
                             } else {
-                              // Show error if login failed
-                              context.read<LoginValidationProvider>().validatePassword('');
+                              context
+                                  .read<LoginValidationProvider>()
+                                  .validatePassword('');
                             }
                           });
                         }
