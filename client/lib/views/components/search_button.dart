@@ -7,16 +7,16 @@ class SearchButton extends StatelessWidget {
   final ValueChanged<String> onChanged;
 
   const SearchButton({
-    Key? key,
+    super.key,
     required this.hintText,
     required this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       onChanged: onChanged,
-      decoration: kDefaultSearchButtonDecoration.copyWith(hintText: 'Search', hintStyle:  TextStyle(color: kHintTextColorSearchButton))
+      decoration: kDefaultSearchButtonDecoration.copyWith(hintText: 'Search', hintStyle:  const TextStyle(color: kHintTextColorSearchButton))
     );
   }
 }

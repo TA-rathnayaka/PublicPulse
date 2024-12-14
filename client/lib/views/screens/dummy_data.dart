@@ -12,7 +12,7 @@ final List<Poll> pollsList = [
       {"Undecided": 0},
     ],
     createDate: DateTime.now(),
-    duration: Duration(days: 7),
+    duration: const Duration(days: 7),
   ),
   Poll(
     title: "Education Budget Allocation",
@@ -25,7 +25,7 @@ final List<Poll> pollsList = [
       {"Neutral": 0},
     ],
     createDate: DateTime.now(),
-    duration: Duration(days: 7),
+    duration: const Duration(days: 7),
   ),
   Poll(
     title: "Climate Change Initiative",
@@ -38,7 +38,7 @@ final List<Poll> pollsList = [
       {"No Opinion": 0},
     ],
     createDate: DateTime.now(),
-    duration: Duration(days: 7),
+    duration: const Duration(days: 7),
   ),
   Poll(
     title: "Tax Reform Proposal",
@@ -49,7 +49,7 @@ final List<Poll> pollsList = [
       {"No": 0},
     ],
     createDate: DateTime.now(),
-    duration: Duration(days: 7),
+    duration: const Duration(days: 7),
   ),
   Poll(
     title: "Public Transportation Funding",
@@ -61,6 +61,6 @@ final List<Poll> pollsList = [
       {"Decrease Funding": 0},
     ],
     createDate: DateTime.now(),
-    duration: Duration(days: 7),
+    duration: const Duration(days: 7),
   ),
 ];

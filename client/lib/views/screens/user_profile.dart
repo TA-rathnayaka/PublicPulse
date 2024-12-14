@@ -49,7 +49,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void initState() {
     super.initState();
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    final userId = "userId"; // Replace with actual user ID logic
+    const userId = "userId"; // Replace with actual user ID logic
     userProvider.getUserDetails(userId); // Fetch user details on init
   }
 
@@ -66,7 +66,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: RoundedRectangleBorder(
+      shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
@@ -125,14 +125,14 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
             label,
             style: kLabelTextStyle,
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           TextFormField(
             controller: controller,
             readOnly: isDate,
             obscureText: obscureText,
             decoration: kInputDecoration.copyWith(
               hintText: "Enter your $label",
-              suffixIcon: isDate ? Icon(Icons.calendar_today, size: 20) : null,
+              suffixIcon: isDate ? const Icon(Icons.calendar_today, size: 20) : null,
             ),
           ),
         ],
@@ -144,7 +144,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
@@ -184,22 +184,22 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    MenuRow(icon: Icons.dark_mode, text: "Dark Mode"),
-                    Divider(),
-                    MenuRow(icon: Icons.card_giftcard_outlined, text: "Orders"),
-                    Divider(),
-                    MenuRow(icon: Icons.history, text: "Purchase History"),
-                    Divider(),
-                    MenuRow(icon: Icons.payment, text: "Payment Methods"),
-                    Divider(),
-                    MenuRow(icon: Icons.privacy_tip, text: "Privacy"),
-                    Divider(),
-                    MenuRow(icon: Icons.person, text: "Personal Info"),
-                    Divider(),
-                    MenuRow(icon: Icons.reviews_sharp, text: "Rewards"),
-                    Divider(),
-                    MenuRow(icon: Icons.settings, text: "Settings"),
-                    Divider(),
+                    const MenuRow(icon: Icons.dark_mode, text: "Dark Mode"),
+                    const Divider(),
+                    const MenuRow(icon: Icons.card_giftcard_outlined, text: "Orders"),
+                    const Divider(),
+                    const MenuRow(icon: Icons.history, text: "Purchase History"),
+                    const Divider(),
+                    const MenuRow(icon: Icons.payment, text: "Payment Methods"),
+                    const Divider(),
+                    const MenuRow(icon: Icons.privacy_tip, text: "Privacy"),
+                    const Divider(),
+                    const MenuRow(icon: Icons.person, text: "Personal Info"),
+                    const Divider(),
+                    const MenuRow(icon: Icons.reviews_sharp, text: "Rewards"),
+                    const Divider(),
+                    const MenuRow(icon: Icons.settings, text: "Settings"),
+                    const Divider(),
                     // Sign-out option using Consumer
                     Consumer<MyAuthProvider>(
                       builder: (context, authProvider, child) {

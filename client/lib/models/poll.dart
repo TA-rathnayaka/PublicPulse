@@ -13,7 +13,7 @@ class Poll {
     required this.options,
     required this.createDate,
     Duration? duration,
-  }) : endDate = createDate.add(duration ?? Duration(days: 0));
+  }) : endDate = createDate.add(duration ?? const Duration(days: 0));
 
   // Add this duration getter
   Duration get duration => endDate.difference(createDate);

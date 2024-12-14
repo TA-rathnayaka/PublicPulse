@@ -14,14 +14,16 @@ class MainScreen extends StatelessWidget {
   static String id = '/main-screen';
 
   final List<Widget> _pages = [
-    Dashboard(),
+    const Dashboard(),
     ChangeNotifierProvider(
       create: (_) => PollCreationValidationProvider(),
-      child: PollCreationScreen(),
+      child: const PollCreationScreen(),
     ),
-    NotificationScreen(),
-    UserProfileScreen(),
+    const NotificationScreen(),
+    const UserProfileScreen(),
   ];
+
+  MainScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

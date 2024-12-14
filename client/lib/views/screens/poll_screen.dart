@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:client/providers/screens_providers/poll_screen_provider.dart';
-import 'package:client/providers/polls_provider.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:client/models/poll.dart';
@@ -12,7 +11,7 @@ class PollScreen extends StatelessWidget {
 
   final Poll poll;
 
-  PollScreen({required this.poll}); // Constructor updated to accept Poll object
+  const PollScreen({super.key, required this.poll}); // Constructor updated to accept Poll object
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +30,7 @@ class PollScreen extends StatelessWidget {
                     onPrevious: pollProvider.previous,
                   ),
                   Transform.translate(
-                    offset: Offset(0, -40),
+                    offset: const Offset(0, -40),
                     child: PollDetails(
                       question: poll.title,
                       votes: _calculateVotes(poll.options),
@@ -64,7 +63,7 @@ class PollDetails extends StatefulWidget {
   final String description;
   final List<Map<String, int>> options;  // Add options as parameter
 
-  PollDetails({
+  const PollDetails({super.key, 
     required this.question,
     required this.votes,
     required this.description,
@@ -83,29 +82,29 @@ class _PollDetailsState extends State<PollDetails> {
     final safeVotes = int.tryParse(widget.votes) ?? 0;
 
     return FadeInUp(
-      duration: Duration(milliseconds: 1000),
+      duration: const Duration(milliseconds: 1000),
       child: ClipRRect(
-        borderRadius: BorderRadius.only(
+        borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(30),
           topRight: Radius.circular(30),
         ),
         child: Container(
           width: double.infinity,
-          padding: EdgeInsets.all(30),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.all(30),
+          decoration: const BoxDecoration(
             color: Colors.white,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _buildText(widget.question, 26, FontWeight.bold, Colors.grey[800], 1300),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               _buildText("$safeVotes Votes", 22, FontWeight.bold, kPrimaryColor, 1500),
-              SizedBox(height: 15),
+              const SizedBox(height: 15),
               _buildText(widget.description, 18, FontWeight.normal, Colors.grey[600], 1700),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildOptions(),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               _buildVoteButton(),
             ],
           ),
@@ -132,7 +131,7 @@ class _PollDetailsState extends State<PollDetails> {
   // Helper function to render poll options
   Widget _buildOptions() {
     return FadeInUp(
-      duration: Duration(milliseconds: 1700),
+      duration: const Duration(milliseconds: 1700),
       child: Column(
         children: widget.options.map((option) {
           String optionName = option.keys.first;
@@ -143,8 +142,8 @@ class _PollDetailsState extends State<PollDetails> {
               });
             },
             child: Container(
-              padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-              margin: EdgeInsets.symmetric(vertical: 5),
+              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+              margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
                 color: selectedOption == optionName
                     ? Colors.blueAccent
@@ -170,7 +169,7 @@ class _PollDetailsState extends State<PollDetails> {
   // Helper function to handle vote button click
   Widget _buildVoteButton() {
     return FadeInUp(
-      duration: Duration(milliseconds: 1700),
+      duration: const Duration(milliseconds: 1700),
       child: PrimaryButton(
         onPressed: () {
           if (selectedOption != null) {
@@ -204,7 +203,7 @@ class PollCarousel extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onPrevious;
 
-  PollCarousel({
+  const PollCarousel({super.key, 
     required this.images,
     required this.currentIndex,
     required this.onNext,
@@ -214,7 +213,7 @@ class PollCarousel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (images.isEmpty) {
-      return Center(
+      return const Center(
         child: Text(
           "No images available",
           style: TextStyle(fontSize: 18, color: Colors.grey),
@@ -233,7 +232,7 @@ class PollCarousel extends StatelessWidget {
         }
       },
       child: FadeInUp(
-        duration: Duration(milliseconds: 800),
+        duration: const Duration(milliseconds: 800),
         child: Container(
           width: double.infinity,
           height: 300,
@@ -260,10 +259,10 @@ class PollCarousel extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
                 FadeInUp(
-                  duration: Duration(milliseconds: 1000),
+                  duration: const Duration(milliseconds: 1000),
                   child: Container(
                     width: 90,
-                    margin: EdgeInsets.only(bottom: 60),
+                    margin: const EdgeInsets.only(bottom: 60),
                     child: IndicatorRow(
                       currentIndex: safeIndex,
                       itemCount: images.length,
@@ -283,7 +282,7 @@ class IndicatorRow extends StatelessWidget {
   final int currentIndex;
   final int itemCount;
 
-  IndicatorRow({required this.currentIndex, required this.itemCount});
+  const IndicatorRow({super.key, required this.currentIndex, required this.itemCount});
 
   @override
   Widget build(BuildContext context) {
@@ -300,7 +299,7 @@ class IndicatorRow extends StatelessWidget {
     return Container(
       width: 20,
       height: 4,
-      margin: EdgeInsets.symmetric(horizontal: 2),
+      margin: const EdgeInsets.symmetric(horizontal: 2),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(50),
         color: isActive ? Colors.blue[700] : Colors.grey[300],

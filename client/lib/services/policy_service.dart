@@ -1,138 +1,69 @@
-import 'package:flutter/material.dart';
-import 'package:animate_do/animate_do.dart';
-import 'package:client/views/components/primary_button.dart';
-import 'package:client/views/constants/constants.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:client/models/policy.dart';
 
-class PolicyScreen extends StatelessWidget {
-  static String id = '/policy-screen';
+class PolicyService {
+  final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
-  final List<String> images;
-  final String title;
-  final String description;
+  Future<List<Policy>> getPolicies() async {
+    try {
+      QuerySnapshot snapshot = await _fireStore.collection('policies').get();
+      List<Policy> policies = snapshot.docs.map((doc) {
+        Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-  PolicyScreen({
-    required this.images,
-    required this.title,
-    required this.description,
-  });
+        // Handle null createDate
+        Timestamp? createDateTimestamp = data['createDate'] as Timestamp?;
+        DateTime createDate = createDateTimestamp?.toDate() ?? DateTime.now();
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          color: Colors.white,
-          child: Column(
-            children: <Widget>[
-              PolicyCarousel(images: images),
-              Transform.translate(
-                offset: Offset(0, -40),
-                child: PolicyDetails(
-                  title: title,
-                  description: description,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class PolicyDetails extends StatelessWidget {
-  final String title;
-  final String description;
-
-  PolicyDetails({required this.title, required this.description});
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeInUp(
-      duration: Duration(milliseconds: 1000),
-      child: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30),
-          topRight: Radius.circular(30),
-        ),
-        child: Container(
-          width: double.infinity,
-          padding: EdgeInsets.all(30),
-          decoration: BoxDecoration(color: Colors.white),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _buildText(title, 26, FontWeight.bold, Colors.grey[800]),
-              SizedBox(height: 15),
-              _buildText(description, 18, FontWeight.normal, Colors.grey[600]),
-              SizedBox(height: 30),
-              _buildAcknowledgeButton(context),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildText(String text, double fontSize, FontWeight fontWeight, Color? color) {
-    return FadeInUp(
-      duration: Duration(milliseconds: 1200),
-      child: Text(
-        text,
-        style: TextStyle(fontSize: fontSize, fontWeight: fontWeight, color: color),
-      ),
-    );
-  }
-
-  Widget _buildAcknowledgeButton(BuildContext context) {
-    return FadeInUp(
-      duration: Duration(milliseconds: 1500),
-      child: PrimaryButton(
-        onPressed: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Policy Acknowledged')),
-          );
-        },
-        label: "Acknowledge",
-      ),
-    );
-  }
-}
-
-class PolicyCarousel extends StatelessWidget {
-  final List<String> images;
-
-  PolicyCarousel({required this.images});
-
-  @override
-  Widget build(BuildContext context) {
-    if (images.isEmpty) {
-      return Center(
-        child: Text(
-          "No images available",
-          style: TextStyle(fontSize: 18, color: Colors.grey),
-        ),
-      );
+        return Policy(
+          id: doc.id,
+          title: data['title'] ?? '',
+          description: data['description'] ?? '',
+          imageUrl: data['imageUrl'],
+          createDate: createDate,
+        );
+      }).toList();
+      return policies;
+    } catch (e) {
+      print("Error fetching policies: $e");
+      return [];
     }
+  }
 
-    return Container(
-      height: 300,
-      child: PageView.builder(
-        itemCount: images.length,
-        itemBuilder: (context, index) {
-          return FadeInUp(
-            duration: Duration(milliseconds: 800),
-            child: Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  image: NetworkImage(images[index]),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
+
+  // Create a new policy
+  Future<void> createPolicy(Policy policy) async {
+    try {
+      await _fireStore.collection('policies').add({
+        'title': policy.title,
+        'description': policy.description,
+        'imageUrl': policy.imageUrl,
+        'createDate': policy.createDate,
+      });
+    } catch (e) {
+      print("Error creating policy: $e");
+    }
+  }
+
+  // Update an existing policy by ID
+  Future<void> updatePolicy(String policyId, Policy updatedPolicy) async {
+    try {
+      await _fireStore.collection('policies').doc(policyId).update({
+        'title': updatedPolicy.title,
+        'description': updatedPolicy.description,
+        'imageUrl': updatedPolicy.imageUrl,
+        'createDate': updatedPolicy.createDate,
+      });
+    } catch (e) {
+      print("Error updating policy: $e");
+    }
+  }
+
+  // Delete a policy by ID
+  Future<void> deletePolicy(String policyId) async {
+    try {
+      await _fireStore.collection('policies').doc(policyId).delete();
+    } catch (e) {
+      print("Error deleting policy: $e");
+    }
   }
 }

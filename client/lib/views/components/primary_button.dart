@@ -6,10 +6,10 @@ class PrimaryButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   const PrimaryButton({
-    Key? key,
+    super.key,
     required this.label,  // Changed to 'label' to match PrimaryButton
     required this.onPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class PrimaryButton extends StatelessWidget {
         child: Center(
           child: Text(
             label,  // Changed to 'label' to match PrimaryButton
-            style: TextStyle(
+            style: const TextStyle(
               color: Colors.white,
               fontWeight: FontWeight.bold,
             ),

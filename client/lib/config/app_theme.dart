@@ -19,7 +19,7 @@ final ThemeData KLightTheme = ThemeData(
   colorScheme: ColorScheme.fromSwatch().copyWith(
     primary: Colors.white,
     secondary: Colors.black,
-    background: Colors.white,
+    surface: Colors.white,
   ),
 );
 

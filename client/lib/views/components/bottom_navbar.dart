@@ -11,7 +11,7 @@ class BottomNavbar extends StatelessWidget {
   final double elevation;
   final double borderRadius;
 
-  const BottomNavbar({
+  const BottomNavbar({super.key, 
     required this.currentIndex,
     required this.onTap,
     required this.items,
@@ -64,8 +64,8 @@ class BottomNavbar extends StatelessWidget {
   BottomNavigationBarItem _buildNavItem(IconData icon, int index) {
     return BottomNavigationBarItem(
       icon: AnimatedContainer(
-        duration: Duration(milliseconds: 200),
-        padding: EdgeInsets.all(8),
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
         ),

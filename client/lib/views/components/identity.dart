@@ -36,7 +36,7 @@ class Identity extends StatelessWidget {
               backgroundImage: AssetImage(imagePath),
               radius: 40,
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Text(
               name,
               style: GoogleFonts.poppins(
@@ -44,14 +44,14 @@ class Identity extends StatelessWidget {
                 fontSize: 21,
               ),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               email,
               style: GoogleFonts.poppins(
                 color: Colors.grey,
               ),
             ),
-            SizedBox(height: 5),
+            const SizedBox(height: 5),
             Text(
               phoneNumber,
               style: GoogleFonts.poppins(

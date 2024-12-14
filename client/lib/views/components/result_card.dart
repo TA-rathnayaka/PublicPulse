@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:client/views/constants/result_card_constants.dart';
 
 class CustomInkWell extends StatelessWidget {
   final bool isActive; // Indicates if the widget is active
@@ -7,11 +6,11 @@ class CustomInkWell extends StatelessWidget {
   final VoidCallback? onTap; // Callback for tap action
 
   const CustomInkWell({
-    Key? key,
+    super.key,
     required this.isActive,
     this.text = "M",
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:client/views/constants/top_navigation_bar_constants.dart';
 
 class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
+  const TopNavigationBar({super.key});
+
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
@@ -29,7 +31,7 @@ class TopNavigationBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
           child: IconButton(
-            icon: Icon(
+            icon: const Icon(
               Icons.arrow_back_ios_new,
               color: kLeadingButtonIconColor,
               size: kLeadingButtonIconSize,

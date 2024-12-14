@@ -10,14 +10,14 @@ class PreviewCard extends StatelessWidget {
   final String imageUrl;
 
   const PreviewCard({
-    Key? key,
+    super.key,
     required this.username,
     required this.avatarPath,
     required this.title,
     required this.subTitle,
     required this.description,
     required this.imageUrl,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,11 +33,11 @@ class PreviewCard extends StatelessWidget {
               radius: kAvatarRadiusPreviewCard,
             ),
             title: Text(username, style: kUsernameStylePreviewCard),
-            trailing: Icon(Icons.more_vert),
+            trailing: const Icon(Icons.more_vert),
           ),
 
           // Image displayed with fixed size
-          Container(
+          SizedBox(
             height: kImageHeightPreviewCard,
             width: double.infinity,
             child: Image.network(
@@ -56,7 +56,7 @@ class PreviewCard extends StatelessWidget {
                   style: kTitleStylePreviewCard,
                   textAlign: TextAlign.left, // Align title to the left
                 ),
-                SizedBox(height: 4),
+                const SizedBox(height: 4),
                 Text(
                   subTitle,
                   style: kSubTitleStylePreviewCard,
@@ -81,9 +81,9 @@ class PreviewCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
             child: Row(
               children: [
-                Chip(label: Text("#OpinionPolls", style: kChipLabelStylePreviewCard)),
+                const Chip(label: Text("#OpinionPolls", style: kChipLabelStylePreviewCard)),
                 SizedBox(width: kChipSpacingPreviewCard.horizontal),
-                Chip(label: Text("#SummerActivities", style: kChipLabelStylePreviewCard)),
+                const Chip(label: Text("#SummerActivities", style: kChipLabelStylePreviewCard)),
               ],
             ),
           )

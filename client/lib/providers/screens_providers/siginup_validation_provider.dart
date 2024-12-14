@@ -78,10 +78,10 @@ class SignupValidationProvider extends ChangeNotifier {
   void handleSignup(BuildContext context) {
     if (firstNameError == null && lastNameError == null && emailError == null && passwordError == null && repeatPasswordError == null) {
       // Proceed with signup
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Signup Successful")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Signup Successful")));
     } else {
       // Show error message
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Please fix the errors")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fix the errors")));
     }
   }
 

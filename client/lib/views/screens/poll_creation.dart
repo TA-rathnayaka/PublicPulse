@@ -9,11 +9,13 @@ import 'package:client/providers/screens_providers/poll_creation_validation_prov
 class PollCreationScreen extends StatelessWidget {
   static String id = '/poll-creation';
 
+  const PollCreationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Create Poll'),
+        title: const Text('Create Poll'),
         backgroundColor: kPrimaryColor,
       ),
       backgroundColor: kBackgroundColor,
@@ -24,8 +26,8 @@ class PollCreationScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Poll Title
-              Text('Poll Title', style: kHeadlineStyle),
-              SizedBox(height: kSizedBoxHeight),
+              const Text('Poll Title', style: kHeadlineStyle),
+              const SizedBox(height: kSizedBoxHeight),
               Consumer<PollCreationValidationProvider>(
                 builder: (context, provider, child) {
                   return TextField(
@@ -37,11 +39,11 @@ class PollCreationScreen extends StatelessWidget {
                   );
                 },
               ),
-              SizedBox(height: kSizedBoxHeight),
+              const SizedBox(height: kSizedBoxHeight),
 
               // Poll Description
-              Text('Poll Description', style: kHeadlineStyle),
-              SizedBox(height: kSizedBoxHeight),
+              const Text('Poll Description', style: kHeadlineStyle),
+              const SizedBox(height: kSizedBoxHeight),
               Consumer<PollCreationValidationProvider>(
                 builder: (context, provider, child) {
                   return TextField(
@@ -54,11 +56,11 @@ class PollCreationScreen extends StatelessWidget {
                   );
                 },
               ),
-              SizedBox(height: kSizedBoxHeight),
+              const SizedBox(height: kSizedBoxHeight),
 
               // Poll Options
-              Text('Poll Options', style: kHeadlineStyle),
-              SizedBox(height: kSizedBoxHeight),
+              const Text('Poll Options', style: kHeadlineStyle),
+              const SizedBox(height: kSizedBoxHeight),
               Consumer<PollCreationValidationProvider>(
                 builder: (context, provider, child) {
                   return Column(
@@ -78,7 +80,7 @@ class PollCreationScreen extends StatelessWidget {
                             ),
                             if (provider.optionControllers.length > 2)
                               IconButton(
-                                icon: Icon(Icons.delete, color: Colors.red),
+                                icon: const Icon(Icons.delete, color: Colors.red),
                                 onPressed: () => provider.removeOptionField(index),
                               ),
                           ],
@@ -88,7 +90,7 @@ class PollCreationScreen extends StatelessWidget {
                   );
                 },
               ),
-              SizedBox(height: kSizedBoxHeight),
+              const SizedBox(height: kSizedBoxHeight),
 
               // Add Option Button
               Align(
@@ -99,21 +101,21 @@ class PollCreationScreen extends StatelessWidget {
                     builder: (context, provider, child) {
                       return OutlinedButton.icon(
                         onPressed: provider.addOptionField,
-                        icon: Icon(Icons.add, color: Colors.black),
-                        label: Text('Add Option', style: TextStyle(color: Colors.black)),
+                        icon: const Icon(Icons.add, color: Colors.black),
+                        label: const Text('Add Option', style: TextStyle(color: Colors.black)),
                         style: OutlinedButton.styleFrom(
-                          side: BorderSide(color: Colors.black),
+                          side: const BorderSide(color: Colors.black),
                         ),
                       );
                     },
                   ),
                 ),
               ),
-              SizedBox(height: kSizedBoxHeight),
+              const SizedBox(height: kSizedBoxHeight),
 
               // Poll Image URL
-              Text('Poll Image URL', style: kHeadlineStyle),
-              SizedBox(height: kSizedBoxHeight),
+              const Text('Poll Image URL', style: kHeadlineStyle),
+              const SizedBox(height: kSizedBoxHeight),
               Consumer<PollCreationValidationProvider>(
                 builder: (context, provider, child) {
                   return TextField(
@@ -125,7 +127,7 @@ class PollCreationScreen extends StatelessWidget {
                   );
                 },
               ),
-              SizedBox(height: kSizedBoxHeight),
+              const SizedBox(height: kSizedBoxHeight),
 
               // Create Poll Button
               Consumer<PollCreationValidationProvider>(
@@ -137,7 +139,7 @@ class PollCreationScreen extends StatelessWidget {
                         _createPoll(context, provider);
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Please fix the errors before submitting.')),
+                          const SnackBar(content: Text('Please fix the errors before submitting.')),
                         );
                       }
                     },
@@ -167,7 +169,7 @@ class PollCreationScreen extends StatelessWidget {
       description: description,
       options: options,
       createDate: DateTime.now(),
-      duration: Duration(days: 7),
+      duration: const Duration(days: 7),
       imageUrl: imageUrl,
     );
 
@@ -176,7 +178,7 @@ class PollCreationScreen extends StatelessWidget {
 
     // Show success message
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Poll created successfully!')),
+      const SnackBar(content: Text('Poll created successfully!')),
     );
 
     // Clear inputs after poll creation

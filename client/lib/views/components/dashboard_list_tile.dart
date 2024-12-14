@@ -8,12 +8,12 @@ class DashboardListTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const DashboardListTile({
-    Key? key,
+    super.key,
     required this.title,
     required this.description,
     this.imageUrl,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -22,12 +22,12 @@ class DashboardListTile extends StatelessWidget {
       child: Card(
         elevation: 6,
         shadowColor: Colors.black.withOpacity(0.2),
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: kImageBorderRadius,
         ),
         child: Container(
-          padding: EdgeInsets.all(20),
-          decoration: BoxDecoration(
+          padding: const EdgeInsets.all(20),
+          decoration: const BoxDecoration(
             color: kCardBackgroundColor,
             borderRadius: kImageBorderRadius,
           ),
@@ -55,7 +55,7 @@ class DashboardListTile extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(width: kSpaceBetweenImageAndText),
+              const SizedBox(width: kSpaceBetweenImageAndText),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,7 +70,7 @@ class DashboardListTile extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
                     ),
-                    SizedBox(height: kSpaceBetweenTitleAndDescription),
+                    const SizedBox(height: kSpaceBetweenTitleAndDescription),
                     Text(
                       description,
                       style: kDescriptionTextStyle.copyWith(
