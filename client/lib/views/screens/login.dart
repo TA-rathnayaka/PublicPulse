@@ -171,53 +171,93 @@ class Login extends StatelessWidget {
                   SizedBox(height: 20),
                   FadeInUp(
                     duration: const Duration(milliseconds: 1900),
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                        side: BorderSide(color: Colors.grey.shade300, width: 1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      onPressed: () {
-                        // Validate any preconditions if needed
-                        if (context.read<LoginValidationProvider>().isValid) {
-                          // Proceed with Google sign-in
-                          context.read<MyAuthProvider>().signInWithGoogle().then((_) {
-                            if (context.read<MyAuthProvider>().user != null) {
-                              // Navigate to the dashboard on success
-                              Navigator.pushNamed(context, MainScreen.id);
-                            } else {
-                              // Show error if Google sign-in failed
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Google Icon Button
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(12),
+                            shape: const CircleBorder(),
+                            backgroundColor: Colors.white,
+                            side: BorderSide(color: Colors.grey.shade300, width: 1),
+                          ),
+                          onPressed: () {
+                            // Google Sign-In logic
+                            context.read<MyAuthProvider>().signInWithGoogle().then((_) {
+                              if (context.read<MyAuthProvider>().user != null) {
+                                Navigator.pushNamed(context, MainScreen.id);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Google Sign-In failed")),
+                                );
+                              }
+                            }).catchError((error) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Google Sign-In failed")),
+                                SnackBar(content: Text("Error: ${error.toString()}")),
                               );
-                            }
-                          }).catchError((error) {
-                            // Handle any error that might occur during Google sign-in
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text("Error: ${error.toString()}")),
-                            );
-                          });
-                        } else {
-                          // Show validation error or feedback to the user if needed
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("Please fix validation issues before proceeding.")),
-                          );
-                        }
-                      },
-
-                      icon: Image.network(
-                        "https://cdn-icons-png.flaticon.com/128/300/300221.png",
-                        height: 20,
-                      ),
-                      label: const Text(
-                        "Sign in with Google",
-                        style: TextStyle(
-                          color: Colors.black,
+                            });
+                          },
+                          child: Image.network(
+                            "https://cdn-icons-png.flaticon.com/128/300/300221.png",
+                            height: 24,
+                            width: 24,
+                          ),
                         ),
-                      ),
-                    ),),
+
+                        // Facebook Icon Button
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(12),
+                            shape: const CircleBorder(),
+                            backgroundColor: Colors.white,
+                            side: BorderSide(color: Colors.grey.shade300, width: 1),
+                          ),
+                          onPressed: () {
+                            // Facebook Sign-In logic
+                            context.read<MyAuthProvider>().signInWithFacebook().then((_) {
+                              if (context.read<MyAuthProvider>().user != null) {
+                                Navigator.pushNamed(context, MainScreen.id);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text("Facebook Sign-In failed")),
+                                );
+                              }
+                            }).catchError((error) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text("Error: ${error.toString()}")),
+                              );
+                            });
+                          },
+                          child: Image.network(
+                            "https://cdn-icons-png.flaticon.com/128/145/145802.png",
+                            height: 24,
+                            width: 24,
+                          ),
+                        ),
+
+                        // Mobile Icon Button
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(12),
+                            shape: const CircleBorder(),
+                            backgroundColor: Colors.white,
+                            side: BorderSide(color: Colors.grey.shade300, width: 1),
+                          ),
+                          onPressed: () {
+                            // Mobile Sign-In logic
+
+                          },
+                          child: Icon(
+                            Icons.phone_android,
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
 
                   SizedBox(height: 70),
                   FadeInUp(

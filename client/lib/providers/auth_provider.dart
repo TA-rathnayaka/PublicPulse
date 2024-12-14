@@ -15,6 +15,11 @@ class MyAuthProvider with ChangeNotifier {
       notifyListeners();
   }
 
+  Future<void> signInWithFacebook() async {
+    _user = await _authService.signInWithFacebook();
+    notifyListeners();
+  }
+
   Future<void> signInEmailAndPassword(String email, String password) async {
     _user = await _authService.signInEmailAndPassword(email, password);
     notifyListeners();

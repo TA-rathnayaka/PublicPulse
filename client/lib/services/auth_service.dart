@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService {
@@ -8,6 +9,39 @@ class AuthService {
   Stream<User?> get userStream {
     return _auth.authStateChanges();
   }
+
+  Future<User?> signInWithFacebook() async {
+    try {
+      // Trigger the Facebook login flow.
+      final LoginResult loginResult = await FacebookAuth.instance.login();
+
+      if (loginResult.status == LoginStatus.success) {
+        // Obtain the Facebook Access Token.
+        final AccessToken accessToken = loginResult.accessToken!;
+
+        // Create a credential for Firebase authentication.
+        final OAuthCredential facebookCredential =
+        FacebookAuthProvider.credential(accessToken.tokenString);
+
+        // Sign in to Firebase with the Facebook credential.
+        UserCredential userCredential =
+        await _auth.signInWithCredential(facebookCredential);
+
+        return userCredential.user;
+      } else if (loginResult.status == LoginStatus.cancelled) {
+        print("Facebook login cancelled by the user.");
+        return null;
+      } else {
+        print("Facebook login failed: ${loginResult.message}");
+        return null;
+      }
+    } catch (e) {
+      print("Error signing in with Facebook: $e");
+      rethrow;
+    }
+  }
+
+
   Future<User?> signInWithGoogle() async {
     try {
 
