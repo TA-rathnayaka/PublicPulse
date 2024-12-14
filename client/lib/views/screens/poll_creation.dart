@@ -13,9 +13,14 @@ class PollCreationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Access the current theme using Theme.of(context)
+    final theme = Theme.of(context);
+    final textTheme = theme.textTheme;
+    final inputDecorationTheme = theme.inputDecorationTheme;
+
     return SafeArea(
       child: Scaffold(
-        backgroundColor: kBackgroundColor,
+        backgroundColor: theme.scaffoldBackgroundColor,
         body: Padding(
           padding: const EdgeInsets.all(kPaddingHorizontal),
           child: SingleChildScrollView(
@@ -23,13 +28,15 @@ class PollCreationScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Poll Title
-                const Text('Poll Title', style: kHeadlineStyle),
+                Text('Poll Title',
+                    style: textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: kSizedBoxHeight),
                 Consumer<PollCreationValidationProvider>(
                   builder: (context, provider, child) {
                     return TextField(
                       controller: provider.titleController,
-                      decoration: kTextFieldDecoration.copyWith(
+                      decoration: InputDecoration(
                         hintText: 'Enter poll title',
                         errorText: provider.titleError,
                       ),
@@ -37,16 +44,18 @@ class PollCreationScreen extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: kSizedBoxHeight),
-      
+
                 // Poll Description
-                const Text('Poll Description', style: kHeadlineStyle),
+                Text('Poll Description',
+                    style: textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: kSizedBoxHeight),
                 Consumer<PollCreationValidationProvider>(
                   builder: (context, provider, child) {
                     return TextField(
                       controller: provider.descriptionController,
                       maxLines: 3,
-                      decoration: kTextFieldDecoration.copyWith(
+                      decoration: InputDecoration(
                         hintText: 'Enter poll description',
                         errorText: provider.descriptionError,
                       ),
@@ -54,9 +63,11 @@ class PollCreationScreen extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: kSizedBoxHeight),
-      
+
                 // Poll Options
-                const Text('Poll Options', style: kHeadlineStyle),
+                Text('Poll Options',
+                    style: textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: kSizedBoxHeight),
                 Consumer<PollCreationValidationProvider>(
                   builder: (context, provider, child) {
@@ -69,7 +80,7 @@ class PollCreationScreen extends StatelessWidget {
                               Expanded(
                                 child: TextField(
                                   controller: provider.optionControllers[index],
-                                  decoration: kTextFieldDecoration.copyWith(
+                                  decoration: InputDecoration(
                                     hintText: 'Enter an option',
                                     errorText: provider.optionErrors[index],
                                   ),
@@ -88,7 +99,7 @@ class PollCreationScreen extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: kSizedBoxHeight),
-      
+
                 // Add Option Button
                 Align(
                   alignment: Alignment.centerLeft,
@@ -98,10 +109,17 @@ class PollCreationScreen extends StatelessWidget {
                       builder: (context, provider, child) {
                         return OutlinedButton.icon(
                           onPressed: provider.addOptionField,
-                          icon: const Icon(Icons.add, color: Colors.black),
-                          label: const Text('Add Option', style: TextStyle(color: Colors.black)),
+                          icon: Icon(Icons.add, color: theme.primaryColor),
+                          label:  Text(
+                            'Add Option',
+                            style: TextStyle(color: theme.primaryColor),  // This applies to the label's text color.
+                          ),
                           style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.black),
+                            side: BorderSide(color: theme.primaryColor),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            foregroundColor: Colors.black,  // This ensures the text color remains black.
                           ),
                         );
                       },
@@ -109,15 +127,17 @@ class PollCreationScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: kSizedBoxHeight),
-      
+
                 // Poll Image URL
-                const Text('Poll Image URL', style: kHeadlineStyle),
+                Text('Poll Image URL',
+                    style: textTheme.bodyMedium
+                        ?.copyWith(fontWeight: FontWeight.bold)),
                 const SizedBox(height: kSizedBoxHeight),
                 Consumer<PollCreationValidationProvider>(
                   builder: (context, provider, child) {
                     return TextField(
                       controller: provider.imageUrlController,
-                      decoration: kTextFieldDecoration.copyWith(
+                      decoration: InputDecoration(
                         hintText: 'Enter image URL',
                         errorText: provider.imageUrlError,
                       ),
@@ -125,7 +145,7 @@ class PollCreationScreen extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: kSizedBoxHeight),
-      
+
                 // Create Poll Button
                 Consumer<PollCreationValidationProvider>(
                   builder: (context, provider, child) {
@@ -136,7 +156,9 @@ class PollCreationScreen extends StatelessWidget {
                           _createPoll(context, provider);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please fix the errors before submitting.')),
+                            const SnackBar(
+                                content: Text(
+                                    'Please fix the errors before submitting.')),
                           );
                         }
                       },
@@ -151,7 +173,8 @@ class PollCreationScreen extends StatelessWidget {
     );
   }
 
-  void _createPoll(BuildContext context, PollCreationValidationProvider provider) {
+  void _createPoll(
+      BuildContext context, PollCreationValidationProvider provider) {
     final title = provider.titleController.text.trim();
     final description = provider.descriptionController.text.trim();
     final options = provider.optionControllers

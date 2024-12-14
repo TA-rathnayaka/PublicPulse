@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         ],
         child: Consumer<ThemeProvider>(builder: (context, theme, child) {
           return MaterialApp(
-            theme: theme.isDarkMode ? kLightTheme : kDarkTheme,
+            theme: theme.isDarkMode ? kDarkTheme : kLightTheme,
             routes: routes,
           );
         }));
