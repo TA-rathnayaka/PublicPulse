@@ -49,8 +49,7 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
   void initState() {
     super.initState();
     final userProvider = Provider.of<UserProvider>(context, listen: false);
-    const userId = "userId"; // Replace with actual user ID logic
-    userProvider.getUserDetails(userId); // Fetch user details on init
+    userProvider.getCurrentUserDetails();
   }
 
   void _handleSave() {
@@ -62,7 +61,18 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     Navigator.pushReplacementNamed(context, SplashScreen.id);
   }
 
-  void _showBottomSheet() {
+  void _showBottomSheet(Map<String, dynamic> user) {
+    // Initialize controllers with user data
+    _nameController.text = "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim();
+    _usernameController.text = user['username'] ?? '';
+    _emailController.text = user['email'] ?? '';
+    _dobController.text = user['dob'] ?? '';
+    _presentAddressController.text = user['presentAddress'] ?? '';
+    _permanentAddressController.text = user['permanentAddress'] ?? '';
+    _cityController.text = user['city'] ?? '';
+    _postalCodeController.text = user['postalCode'] ?? '';
+    _countryController.text = user['country'] ?? '';
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -86,7 +96,6 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   _buildTextField(label: "Your Name", controller: _nameController),
                   _buildTextField(label: "User Name", controller: _usernameController),
                   _buildTextField(label: "Email", controller: _emailController),
-                  _buildTextField(label: "Password", controller: _passwordController, obscureText: true),
                   _buildTextField(label: "Date of Birth", controller: _dobController, isDate: true),
                   _buildTextField(label: "Present Address", controller: _presentAddressController),
                   _buildTextField(label: "Permanent Address", controller: _permanentAddressController),
@@ -109,6 +118,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
       },
     );
   }
+
+
 
   Widget _buildTextField({
     required String label,
@@ -167,12 +178,20 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               ],
             ),
             const SizedBox(height: 20),
-            Identity(
-              imagePath: "assets/toji.jpg",
-              name: "Toji Fushiguro",
-              email: "tojifushiguro@gmail.com",
-              phoneNumber: "+123 456-789",
-              onTap: _showBottomSheet,
+            Consumer<UserProvider>(
+              builder: (context, userProvider, child) {
+                final user = userProvider.userDetails;
+
+                return Identity(
+                  imagePath: user?['profileImage'] ?? "assets/default_profile.jpg", // Dynamic image path
+                  name: "${user?['firstName'] ?? ''} ${user?['lastName'] ?? ''}".trim(), // Handle null names
+                  email: user?['email'] ?? "No email available", // Default email message
+                  phoneNumber: user?['phoneNumber'] ?? "No phone number available", // Default phone number
+                  onTap: () {
+                    _showBottomSheet(user!);
+                  }, // Your defined function
+                );
+              },
             ),
             const SizedBox(height: 20),
             Container(

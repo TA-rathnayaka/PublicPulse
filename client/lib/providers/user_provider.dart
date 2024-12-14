@@ -1,8 +1,10 @@
+import 'package:client/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:client/services/user_service.dart';
 
 class UserProvider with ChangeNotifier {
   final UserService _userService = UserService();
+  final AuthService _authService = AuthService();
   Map<String, dynamic>? _userDetails;
 
   Map<String, dynamic>? get userDetails => _userDetails;
@@ -22,6 +24,19 @@ class UserProvider with ChangeNotifier {
       final userData = await _userService.getUserDetails(uid);
       if (userData != null) {
         _userDetails = userData;
+        notifyListeners();
+      }
+    } catch (e) {
+      print("Error fetching user details: $e");
+    }
+  }
+  Future<void> getCurrentUserDetails() async {
+    try {
+      final uid = await _authService.getCurrentUserUid();
+      final userData = await _userService.getUserDetails(uid!);
+      if (userData != null) {
+        _userDetails = userData;
+
         notifyListeners();
       }
     } catch (e) {

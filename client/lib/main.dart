@@ -4,6 +4,7 @@ import 'package:client/config/app_routes.dart';
 import 'package:client/config/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:client/providers/auth_provider.dart';
+import 'package:client/providers/user_provider.dart';
 
 
 void main() async {
@@ -21,6 +22,7 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider<MyAuthProvider>(create: (context) => MyAuthProvider()),
+        ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
       ],
       child: MaterialApp(
         theme: KLightTheme,

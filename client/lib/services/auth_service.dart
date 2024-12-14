@@ -101,4 +101,9 @@ class AuthService {
       print('Error signing out: $e');
     }
   }
+
+  Future<String?> getCurrentUserUid() async {
+    User? user = _auth.currentUser;
+    return user?.uid;
+  }
 }

@@ -29,7 +29,6 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
         ChangeNotifierProvider<PollsProvider>(create: (context) => PollsProvider()),
         ChangeNotifierProvider<NotificationProvider>(create: (context) => NotificationProvider()),
         ChangeNotifierProvider<NavigatorProvider>(create: (context) => NavigatorProvider()),

@@ -25,16 +25,15 @@ class UserService {
 
   Future<Map<String, dynamic>?> getUserDetails(String uid) async {
     try {
-      DocumentSnapshot doc =
-      await _fireStore.collection('users').doc(uid).get();
-      if (doc.exists) {
+      DocumentSnapshot doc = await _fireStore.collection('users').doc(uid).get();
+      if (doc.exists && doc.data() != null) {
         return doc.data() as Map<String, dynamic>;
       } else {
-        print("User not found.");
+        print("User document is empty or not found.");
         return null;
       }
     } catch (e) {
-      print("Error fetching user details: $e");
+      print("Error fetching user details for UID $uid: $e");
       return null;
     }
   }
