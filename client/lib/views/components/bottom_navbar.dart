@@ -1,58 +1,93 @@
-import 'package:client/views/constants/bottom_navbar_constants.dart';
 import 'package:flutter/material.dart';
 
 class BottomNavbar extends StatelessWidget {
   final int currentIndex;
   final ValueChanged<int> onTap;
+  final List<BottomNavbarItem> items;
+  final double iconSize;
+  final double elevation;
+  final double borderRadius;
 
   const BottomNavbar({
+    super.key,
     required this.currentIndex,
     required this.onTap,
+    required this.items,
+    this.iconSize = 28.0,
+    this.elevation = 10.0,
+    this.borderRadius = 24.0,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Get the current theme
+    final ThemeData theme = Theme.of(context);
+    final Color backgroundColor = theme.scaffoldBackgroundColor;
+    final Color selectedItemColor = theme.primaryColor;
+    final Color unselectedItemColor = theme.unselectedWidgetColor;
+
     return Container(
-      color: Colors.black, // Set background color for the navbar
-      child: BottomNavigationBar(
-        showSelectedLabels: false, // Hide selected labels
-        showUnselectedLabels: false, // Hide unselected labels
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: kBackgroundColorBottomNavbar, // Match navbar background color
-        elevation: 0,
-        currentIndex: currentIndex,
-        onTap: onTap,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home,
-              color: currentIndex == 0 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
-            ),
-            label: 'Home', // Keep label for the sake of structure but won't be displayed
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.shopify,
-              color: currentIndex == 1 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
-            ),
-            label: 'Shop', // Keep label for the sake of structure but won't be displayed
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.favorite,
-              color: currentIndex == 2 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
-            ),
-            label: 'Favourite', // Keep label for the sake of structure but won't be displayed
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notification_add,
-              color: currentIndex == 3 ? kSelectedItemColorBottomNavbar : Colors.grey.withOpacity(0.6),
-            ),
-            label: 'Notification', // Keep label for the sake of structure but won't be displayed
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(borderRadius),
+          topRight: Radius.circular(borderRadius),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.2),
+            blurRadius: elevation,
+            spreadRadius: 1,
           ),
         ],
       ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(borderRadius),
+          topRight: Radius.circular(borderRadius),
+        ),
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: backgroundColor,
+          elevation: 0,
+          currentIndex: currentIndex,
+          onTap: onTap,
+          selectedItemColor: selectedItemColor,  // Set the selected item color explicitly
+          unselectedItemColor: unselectedItemColor,  // Set the unselected item color explicitly
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          items: items.map((item) {
+            return _buildNavItem(context,item.icon, item.index);
+          }).toList(),
+        ),
+      ),
     );
   }
+
+  BottomNavigationBarItem _buildNavItem(context, IconData icon, int index) {
+    return BottomNavigationBarItem(
+      icon: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Icon(
+          icon,
+          size: iconSize,
+          color: currentIndex == index
+              ? Theme.of(context).primaryColor  // Ensure selected color is set
+              : Theme.of(context).unselectedWidgetColor,  // Ensure unselected color is set
+        ),
+      ),
+      label: '',
+    );
+  }
+}
+
+class BottomNavbarItem {
+  final IconData icon;
+  final int index;
+
+  BottomNavbarItem({required this.icon, required this.index});
 }

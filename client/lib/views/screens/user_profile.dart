@@ -1,51 +1,230 @@
+import 'package:client/providers/screens_providers/theme_provider.dart';
+import 'package:client/views/screens/_all.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:client/views/components/identity.dart';
+import 'package:client/views/components/profile_menu_row.dart';
 import 'package:client/views/components/primary_button.dart';
-import 'package:client/views/constants/profile_constants.dart';
+import 'package:client/providers/auth_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:client/providers/screens_providers/profile_screen_provider.dart';
+import 'package:client/providers/user_provider.dart';
+import 'package:animate_do/animate_do.dart';
 
-class UserProfileScreen extends StatefulWidget {
-  static const id = '/userProfile';
+import 'package:animate_do/animate_do.dart';  // Make sure to import animate_do
 
-  @override
-  _UserProfileScreenState createState() => _UserProfileScreenState();
-}
+class UserProfileScreen extends StatelessWidget {
+  static const id = '/combinedProfile';
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _dobController = TextEditingController();
-  final TextEditingController _presentAddressController = TextEditingController();
-  final TextEditingController _permanentAddressController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _postalCodeController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
+  const UserProfileScreen({super.key});
 
   @override
-  void dispose() {
-    _nameController.dispose();
-    _usernameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _dobController.dispose();
-    _presentAddressController.dispose();
-    _permanentAddressController.dispose();
-    _cityController.dispose();
-    _postalCodeController.dispose();
-    _countryController.dispose();
-    super.dispose();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => ProfileScreenProvider(),
+      child: Consumer<ProfileScreenProvider>(
+        builder: (context, profileProvider, child) {
+          return SafeArea(
+            child: Scaffold(
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    FadeIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Account",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: Consumer<UserProvider>(
+                        builder: (context, userProvider, child) {
+                          final user = userProvider.userDetails;
+
+                          // Check if user is null before proceeding
+                          if (user == null) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+
+                          profileProvider.initializeProfile(user);
+
+                          return Identity(
+                            imagePath: user['profileImage'] ?? "assets/default_profile.jpg",
+                            name: "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim(),
+                            email: user['email'] ?? "No email available",
+                            phoneNumber: user['phoneNumber'] ?? "No phone number available",
+                            onTap: () {
+                              _showBottomSheet(context, profileProvider, user);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              FadeInUp(
+                                duration: const Duration(milliseconds: 500),
+                                child: Consumer<ThemeProvider>(
+                                  builder: (context, themeProvider, child) {
+                                    return MenuRow(
+                                      icon: Icons.dark_mode,
+                                      text: themeProvider.isDarkMode
+                                          ? "Dark Mode"
+                                          : "Light Mode",
+                                      onTap: () {
+                                        themeProvider.toggleTheme();
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                              const Divider(),
+                              FadeInUp(
+                                duration: Duration(milliseconds: 500),
+                                child: MenuRow(
+                                  icon: Icons.privacy_tip,
+                                  text: "Privacy",
+                                ),
+                              ),
+                              const Divider(),
+                              FadeInUp(
+                                duration: Duration(milliseconds: 500),
+                                child: MenuRow(
+                                  icon: Icons.person,
+                                  text: "Personal Info",
+                                ),
+                              ),
+                              const Divider(),
+                              FadeInUp(
+                                duration: const Duration(milliseconds: 500),
+                                child: Consumer<MyAuthProvider>(
+                                  builder: (context, authProvider, child) {
+                                    return MenuRow(
+                                      icon: Icons.exit_to_app,
+                                      text: "Sign Out",
+                                      onTap: () {
+                                        Provider.of<MyAuthProvider>(context, listen: false)
+                                            .signOut();
+                                        Navigator.pushReplacementNamed(context, SplashScreen.id);
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
-  void _handleSave() {
-    // Handle save action
+  void _showBottomSheet(BuildContext context, ProfileScreenProvider profileProvider, Map<String, dynamic> user) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.7,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 20,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTextField(context,
+                      label: "Your Name",
+                      controller: profileProvider.nameController),
+                  _buildTextField(context,
+                      label: "User Name",
+                      controller: profileProvider.usernameController),
+                  _buildTextField(context,
+                      label: "Email",
+                      controller: profileProvider.emailController),
+                  _buildTextField(context,
+                      label: "Date of Birth",
+                      controller: profileProvider.dobController,
+                      isDate: true),
+                  _buildTextField(context,
+                      label: "Present Address",
+                      controller: profileProvider.presentAddressController),
+                  _buildTextField(context,
+                      label: "Permanent Address",
+                      controller: profileProvider.permanentAddressController),
+                  _buildTextField(context,
+                      label: "City",
+                      controller: profileProvider.cityController),
+                  _buildTextField(context,
+                      label: "Postal Code",
+                      controller: profileProvider.postalCodeController),
+                  _buildTextField(context,
+                      label: "Country",
+                      controller: profileProvider.countryController),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: PrimaryButton(
+                      label: 'Save',
+                      onPressed: () {
+                        if (profileProvider.validateProfile()) {
+                          profileProvider.saveProfile(context);
+                        }
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required TextEditingController controller,
-    bool obscureText = false,
-    bool isDate = false,
-  }) {
+  Widget _buildTextField(
+      context, {
+        required String label,
+        required TextEditingController controller,
+        bool obscureText = false,
+        bool isDate = false,
+      }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -53,84 +232,19 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         children: [
           Text(
             label,
-            style: kLabelTextStyle,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
-          SizedBox(height: 5),
+          const SizedBox(height: 5),
           TextFormField(
             controller: controller,
             readOnly: isDate,
             obscureText: obscureText,
-            decoration: kInputDecoration.copyWith(
+            decoration: InputDecoration(
               hintText: "Enter your $label",
-              suffixIcon: isDate ? Icon(Icons.calendar_today, size: 20) : null,
-            ),
+              suffixIcon: isDate ? const Icon(Icons.calendar_today, size: 20) : null,
+            ).applyDefaults(Theme.of(context).inputDecorationTheme),
           ),
         ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Profile'),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(horizontal: kPaddingHorizontalUserProfileScreen),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(height: 20),
-            Center(
-              child: Stack(
-                children: [
-                  CircleAvatar(
-                    radius: kCircleAvatarRadiusUserProfileScreen,
-                    backgroundImage: NetworkImage(
-                      'https://example.com/profile_image.jpg', // Replace with actual image URL
-                    ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    right: 4,
-                    child: CircleAvatar(
-                      radius: kEditIconRadiusUserProfileScreen,
-                      backgroundColor: Colors.blue,
-                      child: Icon(
-                        Icons.edit,
-                        color: Colors.white,
-                        size: 16,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 20),
-            _buildTextField(label: "Your Name", controller: _nameController),
-            _buildTextField(label: "User Name", controller: _usernameController),
-            _buildTextField(label: "Email", controller: _emailController),
-            _buildTextField(label: "Password", controller: _passwordController, obscureText: true),
-            _buildTextField(label: "Date of Birth", controller: _dobController, isDate: true),
-            _buildTextField(label: "Present Address", controller: _presentAddressController),
-            _buildTextField(label: "Permanent Address", controller: _permanentAddressController),
-            _buildTextField(label: "City", controller: _cityController),
-            _buildTextField(label: "Postal Code", controller: _postalCodeController),
-            _buildTextField(label: "Country", controller: _countryController),
-            SizedBox(height: 30),
-            Center(
-              child: PrimaryButton(
-                label: 'Save',
-                onPressed: _handleSave,
-              ),
-            ),
-            SizedBox(height: 30),
-          ],
-        ),
       ),
     );
   }

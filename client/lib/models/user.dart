@@ -1,4 +1,4 @@
-import 'package:client/services/auth.dart';
+import 'package:client/services/auth_service.dart';
 import 'package:client/services/user_service.dart';
 
 class User {

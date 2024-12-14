@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:client/models/notification_provider.dart';
+import 'package:client/Providers/notification_provider.dart';
 
 class NotificationScreen extends StatelessWidget {
+  const NotificationScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -17,7 +19,7 @@ class NotificationScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
+                        physics: const NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: notificationProvider.notifications.length,
                         itemBuilder: (context, index) {
@@ -27,7 +29,7 @@ class NotificationScreen extends StatelessWidget {
                             child: Row(
                               children: [
                                 Icon(notification.isRead ? Icons.check : Icons.notifications), // Change icon based on read status
-                                SizedBox(width: 8),
+                                const SizedBox(width: 8),
                                 Expanded(
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,19 +39,19 @@ class NotificationScreen extends StatelessWidget {
                                         children: [
                                           Text(
                                             notification.message, // Use message instead of title
-                                            style: TextStyle(fontSize: 16),
+                                            style: const TextStyle(fontSize: 16),
                                           ),
                                           Text(
                                             // Format the timestamp to a readable string
                                             '${notification.timestamp.hour}:${notification.timestamp.minute} ${notification.timestamp.day}/${notification.timestamp.month}/${notification.timestamp.year}',
-                                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                                            style: const TextStyle(fontSize: 12, color: Colors.grey),
                                           ),
                                         ],
                                       ),
-                                      SizedBox(height: 4),
+                                      const SizedBox(height: 4),
                                       Text(
                                         notification.isRead ? 'Read' : 'Unread', // Display read status
-                                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                                        style: const TextStyle(fontSize: 14, color: Colors.grey),
                                       ),
                                     ],
                                   ),

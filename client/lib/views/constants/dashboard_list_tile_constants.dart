@@ -1,4 +1,3 @@
-import 'package:client/views/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 // Existing constants
@@ -24,4 +23,4 @@ const TextStyle kDescriptionTextStyle = TextStyle(
 );
 
 // Background color constant
-const Color kCardBackgroundColor = kCommonGrayColor; // Example: Semi-transparent white
+const Color kCardBackgroundColor = Colors.white; // Example: Semi-transparent white
