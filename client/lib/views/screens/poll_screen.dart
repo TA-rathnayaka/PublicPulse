@@ -143,22 +143,25 @@ class _PollDetailsState extends State<PollDetails> {
                 selectedOption = optionName;
               });
             },
-            child: Container(
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-              margin: const EdgeInsets.symmetric(vertical: 5),
-              decoration: BoxDecoration(
-                color: selectedOption == optionName
-                    ? Theme.of(context).primaryColor
-                    : Theme.of(context).unselectedWidgetColor,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                "$optionName - ${option[optionName]} votes",
-                style: TextStyle(
-                  fontSize: 18,
+            child: Align(
+              alignment:Alignment.centerLeft,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                margin: const EdgeInsets.symmetric(vertical: 5),
+                decoration: BoxDecoration(
                   color: selectedOption == optionName
-                      ? Colors.white
-                      : Colors.black,
+                      ? Theme.of(context).primaryColor
+                      : Theme.of(context).unselectedWidgetColor,
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  "$optionName - ${option[optionName]} votes",
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: selectedOption == optionName
+                        ? Colors.white
+                        : Colors.black,
+                  ),
                 ),
               ),
             ),

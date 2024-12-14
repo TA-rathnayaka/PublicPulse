@@ -5,11 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:client/views/components/identity.dart';
 import 'package:client/views/components/profile_menu_row.dart';
 import 'package:client/views/components/primary_button.dart';
-import 'package:client/views/constants/profile_constants.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:client/providers/screens_providers/profile_screen_provider.dart';
 import 'package:client/providers/user_provider.dart';
+import 'package:animate_do/animate_do.dart';
+
+import 'package:animate_do/animate_do.dart';  // Make sure to import animate_do
 
 class UserProfileScreen extends StatelessWidget {
   static const id = '/combinedProfile';
@@ -30,83 +32,108 @@ class UserProfileScreen extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 20),
-                    Row(
-                      children: [
-                        Text(
-                          "Account",
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 28,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Consumer<UserProvider>(
-                      builder: (context, userProvider, child) {
-                        final user = userProvider.userDetails;
-
-                        // Initialize profile provider with user data
-                        profileProvider.initializeProfile(user!);
-
-                        return Identity(
-                          imagePath: user['profileImage'] ??
-                              "assets/default_profile.jpg",
-                          name:
-                              "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}"
-                                  .trim(),
-                          email: user['email'] ?? "No email available",
-                          phoneNumber: user['phoneNumber'] ??
-                              "No phone number available",
-                          onTap: () {
-                            _showBottomSheet(context, profileProvider, user);
-                          },
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            Consumer<ThemeProvider>(
-                                builder: (context, themeProvider, child) {
-                              return MenuRow(
-                                  icon: Icons.dark_mode,
-                                  text: themeProvider.isDarkMode
-                                      ? "Dark Mode"
-                                      : "Light Mode",
-                                  onTap: () {
-                                    themeProvider.toggleTheme();
-                                  });
-                            }),
-                            const Divider(),
-                            const MenuRow(
-                                icon: Icons.privacy_tip, text: "Privacy"),
-                            const Divider(),
-                            const MenuRow(
-                                icon: Icons.person, text: "Personal Info",),
-                            const Divider(),
-                            Consumer<MyAuthProvider>(
-                              builder: (context, authProvider, child) {
-                                return MenuRow(
-                                  icon: Icons.exit_to_app,
-                                  text: "Sign Out",
-                                  onTap: () {
-                                    Provider.of<MyAuthProvider>(context,
-                                            listen: false)
-                                        .signOut();
-                                    Navigator.pushReplacementNamed(
-                                        context, SplashScreen.id);
-                                  },
-                                );
-                              },
+                    FadeIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Account",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 28,
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: Consumer<UserProvider>(
+                        builder: (context, userProvider, child) {
+                          final user = userProvider.userDetails;
+
+                          // Check if user is null before proceeding
+                          if (user == null) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+
+                          profileProvider.initializeProfile(user);
+
+                          return Identity(
+                            imagePath: user['profileImage'] ?? "assets/default_profile.jpg",
+                            name: "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim(),
+                            email: user['email'] ?? "No email available",
+                            phoneNumber: user['phoneNumber'] ?? "No phone number available",
+                            onTap: () {
+                              _showBottomSheet(context, profileProvider, user);
+                            },
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              FadeInUp(
+                                duration: const Duration(milliseconds: 500),
+                                child: Consumer<ThemeProvider>(
+                                  builder: (context, themeProvider, child) {
+                                    return MenuRow(
+                                      icon: Icons.dark_mode,
+                                      text: themeProvider.isDarkMode
+                                          ? "Dark Mode"
+                                          : "Light Mode",
+                                      onTap: () {
+                                        themeProvider.toggleTheme();
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                              const Divider(),
+                              FadeInUp(
+                                duration: Duration(milliseconds: 500),
+                                child: MenuRow(
+                                  icon: Icons.privacy_tip,
+                                  text: "Privacy",
+                                ),
+                              ),
+                              const Divider(),
+                              FadeInUp(
+                                duration: Duration(milliseconds: 500),
+                                child: MenuRow(
+                                  icon: Icons.person,
+                                  text: "Personal Info",
+                                ),
+                              ),
+                              const Divider(),
+                              FadeInUp(
+                                duration: const Duration(milliseconds: 500),
+                                child: Consumer<MyAuthProvider>(
+                                  builder: (context, authProvider, child) {
+                                    return MenuRow(
+                                      icon: Icons.exit_to_app,
+                                      text: "Sign Out",
+                                      onTap: () {
+                                        Provider.of<MyAuthProvider>(context, listen: false)
+                                            .signOut();
+                                        Navigator.pushReplacementNamed(context, SplashScreen.id);
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -121,8 +148,7 @@ class UserProfileScreen extends StatelessWidget {
     );
   }
 
-  void _showBottomSheet(BuildContext context,
-      ProfileScreenProvider profileProvider, Map<String, dynamic> user) {
+  void _showBottomSheet(BuildContext context, ProfileScreenProvider profileProvider, Map<String, dynamic> user) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -193,12 +219,12 @@ class UserProfileScreen extends StatelessWidget {
   }
 
   Widget _buildTextField(
-    context, {
-    required String label,
-    required TextEditingController controller,
-    bool obscureText = false,
-    bool isDate = false,
-  }) {
+      context, {
+        required String label,
+        required TextEditingController controller,
+        bool obscureText = false,
+        bool isDate = false,
+      }) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
@@ -215,8 +241,7 @@ class UserProfileScreen extends StatelessWidget {
             obscureText: obscureText,
             decoration: InputDecoration(
               hintText: "Enter your $label",
-              suffixIcon:
-                  isDate ? const Icon(Icons.calendar_today, size: 20) : null,
+              suffixIcon: isDate ? const Icon(Icons.calendar_today, size: 20) : null,
             ).applyDefaults(Theme.of(context).inputDecorationTheme),
           ),
         ],
