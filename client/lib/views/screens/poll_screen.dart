@@ -15,34 +15,36 @@ class PollScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Consumer<PollScreenProvider>(
-        builder: (context, pollProvider, child) {
-          return SingleChildScrollView(
-            child: Container(
-              color: Colors.white,
-              child: Column(
-                children: <Widget>[
-                  PollCarousel(
-                    images: poll.imageUrl != null ? [poll.imageUrl!] : [],
-                    currentIndex: pollProvider.currentIndex,
-                    onNext: pollProvider.next,
-                    onPrevious: pollProvider.previous,
-                  ),
-                  Transform.translate(
-                    offset: const Offset(0, -40),
-                    child: PollDetails(
-                      question: poll.title,
-                      votes: _calculateVotes(poll.options),
-                      description: poll.description,
-                      options: poll.options,  // Pass options to PollDetails
+    return SafeArea(
+      child: Scaffold(
+        body: Consumer<PollScreenProvider>(
+          builder: (context, pollProvider, child) {
+            return SingleChildScrollView(
+              child: Container(
+                color: Theme.of(context).scaffoldBackgroundColor,
+                child: Column(
+                  children: <Widget>[
+                    PollCarousel(
+                      images: poll.imageUrl != null ? [poll.imageUrl!] : [],
+                      currentIndex: pollProvider.currentIndex,
+                      onNext: pollProvider.next,
+                      onPrevious: pollProvider.previous,
                     ),
-                  ),
-                ],
+                    Transform.translate(
+                      offset: const Offset(0, -40),
+                      child: PollDetails(
+                        question: poll.title,
+                        votes: _calculateVotes(poll.options),
+                        description: poll.description,
+                        options: poll.options,  // Pass options to PollDetails
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -63,7 +65,7 @@ class PollDetails extends StatefulWidget {
   final String description;
   final List<Map<String, int>> options;  // Add options as parameter
 
-  const PollDetails({super.key, 
+  const PollDetails({super.key,
     required this.question,
     required this.votes,
     required this.description,
@@ -91,17 +93,17 @@ class _PollDetailsState extends State<PollDetails> {
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.all(30),
-          decoration: const BoxDecoration(
-            color: Colors.white,
+          decoration: BoxDecoration(
+            color: Theme.of(context).scaffoldBackgroundColor,
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _buildText(widget.question, 26, FontWeight.bold, Colors.grey[800], 1300),
+              _buildText(widget.question, 26, FontWeight.bold, Theme.of(context).textTheme.bodyMedium?.color, 1300),
               const SizedBox(height: 15),
-              _buildText("$safeVotes Votes", 22, FontWeight.bold, kPrimaryColor, 1500),
+              _buildText("$safeVotes Votes", 22, FontWeight.bold, Theme.of(context).primaryColor, 1500),
               const SizedBox(height: 15),
-              _buildText(widget.description, 18, FontWeight.normal, Colors.grey[600], 1700),
+              _buildText(widget.description, 18, FontWeight.normal, Theme.of(context).textTheme.bodyMedium?.color, 1700),
               const SizedBox(height: 20),
               _buildOptions(),
               const SizedBox(height: 20),
@@ -146,8 +148,8 @@ class _PollDetailsState extends State<PollDetails> {
               margin: const EdgeInsets.symmetric(vertical: 5),
               decoration: BoxDecoration(
                 color: selectedOption == optionName
-                    ? Colors.blueAccent
-                    : Colors.grey.shade200,
+                    ? Theme.of(context).primaryColor
+                    : Theme.of(context).unselectedWidgetColor,
                 borderRadius: BorderRadius.circular(20),
               ),
               child: Text(
@@ -203,7 +205,7 @@ class PollCarousel extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onPrevious;
 
-  const PollCarousel({super.key, 
+  const PollCarousel({super.key,
     required this.images,
     required this.currentIndex,
     required this.onNext,
@@ -297,12 +299,12 @@ class IndicatorRow extends StatelessWidget {
 
   Widget _indicator(bool isActive) {
     return Container(
-      width: 20,
-      height: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 2),
+      width: 10,
+      height: 10,
+      margin: const EdgeInsets.symmetric(horizontal: 5),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(50),
-        color: isActive ? Colors.blue[700] : Colors.grey[300],
+        shape: BoxShape.circle,
+        color: isActive ? Colors.white : Colors.grey,
       ),
     );
   }

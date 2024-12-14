@@ -15,6 +15,9 @@ class Dashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Get the current theme
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: kPaddingHorizontal),
       child: SafeArea(
@@ -25,10 +28,10 @@ class Dashboard extends StatelessWidget {
               const SizedBox(height: 20),
               Text(
                 "Polls",
-                style: kHeadlineStyle.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: theme.primaryColor,
                 ),
               ),
               const SizedBox(height: 16),
