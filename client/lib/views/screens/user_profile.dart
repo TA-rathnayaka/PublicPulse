@@ -1,10 +1,12 @@
+import 'package:client/config/app_routes.dart';
+import 'package:client/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:client/views/components/identity.dart';
 import 'package:client/views/components/profile_menu_row.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/profile_constants.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+
 
 class UserProfileScreen extends StatefulWidget {
   static const id = '/combinedProfile';
@@ -164,14 +166,13 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Padding(
-                  padding: EdgeInsets.all(20),
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
                   child: Column(
                     children: [
                       MenuRow(icon: Icons.dark_mode, text: "Dark Mode"),
                       Divider(),
-                      MenuRow(
-                          icon: Icons.card_giftcard_outlined, text: "Orders"),
+                      MenuRow(icon: Icons.card_giftcard_outlined, text: "Orders"),
                       Divider(),
                       MenuRow(icon: Icons.history, text: "Purchase History"),
                       Divider(),
@@ -184,9 +185,16 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
                       MenuRow(icon: Icons.reviews_sharp, text: "Rewards"),
                       Divider(),
                       MenuRow(icon: Icons.settings, text: "Settings"),
+                      Divider(),
+                      MenuRow(
+                        icon: Icons.logout,
+                        text: "Logout",
+
+                      ),
                     ],
                   ),
                 ),
+
               ),
               const SizedBox(height: 20),
             ],

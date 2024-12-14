@@ -211,13 +211,14 @@ class PollDetails extends StatelessWidget {
               FadeInUp(
                 duration: Duration(milliseconds: 1700),
                 child: PrimaryButton(
-                  onPressed: () {
+                  onPressed: () async{
                     final FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-                    analytics.logEvent(name: "test click");
+                    analytics.setAnalyticsCollectionEnabled(true);
+                    await analytics.logEvent(name: "test_click",parameters: {'key': 'value'},);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Vote button pressed')),
                     );
-                  },
+                    },
                   label: "Vote Now",
                 ),
               ),
