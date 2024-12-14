@@ -17,18 +17,21 @@ class DashboardListTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ThemeData theme = Theme.of(context); // Get the current theme
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        elevation: 6,
-        shadowColor: Colors.black.withOpacity(0.2),
+        elevation: 8, // Slightly higher elevation to create separation
+        shadowColor: theme.shadowColor.withOpacity(0.4), // Adding more shadow to separate card
         shape: const RoundedRectangleBorder(
           borderRadius: kImageBorderRadius,
         ),
+        color: theme.colorScheme.surface, // Set the card color to 'surface' for better distinction
         child: Container(
           padding: const EdgeInsets.all(20),
-          decoration: const BoxDecoration(
-            color: kCardBackgroundColor,
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface, // Match container color to card color for consistency
             borderRadius: kImageBorderRadius,
           ),
           child: Row(
@@ -40,7 +43,10 @@ class DashboardListTile extends StatelessWidget {
                   height: kImageContainerHeight,
                   width: kImageContainerWidth,
                   decoration: BoxDecoration(
-                    border: Border.all(color: Colors.grey.shade300, width: 2),
+                    border: Border.all(
+                      color: Colors.transparent, // Border color for the image
+                      width: 1,
+                    ),
                   ),
                   child: imageUrl != null
                       ? Image.network(
@@ -63,9 +69,10 @@ class DashboardListTile extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: kTitleTextStyle.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
+                        color: theme.colorScheme.primary, // Title text color
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 1,
@@ -73,8 +80,8 @@ class DashboardListTile extends StatelessWidget {
                     const SizedBox(height: kSpaceBetweenTitleAndDescription),
                     Text(
                       description,
-                      style: kDescriptionTextStyle.copyWith(
-                        color: Colors.grey.shade700,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.secondary, // Description text color
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 2,

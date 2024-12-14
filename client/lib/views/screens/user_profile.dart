@@ -1,4 +1,5 @@
-import 'package:client/views/screens/splash_screen.dart';
+import 'package:client/providers/screens_providers/theme_provider.dart';
+import 'package:client/views/screens/_all.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:client/views/components/identity.dart';
@@ -7,72 +8,121 @@ import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/profile_constants.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:provider/provider.dart';
+import 'package:client/providers/screens_providers/profile_screen_provider.dart';
 import 'package:client/providers/user_provider.dart';
 
-class UserProfileScreen extends StatefulWidget {
+class UserProfileScreen extends StatelessWidget {
   static const id = '/combinedProfile';
 
   const UserProfileScreen({super.key});
 
   @override
-  _UserProfileScreenState createState() => _UserProfileScreenState();
-}
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => ProfileScreenProvider(),
+      child: Consumer<ProfileScreenProvider>(
+        builder: (context, profileProvider, child) {
+          return SafeArea(
+            child: Scaffold(
+              body: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 15),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    Row(
+                      children: [
+                        Text(
+                          "Account",
+                          style: GoogleFonts.poppins(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 28,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 20),
+                    Consumer<UserProvider>(
+                      builder: (context, userProvider, child) {
+                        final user = userProvider.userDetails;
 
-class _UserProfileScreenState extends State<UserProfileScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _dobController = TextEditingController();
-  final TextEditingController _presentAddressController = TextEditingController();
-  final TextEditingController _permanentAddressController = TextEditingController();
-  final TextEditingController _cityController = TextEditingController();
-  final TextEditingController _postalCodeController = TextEditingController();
-  final TextEditingController _countryController = TextEditingController();
+                        // Initialize profile provider with user data
+                        profileProvider.initializeProfile(user!);
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _usernameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _dobController.dispose();
-    _presentAddressController.dispose();
-    _permanentAddressController.dispose();
-    _cityController.dispose();
-    _postalCodeController.dispose();
-    _countryController.dispose();
-    super.dispose();
+                        return Identity(
+                          imagePath: user['profileImage'] ??
+                              "assets/default_profile.jpg",
+                          name:
+                              "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}"
+                                  .trim(),
+                          email: user['email'] ?? "No email available",
+                          phoneNumber: user['phoneNumber'] ??
+                              "No phone number available",
+                          onTap: () {
+                            _showBottomSheet(context, profileProvider, user);
+                          },
+                        );
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            Consumer<ThemeProvider>(
+                                builder: (context, themeProvider, child) {
+                              return MenuRow(
+                                  icon: Icons.dark_mode,
+                                  text: themeProvider.isDarkMode
+                                      ? "Dark Mode"
+                                      : "Light Mode",
+                                  onTap: () {
+                                    themeProvider.toggleTheme();
+                                  });
+                            }),
+                            const Divider(),
+                            const MenuRow(
+                                icon: Icons.privacy_tip, text: "Privacy"),
+                            const Divider(),
+                            const MenuRow(
+                                icon: Icons.person, text: "Personal Info",),
+                            const Divider(),
+                            Consumer<MyAuthProvider>(
+                              builder: (context, authProvider, child) {
+                                return MenuRow(
+                                  icon: Icons.exit_to_app,
+                                  text: "Sign Out",
+                                  onTap: () {
+                                    Provider.of<MyAuthProvider>(context,
+                                            listen: false)
+                                        .signOut();
+                                    Navigator.pushReplacementNamed(
+                                        context, SplashScreen.id);
+                                  },
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
   }
 
-  @override
-  void initState() {
-    super.initState();
-    final userProvider = Provider.of<UserProvider>(context, listen: false);
-    userProvider.getCurrentUserDetails();
-  }
-
-  void _handleSave() {
-    // Handle save action
-  }
-
-  void _signOut(BuildContext context) {
-    Provider.of<MyAuthProvider>(context, listen: false).signOut();
-    Navigator.pushReplacementNamed(context, SplashScreen.id);
-  }
-
-  void _showBottomSheet(Map<String, dynamic> user) {
-    // Initialize controllers with user data
-    _nameController.text = "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim();
-    _usernameController.text = user['username'] ?? '';
-    _emailController.text = user['email'] ?? '';
-    _dobController.text = user['dob'] ?? '';
-    _presentAddressController.text = user['presentAddress'] ?? '';
-    _permanentAddressController.text = user['permanentAddress'] ?? '';
-    _cityController.text = user['city'] ?? '';
-    _postalCodeController.text = user['postalCode'] ?? '';
-    _countryController.text = user['country'] ?? '';
-
+  void _showBottomSheet(BuildContext context,
+      ProfileScreenProvider profileProvider, Map<String, dynamic> user) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -93,20 +143,43 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildTextField(label: "Your Name", controller: _nameController),
-                  _buildTextField(label: "User Name", controller: _usernameController),
-                  _buildTextField(label: "Email", controller: _emailController),
-                  _buildTextField(label: "Date of Birth", controller: _dobController, isDate: true),
-                  _buildTextField(label: "Present Address", controller: _presentAddressController),
-                  _buildTextField(label: "Permanent Address", controller: _permanentAddressController),
-                  _buildTextField(label: "City", controller: _cityController),
-                  _buildTextField(label: "Postal Code", controller: _postalCodeController),
-                  _buildTextField(label: "Country", controller: _countryController),
+                  _buildTextField(context,
+                      label: "Your Name",
+                      controller: profileProvider.nameController),
+                  _buildTextField(context,
+                      label: "User Name",
+                      controller: profileProvider.usernameController),
+                  _buildTextField(context,
+                      label: "Email",
+                      controller: profileProvider.emailController),
+                  _buildTextField(context,
+                      label: "Date of Birth",
+                      controller: profileProvider.dobController,
+                      isDate: true),
+                  _buildTextField(context,
+                      label: "Present Address",
+                      controller: profileProvider.presentAddressController),
+                  _buildTextField(context,
+                      label: "Permanent Address",
+                      controller: profileProvider.permanentAddressController),
+                  _buildTextField(context,
+                      label: "City",
+                      controller: profileProvider.cityController),
+                  _buildTextField(context,
+                      label: "Postal Code",
+                      controller: profileProvider.postalCodeController),
+                  _buildTextField(context,
+                      label: "Country",
+                      controller: profileProvider.countryController),
                   const SizedBox(height: 20),
                   Center(
                     child: PrimaryButton(
                       label: 'Save',
-                      onPressed: _handleSave,
+                      onPressed: () {
+                        if (profileProvider.validateProfile()) {
+                          profileProvider.saveProfile(context);
+                        }
+                      },
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -119,9 +192,8 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
     );
   }
 
-
-
-  Widget _buildTextField({
+  Widget _buildTextField(
+    context, {
     required String label,
     required TextEditingController controller,
     bool obscureText = false,
@@ -134,108 +206,20 @@ class _UserProfileScreenState extends State<UserProfileScreen> {
         children: [
           Text(
             label,
-            style: kLabelTextStyle,
+            style: Theme.of(context).textTheme.bodyMedium,
           ),
           const SizedBox(height: 5),
           TextFormField(
             controller: controller,
             readOnly: isDate,
             obscureText: obscureText,
-            decoration: kInputDecoration.copyWith(
+            decoration: InputDecoration(
               hintText: "Enter your $label",
-              suffixIcon: isDate ? const Icon(Icons.calendar_today, size: 20) : null,
-            ),
+              suffixIcon:
+                  isDate ? const Icon(Icons.calendar_today, size: 20) : null,
+            ).applyDefaults(Theme.of(context).inputDecorationTheme),
           ),
         ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(height: 20),
-            Row(
-              children: [
-                Text(
-                  "Account",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 28,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            Consumer<UserProvider>(
-              builder: (context, userProvider, child) {
-                final user = userProvider.userDetails;
-
-                return Identity(
-                  imagePath: user?['profileImage'] ?? "assets/default_profile.jpg", // Dynamic image path
-                  name: "${user?['firstName'] ?? ''} ${user?['lastName'] ?? ''}".trim(), // Handle null names
-                  email: user?['email'] ?? "No email available", // Default email message
-                  phoneNumber: user?['phoneNumber'] ?? "No phone number available", // Default phone number
-                  onTap: () {
-                    _showBottomSheet(user!);
-                  }, // Your defined function
-                );
-              },
-            ),
-            const SizedBox(height: 20),
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.grey[100],
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    const MenuRow(icon: Icons.dark_mode, text: "Dark Mode"),
-                    const Divider(),
-                    const MenuRow(icon: Icons.card_giftcard_outlined, text: "Orders"),
-                    const Divider(),
-                    const MenuRow(icon: Icons.history, text: "Purchase History"),
-                    const Divider(),
-                    const MenuRow(icon: Icons.payment, text: "Payment Methods"),
-                    const Divider(),
-                    const MenuRow(icon: Icons.privacy_tip, text: "Privacy"),
-                    const Divider(),
-                    const MenuRow(icon: Icons.person, text: "Personal Info"),
-                    const Divider(),
-                    const MenuRow(icon: Icons.reviews_sharp, text: "Rewards"),
-                    const Divider(),
-                    const MenuRow(icon: Icons.settings, text: "Settings"),
-                    const Divider(),
-                    // Sign-out option using Consumer
-                    Consumer<MyAuthProvider>(
-                      builder: (context, authProvider, child) {
-                        return MenuRow(
-                          icon: Icons.exit_to_app,
-                          text: "Sign Out",
-                          onTap: () => _signOut(context),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
       ),
     );
   }

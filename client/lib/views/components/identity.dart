@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// The Identity widget
 class Identity extends StatelessWidget {
   final String imagePath;
   final String name;
@@ -19,13 +20,15 @@ class Identity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context); // Get the current theme
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
         width: double.infinity,
         height: 200,
         decoration: BoxDecoration(
-          color: Colors.grey[100],
+          color: theme.scaffoldBackgroundColor, // Using theme background color
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
@@ -42,20 +45,21 @@ class Identity extends StatelessWidget {
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
                 fontSize: 21,
+                color: theme.colorScheme.onSurface, // Using the primary text color from the theme
               ),
             ),
             const SizedBox(height: 5),
             Text(
               email,
               style: GoogleFonts.poppins(
-                color: Colors.grey,
+                color: theme.unselectedWidgetColor, // Using the unselectedWidgetColor for muted text
               ),
             ),
             const SizedBox(height: 5),
             Text(
               phoneNumber,
               style: GoogleFonts.poppins(
-                color: Colors.grey,
+                color: theme.unselectedWidgetColor, // Using the unselectedWidgetColor for muted text
               ),
             ),
           ],

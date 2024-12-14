@@ -27,10 +27,14 @@ class _MenuRowState extends State<MenuRow> {
 
   @override
   Widget build(BuildContext context) {
+    // Get the current theme's background color
+    final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+
     return GestureDetector(
       onTap: widget.onTap ?? showSnackbar, // Use the provided onTap or default to showSnackbar
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 20),
+        color: backgroundColor, // Apply the current theme's background color
         child: Row(
           children: [
             Icon(widget.icon, size: 30),

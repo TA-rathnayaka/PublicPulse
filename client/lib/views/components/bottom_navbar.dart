@@ -5,26 +5,27 @@ class BottomNavbar extends StatelessWidget {
   final ValueChanged<int> onTap;
   final List<BottomNavbarItem> items;
   final double iconSize;
-  final Color backgroundColor;
-  final Color selectedItemColor;
-  final Color unselectedItemColor;
   final double elevation;
   final double borderRadius;
 
-  const BottomNavbar({super.key, 
+  const BottomNavbar({
+    super.key,
     required this.currentIndex,
     required this.onTap,
     required this.items,
     this.iconSize = 28.0,
-    this.backgroundColor = const Color(0xFFF5F5F5), // Default background color
-    this.selectedItemColor = const Color(0xFF6200EE), // Default selected item color
-    this.unselectedItemColor = const Color(0xFF9E9E9E), // Default unselected item color
-    this.elevation = 10.0, // Default elevation
-    this.borderRadius = 24.0, // Default border radius
+    this.elevation = 10.0,
+    this.borderRadius = 24.0,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Get the current theme
+    final ThemeData theme = Theme.of(context);
+    final Color backgroundColor = theme.scaffoldBackgroundColor;
+    final Color selectedItemColor = theme.primaryColor;
+    final Color unselectedItemColor = theme.unselectedWidgetColor;
+
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor,
@@ -51,17 +52,19 @@ class BottomNavbar extends StatelessWidget {
           elevation: 0,
           currentIndex: currentIndex,
           onTap: onTap,
+          selectedItemColor: selectedItemColor,  // Set the selected item color explicitly
+          unselectedItemColor: unselectedItemColor,  // Set the unselected item color explicitly
           showSelectedLabels: false,
           showUnselectedLabels: false,
           items: items.map((item) {
-            return _buildNavItem(item.icon, item.index);
+            return _buildNavItem(context,item.icon, item.index);
           }).toList(),
         ),
       ),
     );
   }
 
-  BottomNavigationBarItem _buildNavItem(IconData icon, int index) {
+  BottomNavigationBarItem _buildNavItem(context, IconData icon, int index) {
     return BottomNavigationBarItem(
       icon: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
@@ -73,8 +76,8 @@ class BottomNavbar extends StatelessWidget {
           icon,
           size: iconSize,
           color: currentIndex == index
-              ? selectedItemColor
-              : unselectedItemColor,
+              ? Theme.of(context).primaryColor  // Ensure selected color is set
+              : Theme.of(context).unselectedWidgetColor,  // Ensure unselected color is set
         ),
       ),
       label: '',

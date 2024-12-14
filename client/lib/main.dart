@@ -5,7 +5,7 @@ import 'package:client/config/app_theme.dart';
 import 'package:provider/provider.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:client/providers/user_provider.dart';
-
+import 'package:client/providers/screens_providers/theme_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,15 +20,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider<MyAuthProvider>(create: (context) => MyAuthProvider()),
-        ChangeNotifierProvider<UserProvider>(create: (context) => UserProvider()),
-      ],
-      child: MaterialApp(
-        theme: KLightTheme,
-        routes: routes,
-      ),
-    );
+        providers: [
+          ChangeNotifierProvider<MyAuthProvider>(
+              create: (context) => MyAuthProvider()),
+          ChangeNotifierProvider<UserProvider>(
+              create: (context) => UserProvider()..getCurrentUserDetails()),
+          ChangeNotifierProvider<ThemeProvider>(
+              create: (context) => ThemeProvider())
+        ],
+        child: Consumer<ThemeProvider>(builder: (context, theme, child) {
+          return MaterialApp(
+            theme: theme.isDarkMode ? kLightTheme : kDarkTheme,
+            routes: routes,
+          );
+        }));
   }
 }
-
