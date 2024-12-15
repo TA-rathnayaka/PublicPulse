@@ -11,7 +11,9 @@ class PollScreen extends StatelessWidget {
 
   final Poll poll;
 
-  const PollScreen({super.key, required this.poll}); // Constructor updated to accept Poll object
+  const PollScreen(
+      {super.key,
+      required this.poll}); // Constructor updated to accept Poll object
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +36,9 @@ class PollScreen extends StatelessWidget {
                       offset: const Offset(0, -40),
                       child: PollDetails(
                         question: poll.title,
-                        votes: _calculateVotes(poll.options),
                         description: poll.description,
                         options: poll.options,
-                        poll: poll,  // Add this line
+                        poll: poll, // Add this line
                       ),
                     ),
                   ],
@@ -62,18 +63,16 @@ class PollScreen extends StatelessWidget {
 
 class PollDetails extends StatefulWidget {
   final String question;
-  final String votes;
   final String description;
-  final List<Option> options;  // Add options as parameter
+  final List<Option> options; // Add options as parameter
   final Poll poll;
 
   const PollDetails({
     super.key,
     required this.question,
-    required this.votes,
     required this.description,
     required this.options,
-    required this.poll,  // Add this line
+    required this.poll, // Add this line
   });
 
   @override
@@ -85,7 +84,6 @@ class _PollDetailsState extends State<PollDetails> {
 
   @override
   Widget build(BuildContext context) {
-    final safeVotes = int.tryParse(widget.votes) ?? 0;
 
     return FadeInUp(
       duration: const Duration(milliseconds: 1000),
@@ -103,11 +101,13 @@ class _PollDetailsState extends State<PollDetails> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _buildText(widget.question, 26, FontWeight.bold, Theme.of(context).textTheme.bodyMedium?.color, 1300),
+              _buildText(widget.question, 26, FontWeight.bold,
+                  Theme.of(context).textTheme.bodyMedium?.color, 1300),
+
+
               const SizedBox(height: 15),
-              _buildText("$safeVotes Votes", 22, FontWeight.bold, Theme.of(context).primaryColor, 1500),
-              const SizedBox(height: 15),
-              _buildText(widget.description, 18, FontWeight.normal, Theme.of(context).textTheme.bodyMedium?.color, 1700),
+              _buildText(widget.description, 18, FontWeight.normal,
+                  Theme.of(context).textTheme.bodyMedium?.color, 1700),
               const SizedBox(height: 20),
               _buildOptions(),
               const SizedBox(height: 20),
@@ -120,7 +120,8 @@ class _PollDetailsState extends State<PollDetails> {
   }
 
   // Helper function to build text with animations
-  Widget _buildText(String text, double fontSize, FontWeight fontWeight, Color? color, int duration) {
+  Widget _buildText(String text, double fontSize, FontWeight fontWeight,
+      Color? color, int duration) {
     return FadeInUp(
       duration: Duration(milliseconds: duration),
       child: Text(
@@ -140,7 +141,6 @@ class _PollDetailsState extends State<PollDetails> {
       duration: const Duration(milliseconds: 1700),
       child: Column(
         children: widget.options.map((option) {
-
           return GestureDetector(
             onTap: () {
               setState(() {
@@ -148,9 +148,10 @@ class _PollDetailsState extends State<PollDetails> {
               });
             },
             child: Align(
-              alignment:Alignment.centerLeft,
+              alignment: Alignment.centerLeft,
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                 margin: const EdgeInsets.symmetric(vertical: 5),
                 decoration: BoxDecoration(
                   color: selectedOption == option.text
@@ -182,13 +183,24 @@ class _PollDetailsState extends State<PollDetails> {
       child: Consumer<VotesProvider>(
         builder: (context, votesProvider, child) {
           return PrimaryButton(
-            onPressed: () {
+            onPressed: () async {
               if (selectedOption != null) {
-                final selectedOptionId = widget.options.firstWhere((option) => option.text == selectedOption).optionId;
-                votesProvider.addVote(poll.id!, selectedOptionId!);
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Voted for $selectedOption')),
-                );
+                final selectedOptionId = widget.options
+                    .firstWhere((option) => option.text == selectedOption)
+                    .optionId;
+                // Check if the vote was successfully added (via _hasVoted)
+                if (!votesProvider.hasVoted) {
+                  await votesProvider.addVote(poll.id!, selectedOptionId!);
+                  _voteForOption(selectedOptionId);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Voted for $selectedOption')),
+                  );
+
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('You have already voted for ${poll.title}')),
+                  );
+                }
               }
             },
             label: "Vote Now",
@@ -199,11 +211,11 @@ class _PollDetailsState extends State<PollDetails> {
   }
 
   // Helper function to vote for the selected option
-  void _voteForOption(String optionName) {
+  void _voteForOption(String optionId) {
     setState(() {
       for (var option in widget.options) {
-        if (option.text == (optionName)) {
-          option.voteCount = (option.voteCount) + 1;  // Increment vote count
+        if (option.optionId == (optionId)) {
+          option.voteCount = (option.voteCount) + 1; // Increment vote count
         }
       }
     });
@@ -216,7 +228,8 @@ class PollCarousel extends StatelessWidget {
   final VoidCallback onNext;
   final VoidCallback onPrevious;
 
-  const PollCarousel({super.key,
+  const PollCarousel({
+    super.key,
     required this.images,
     required this.currentIndex,
     required this.onNext,
@@ -295,7 +308,8 @@ class IndicatorRow extends StatelessWidget {
   final int currentIndex;
   final int itemCount;
 
-  const IndicatorRow({super.key, required this.currentIndex, required this.itemCount});
+  const IndicatorRow(
+      {super.key, required this.currentIndex, required this.itemCount});
 
   @override
   Widget build(BuildContext context) {
@@ -303,7 +317,7 @@ class IndicatorRow extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(
         itemCount,
-            (index) => _indicator(index == currentIndex),
+        (index) => _indicator(index == currentIndex),
       ),
     );
   }

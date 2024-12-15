@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:client/services/vote_service.dart';
 
-
 class VotesProvider with ChangeNotifier {
   final VoteService _voteService = VoteService();
 
   bool _hasVoted = false;
+
   bool get hasVoted {
     // Trigger a background check when the getter is accessed
     _triggerCheckVotedStatus();
@@ -25,10 +25,12 @@ class VotesProvider with ChangeNotifier {
   Future<void> addVote(String pollId, String optionId) async {
     try {
       await _voteService.addVote(pollId, optionId);
-      _hasVoted = true;
+      _hasVoted = true; // assuming this is to mark that the user has voted
       notifyListeners();
+      // Indicates success
     } catch (e) {
       print("Error adding vote in provider: $e");
+// Indicates failure (e.g., if an error occurs)
     }
   }
 
