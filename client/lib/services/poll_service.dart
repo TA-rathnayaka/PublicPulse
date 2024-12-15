@@ -12,17 +12,20 @@ class PollService {
         'title': poll.title,
         'description': poll.description,
         'imageUrl': poll.imageUrl,
-        'createdAt': poll.createDate, // Updated field name
-        'relatedPolicy': 'multiple-choice', // Assuming this is a constant for now
+        'createdAt': poll.createDate,
+        // Updated field name
+        'relatedPolicy': 'multiple-choice',
+        // Assuming this is a constant for now
+        'duration': poll.duration.inDays,
+        // Duration as a number of days
       });
 
       // Add options to the 'options' collection with reference to pollId
       for (var option in poll.options) {
-        final String key = option.keys.first;
         await _fireStore.collection('options').add({
           'pollId': pollRef.id,
-          'text': key,
-          'voteCount': option[key],
+          'text': option.text,
+          'voteCount': option.voteCount,
         });
       }
     } catch (e) {
@@ -37,39 +40,47 @@ class PollService {
       QuerySnapshot pollSnapshot = await _fireStore.collection('polls').get();
 
       // Fetch all options
-      QuerySnapshot optionSnapshot = await _fireStore.collection('options').get();
+      QuerySnapshot optionSnapshot =
+          await _fireStore.collection('options').get();
 
-      // Create a map of pollId to options
-      Map<String, List<Map<String, int>>> optionsMap = {};
+      // Create a map of pollId to a list of options
+      Map<String, List<Option>> optionsMap = {};
 
       for (var optionDoc in optionSnapshot.docs) {
-        Map<String, dynamic> optionData = optionDoc.data() as Map<String, dynamic>;
-        String pollId = optionData['pollId'];
-        String optionText = optionData['text'];
-        int voteCount = optionData['voteCount'];
+        Map<String, dynamic> optionData =
+            optionDoc.data() as Map<String, dynamic>;
+
+        String pollId = optionData['pollId'] as String;
+        String optionText = optionData['text'] as String;
+        int voteCount = optionData['voteCount'] ?? 0;
 
         optionsMap.putIfAbsent(pollId, () => []);
-        optionsMap[pollId]!.add({optionText: voteCount});
+        optionsMap[pollId]!.add(Option(
+          optionId: optionDoc.id, // Assign optionDoc.id as optionId
+          text: optionText,
+          voteCount: voteCount,
+        ));
       }
 
       // Combine polls with their corresponding options
       List<Poll> polls = pollSnapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-        // Handle null createDate
-        Timestamp? createDateTimestamp = data['createDate'] as Timestamp?;
+        // Handle null createDate safely
+        Timestamp? createDateTimestamp = data['createdAt'] as Timestamp?;
         DateTime createDate = createDateTimestamp?.toDate() ?? DateTime.now();
 
         String pollId = doc.id;
-        List<Map<String, int>> options = optionsMap[pollId] ?? [];
+        List<Option> pollOptions = optionsMap[pollId] ?? [];
 
         return Poll(
-          title: data['title'],
-          description: data['description'],
-          imageUrl: data['imageUrl'],
-          options: options,
+          id: pollId,
+          title: data['title'] as String,
+          description: data['description'] as String,
+          imageUrl: data['imageUrl'] as String?,
+          options: pollOptions,
           createDate: createDate,
-          duration: Duration(days: data['duration'] ?? 0),
+          duration: Duration(days: (data['duration'] as int?) ?? 0),
         );
       }).toList();
 
@@ -88,47 +99,52 @@ class PollService {
         'title': updatedPoll.title,
         'description': updatedPoll.description,
         'imageUrl': updatedPoll.imageUrl,
-        'createDate': updatedPoll.createDate,
+        'createdAt': updatedPoll.createDate,
         'duration': updatedPoll.duration.inDays,
       });
 
-      // Delete old options related to this poll
-      QuerySnapshot optionsSnapshot = await _fireStore.collection('options')
+      // Fetch and delete old options related to this poll
+      QuerySnapshot optionsSnapshot = await _fireStore
+          .collection('options')
           .where('pollId', isEqualTo: pollId)
           .get();
 
-      for (var doc in optionsSnapshot.docs) {
-        await doc.reference.delete();
-      }
+      // Delete all old options concurrently
+      await Future.wait(
+          optionsSnapshot.docs.map((doc) => doc.reference.delete()));
 
       // Add the updated options to the 'options' collection
       for (var option in updatedPoll.options) {
-        final String key = option.keys.first;
         await _fireStore.collection('options').add({
           'pollId': pollId,
-          'text': key,
-          'voteCount': option[key],
+          'optionId': option.optionId,
+          'text': option.text,
+          'voteCount': option.voteCount,
         });
       }
+
+      print("Poll updated successfully: $pollId");
     } catch (e) {
       print("Error updating poll: $e");
     }
   }
 
-  // Delete a poll by ID
+// Delete a poll by ID
   Future<void> deletePoll(String pollId) async {
     try {
       // Delete the poll document in the 'polls' collection
       await _fireStore.collection('polls').doc(pollId).delete();
 
-      // Delete all options associated with this poll
-      QuerySnapshot optionsSnapshot = await _fireStore.collection('options')
+      // Fetch and delete all options associated with this poll concurrently
+      QuerySnapshot optionsSnapshot = await _fireStore
+          .collection('options')
           .where('pollId', isEqualTo: pollId)
           .get();
 
-      for (var doc in optionsSnapshot.docs) {
-        await doc.reference.delete();
-      }
+      await Future.wait(
+          optionsSnapshot.docs.map((doc) => doc.reference.delete()));
+
+      print("Poll deleted successfully: $pollId");
     } catch (e) {
       print("Error deleting poll: $e");
     }
