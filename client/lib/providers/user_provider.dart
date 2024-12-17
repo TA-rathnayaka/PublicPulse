@@ -43,4 +43,16 @@ class UserProvider with ChangeNotifier {
       print("Error fetching user details: $e");
     }
   }
+  Future<void> updateUserDetails(Map<String, dynamic> updatedData) async {
+    try {
+      final uid = await _authService.getCurrentUserUid(); // Get current user UID
+      if (uid != null) {
+        await _userService.updateUserDetails(uid, updatedData);
+        await getUserDetails(uid); // Fetch updated details
+        notifyListeners();
+      }
+    } catch (e) {
+      print("Error updating user details: $e");
+    }
+  }
 }
