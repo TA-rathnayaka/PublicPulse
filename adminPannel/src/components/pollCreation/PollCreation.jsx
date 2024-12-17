@@ -11,7 +11,7 @@ const PollCreation = () => {
   const [imageFile, setImageFile] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [options, setOptions] = useState([""]);
+  const [options, setOptions] = useState([{ option: "", count: 0 }]);
   const [relatedPolicy, setRelatedPolicy] = useState("multiple-choice");
   const [settings, setSettings] = useState({
     multipleSelection: false,
@@ -36,18 +36,18 @@ const PollCreation = () => {
   };
 
   const handleAddOption = () => {
-    setOptions([...options, ""]);
+    setOptions([...options, { option: "", count: 0 }]);
   };
 
   const handleOptionChange = (index, value) => {
-    const newOptions = [...options];
-    newOptions[index] = value;
+    const newOptions = options.map((opt, i) => 
+      i === index ? { ...opt, option: value } : opt
+    );
     setOptions(newOptions);
   };
 
   const handleRemoveOption = (index) => {
-    const newOptions = options.filter((_, i) => i !== index);
-    setOptions(newOptions);
+    setOptions(options.filter((_, i) => i !== index));
   };
 
   const uploadImage = async () => {
@@ -59,25 +59,12 @@ const PollCreation = () => {
 
   const notifyUsers = async (message) => {
     const usersCollectionRef = collection(firestore, "users");
-  
-    // Get all users
     const usersSnapshot = await getDocs(usersCollectionRef);
     const userUpdates = usersSnapshot.docs.map(async (doc) => {
-      const userRef = doc.ref; // Get a reference to the user's document
-  
-      // Create a new notification object
-      const notification = {
-        message,
-        dateTime: new Date(),
-      };
-  
-      // Update the user's notifications array by adding the new notification
-      await updateDoc(userRef, {
-        notifications: arrayUnion(notification), // Use arrayUnion to add without overwriting
-      });
+      const userRef = doc.ref;
+      const notification = { message, dateTime: new Date() };
+      await updateDoc(userRef, { notifications: arrayUnion(notification) });
     });
-  
-    // Wait for all notifications to be sent
     await Promise.all(userUpdates);
   };
 
@@ -89,20 +76,19 @@ const PollCreation = () => {
       await addDoc(collection(firestore, "polls"), {
         title,
         description,
-        options: options.filter((option) => option.trim() !== ""),
+        options: options.filter((option) => option.option.trim() !== ""),
         relatedPolicy,
         settings,
         imageUrl,
         createdAt: new Date(),
       });
-      const message = "new poll added : "+title;
-      // Notify users about the new poll
+      const message = "New poll added: " + title;
       await notifyUsers(message);
 
       alert("Poll created successfully!");
       setTitle("");
       setDescription("");
-      setOptions([""]);
+      setOptions([{ option: "", count: 0 }]);
       setImage(null);
       setImageFile(null);
       setSettings({
@@ -134,12 +120,22 @@ const PollCreation = () => {
             />
           </div>
 
+          <div className="form-group">
+            <label htmlFor="description">Description</label>
+            <textarea
+              id="description"
+              placeholder="Add a description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+
           <button
             type="button"
             className="add-description"
             onClick={handleAddImageClick}
           >
-            + Add description or image
+            + Add image
           </button>
 
           {showImageUpload && (
@@ -162,21 +158,9 @@ const PollCreation = () => {
           )}
 
           <div className="form-group">
-            <label htmlFor="poll-type">Related Policy</label>
-            <select
-              id="poll-type"
-              value={relatedPolicy}
-              onChange={(e) => setRelatedPolicy(e.target.value)}
-            >
-              <option value="none">None</option>
-              {/* Add other policies if needed */}
-            </select>
-          </div>
-
-          <div className="form-group">
             <label>Answer Options</label>
             <div className="options">
-              {options.map((option, index) => (
+              {options.map((optionObj, index) => (
                 <div
                   key={index}
                   style={{
@@ -188,8 +172,10 @@ const PollCreation = () => {
                   <input
                     type="text"
                     placeholder={`Option ${index + 1}`}
-                    value={option}
-                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                    value={optionObj.option}
+                    onChange={(e) =>
+                      handleOptionChange(index, e.target.value)
+                    }
                   />
                   {index > 1 && (
                     <button
@@ -208,9 +194,6 @@ const PollCreation = () => {
                   onClick={handleAddOption}
                 >
                   + Add option
-                </button>
-                <button type="button" className="add-other">
-                  + Add Other
                 </button>
               </div>
             </div>
@@ -256,7 +239,6 @@ const PollCreation = () => {
                 }
               >
                 <option>One vote per IP address</option>
-                {/* Additional security options here */}
               </select>
             </div>
             <div className="setting-item">

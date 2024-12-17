@@ -1,43 +1,34 @@
-import { auth, firestore } from "./firebase/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { firestore } from "./firebase/firebase";
+import { collection, onSnapshot } from "firebase/firestore";
 
-// Function to get user count from Firestore
-export const getUserCount = async () => {
+/**
+ * Function to get document count from Firestore for a specified collection with real-time updates.
+ * @param {string} collectionName - The name of the collection in Firestore.
+ * @param {function} setCount - Callback function to set the document count in the calling component.
+ * @param {function} setError - Callback function to handle errors in the calling component.
+ */
+export const subscribeToDataCount = (collectionName, setCount, setError) => {
   try {
-    // Check if the auth state is available
-    if (auth) {
-      const userCollectionRef = collection(firestore, "users"); // Reference to "users" collection
-      const userSnapshot = await getDocs(userCollectionRef); // Get all documents in the collection
-      return userSnapshot.size; // Return the number of documents (users)
-    } else {
-      return -1; // Return -1 if the user is not authenticated
-    }
-  } catch (err) {
-    console.error("Error fetching user count:", err);
-    return -1; // Return -1 in case of an error
-  }
-};
+    const collectionRef = collection(firestore, collectionName); // Reference to the specified collection
 
-// Function to get poll count from Firestore
-export const getPollCount = async () => {
-  try {
-    const pollCollectionRef = collection(firestore, "polls"); // Reference to "polls" collection
-    const pollSnapshot = await getDocs(pollCollectionRef); // Get all poll documents
-    return pollSnapshot.size; // Return the number of polls
-  } catch (err) {
-    console.error("Error fetching poll count:", err);
-    return -1; // Return -1 in case of an error
-  }
-};
+    // Set up real-time listener with onSnapshot
+    const unsubscribe = onSnapshot(
+      collectionRef,
+      (snapshot) => {
+        setCount(snapshot.size); // Update the count of documents
+        setError(null); // Reset error state on successful fetch
+      },
+      (error) => {
+        console.error(`Error fetching document count for ${collectionName}:`, error);
+        setError(error.message || "An error occurred while fetching data."); // Set error state
+        setCount(0); // Optionally reset count to zero on error
+      }
+    );
 
-// Function to get participation count from Firestore
-export const getParticipationCount = async () => {
-  try {
-    const participationCollectionRef = collection(firestore, "participation"); // Reference to "participation" collection
-    const participationSnapshot = await getDocs(participationCollectionRef); // Get all participation documents
-    return participationSnapshot.size; // Return the number of participation entries
+    return unsubscribe; // Return the unsubscribe function to stop listening when needed
   } catch (err) {
-    console.error("Error fetching participation count:", err);
-    return -1; // Return -1 in case of an error
+    console.error(`Error setting up real-time updates for ${collectionName}:`, err);
+    setError(err.message || "Failed to set up data subscription."); // Set error state
+    setCount(0); // Reset count to zero on setup error
   }
 };

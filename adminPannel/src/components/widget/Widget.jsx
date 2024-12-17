@@ -1,9 +1,33 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom"; 
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CircularProgress from "@mui/material/CircularProgress"; 
-import { getUserCount, getPollCount, getParticipationCount } from "../../backend/widgetsController"; 
+import { subscribeToDataCount } from "../../backend/widgetsController";
+
+const widgetConfig = {
+  user: {
+    title: "USERS",
+    link: "/users",
+    linkText: "See user details",
+    backgroundColor: "#f2e4d5",
+    collectionName: "users",
+  },
+  polls: {
+    title: "POLLS",
+    link: "/polls",
+    linkText: "View all Polls",
+    backgroundColor: "#e7d5e8",
+    collectionName: "polls",
+  },
+  participation: {
+    title: "PARTICIPATION",
+    link: "/participation",
+    linkText: "View participation details",
+    backgroundColor: "#e0f7fa",
+    collectionName: "votes",
+  },
+};
 
 const Widget = ({ type }) => {
   const [dataCount, setDataCount] = useState(null);
@@ -11,86 +35,53 @@ const Widget = ({ type }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true; 
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        let count;
-        switch (type) {
-          case "user":
-            count = await getUserCount(); 
-            break;
-          case "polls":
-            count = await getPollCount(); 
-            break;
-          case "participation":
-            count = await getParticipationCount(); 
-            break;
-          default:
-            return;
-        }
-        
-        if (isMounted) {
-          setDataCount(count);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError(err.message || "Error fetching data."); // Improved error handling
-        }
-      } finally {
-        if (isMounted) {
-          setLoading(false);
-        }
-      }
-    };
-    fetchData();
+    const collectionName = widgetConfig[type]?.collectionName;
+
+    if (!collectionName) return;
+
+    // Set loading to true before subscribing
+    setLoading(true);
+
+    const unsubscribe = subscribeToDataCount(collectionName, (count) => {
+      setDataCount(count);
+      setLoading(false); // Set loading to false after data is fetched
+      setError(null); // Reset error state on successful fetch
+    }, (err) => {
+      setError(err);
+      setLoading(false); // Set loading to false even on error
+    });
 
     return () => {
-      isMounted = false;
+      if (unsubscribe) unsubscribe(); // Clean up the subscription on unmount
     };
   }, [type]);
 
-  let data;
-  const diff = 20;
+  const handleRetry = useCallback(() => {
+    setLoading(true); // Reset loading state before retrying
+    setError(null);   // Clear error state
+    const collectionName = widgetConfig[type]?.collectionName;
+    if (collectionName) {
+      subscribeToDataCount(collectionName, setDataCount, setError);
+    }
+  }, [type]);
 
-  switch (type) {
-    case "user":
-      data = {
-        title: "USERS",
-        link: "/users", 
-        linkText: "See user details",
-        backgroundColor: "#f2e4d5", // Light blue
-      };
-      break;
-    case "polls":
-      data = {
-        title: "POLLS",
-        link: "/polls", 
-        linkText: "View all Polls",
-        backgroundColor: "#e7d5e8", // Light orange
-      };
-      break;
-    case "participation":
-      data = {
-        title: "PARTICIPATION",
-        link: "/participation", 
-        linkText: "View participation details",
-        backgroundColor: "#e0f7fa", // Light purple
-      };
-      break;
-    default:
-      break;
-  }
+  const data = widgetConfig[type] || {};
+  const diff = dataCount !== null ? Math.floor((dataCount / 100) * 20) : 0;
 
   return (
     <div className="widget" style={{ backgroundColor: data.backgroundColor }}>
-      {loading ? (
+      {loading && (
         <div className="widgetLoading">
           <CircularProgress size={30} />
         </div>
-      ) : error ? (
-        <div className="error">{error}</div>
-      ) : (
+      )}
+      {error && (
+        <div className="error">
+          {error}
+          <button onClick={handleRetry} className="retryButton">Retry</button>
+        </div>
+      )}
+      {!loading && !error && (
         <>
           <div className="left">
             <span className="title">{data.title}</span>
@@ -100,7 +91,7 @@ const Widget = ({ type }) => {
             </Link>
           </div>
           <div className="right">
-            <div className="percentage positive">
+            <div className={`percentage ${diff >= 0 ? "positive" : "negative"}`}>
               <KeyboardArrowUpIcon />
               {diff} %
             </div>
