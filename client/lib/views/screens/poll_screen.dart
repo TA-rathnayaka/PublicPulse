@@ -13,7 +13,7 @@ class PollScreen extends StatelessWidget {
 
   const PollScreen(
       {super.key,
-      required this.poll}); // Constructor updated to accept Poll object
+      required this.poll});
 
   @override
   Widget build(BuildContext context) {
