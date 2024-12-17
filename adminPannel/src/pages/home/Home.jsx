@@ -31,9 +31,9 @@ const Home = () => {
     <div className="home">
       <div className="homeContainer">
         <div className="widgets">
-          <Widget type="users" loading={loading || dataLoading} />
+          <Widget type="user" loading={loading || dataLoading} />
           <Widget type="polls" loading={loading || dataLoading} />
-          <Widget type="votes" loading={loading || dataLoading} />
+          <Widget type="participation" loading={loading || dataLoading} />
         </div>
         <div className="charts">
           <Featured />
