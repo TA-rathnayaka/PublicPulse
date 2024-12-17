@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class MenuRow extends StatefulWidget {
   final IconData icon;
@@ -29,23 +28,33 @@ class _MenuRowState extends State<MenuRow> {
   Widget build(BuildContext context) {
     // Get the current theme's background color
     final backgroundColor = Theme.of(context).scaffoldBackgroundColor;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color ?? Colors.black;
 
     return GestureDetector(
       onTap: widget.onTap ?? showSnackbar, // Use the provided onTap or default to showSnackbar
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        color: backgroundColor, // Apply the current theme's background color
-        child: Row(
-          children: [
-            Icon(widget.icon, size: 30),
-            const SizedBox(width: 20),
-            Text(
-              widget.text,
-              style: GoogleFonts.poppins(
-                fontSize: 17,
+      child: Material(
+        color: Colors.transparent, // Transparent background to allow custom background color
+        child: Container(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20), // Increased horizontal padding for better touch targets
+          color: backgroundColor, // Apply the current theme's background color
+          child: Row(
+            children: [
+              Icon(
+                widget.icon,
+                size: 30,
+                color: textColor.withOpacity(0.8), // Adjust icon color to match the theme
               ),
-            ),
-          ],
+              const SizedBox(width: 16), // Consistent spacing between icon and text
+              Text(
+                widget.text,
+                style: TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500, // Slightly bolder text for better readability
+                  color: textColor, // Ensure text color matches the theme
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

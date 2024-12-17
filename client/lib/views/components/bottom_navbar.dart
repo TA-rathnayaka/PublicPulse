@@ -20,7 +20,6 @@ class BottomNavbar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Get the current theme
     final ThemeData theme = Theme.of(context);
     final Color backgroundColor = theme.scaffoldBackgroundColor;
     final Color selectedItemColor = theme.primaryColor;
@@ -52,23 +51,23 @@ class BottomNavbar extends StatelessWidget {
           elevation: 0,
           currentIndex: currentIndex,
           onTap: onTap,
-          selectedItemColor: selectedItemColor,  // Set the selected item color explicitly
-          unselectedItemColor: unselectedItemColor,  // Set the unselected item color explicitly
+          selectedItemColor: selectedItemColor, // Set the selected item color explicitly
+          unselectedItemColor: unselectedItemColor, // Set the unselected item color explicitly
           showSelectedLabels: false,
           showUnselectedLabels: false,
           items: items.map((item) {
-            return _buildNavItem(context,item.icon, item.index);
+            return _buildNavItem(context, item.icon, item.index);
           }).toList(),
         ),
       ),
     );
   }
 
-  BottomNavigationBarItem _buildNavItem(context, IconData icon, int index) {
+  BottomNavigationBarItem _buildNavItem(BuildContext context, IconData icon, int index) {
     return BottomNavigationBarItem(
       icon: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.all(8),
+        padding: const EdgeInsets.all(12), // Slightly larger padding for better touch target
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -76,8 +75,8 @@ class BottomNavbar extends StatelessWidget {
           icon,
           size: iconSize,
           color: currentIndex == index
-              ? Theme.of(context).primaryColor  // Ensure selected color is set
-              : Theme.of(context).unselectedWidgetColor,  // Ensure unselected color is set
+              ? Theme.of(context).primaryColor // Ensure selected color is set
+              : Theme.of(context).unselectedWidgetColor, // Ensure unselected color is set
         ),
       ),
       label: '',
