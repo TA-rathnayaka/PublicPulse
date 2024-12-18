@@ -12,21 +12,21 @@ final ThemeData kLightTheme = ThemeData(
       fontSize: 20,
       fontWeight: FontWeight.w600,
     ),
-    elevation: 1, // Subtle elevation for the app bar
+    elevation: 1,
   ),
   textTheme: const TextTheme(
     bodyMedium: TextStyle(
       color: Color(0xFF374151), // Darker gray for better contrast
       fontSize: 16,
-      fontWeight: FontWeight.w400, // Light weight for easy reading
+      fontWeight: FontWeight.w400,
     ),
   ),
   inputDecorationTheme: InputDecorationTheme(
     filled: true,
     fillColor: Colors.white,
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10), // Softer corners for a refined look
-      borderSide: BorderSide(color: Color(0xFF1F2937)), // Matching primary color for consistency
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Color(0xFF1F2937)),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
@@ -43,6 +43,13 @@ final ThemeData kLightTheme = ThemeData(
     surface: Colors.white,
     onSurface: Color(0xFF1F2937),
   ),
+  buttonTheme: ButtonThemeData(
+    buttonColor: Colors.blue, // Default button color
+    minWidth: 88.0, // Minimum button width
+    height: 48.0,  // Minimum button height as per HIG
+    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 32.0), // Adjust height and width
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)), // Rounded corners for accessibility
+  ),
 );
 
 final ThemeData kDarkTheme = ThemeData(
@@ -57,7 +64,7 @@ final ThemeData kDarkTheme = ThemeData(
       fontSize: 20,
       fontWeight: FontWeight.w600,
     ),
-    elevation: 1, // Slight elevation for depth
+    elevation: 1,
   ),
   textTheme: const TextTheme(
     bodyMedium: TextStyle(
@@ -70,8 +77,8 @@ final ThemeData kDarkTheme = ThemeData(
     filled: true,
     fillColor: Color(0xFF1F2937),
     border: OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10), // Consistent border radius
-      borderSide: BorderSide(color: Color(0xFFD1D5DB)), // Light gray for contrast
+      borderRadius: BorderRadius.circular(10),
+      borderSide: BorderSide(color: Color(0xFFD1D5DB)),
     ),
     enabledBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(10),
@@ -87,5 +94,12 @@ final ThemeData kDarkTheme = ThemeData(
     secondary: Color(0xFF9CA3AF),
     surface: Color(0xFF1F2937),
     onSurface: Color(0xFFE5E7EB),
+  ),
+  buttonTheme: ButtonThemeData(
+    buttonColor: Colors.blue, // Default button color
+    minWidth: 88.0, // Minimum button width
+    height: 48.0,  // Minimum button height as per HIG
+    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 32.0), // Adjust height and width
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)), // Rounded corners for accessibility
   ),
 );

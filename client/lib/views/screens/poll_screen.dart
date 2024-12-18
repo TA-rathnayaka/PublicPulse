@@ -257,7 +257,7 @@ class PollCarousel extends StatelessWidget {
           onNext();
         }
       },
-      child: FadeInUp(
+      child: FadeIn(
         duration: const Duration(milliseconds: 800),
         child: Container(
           width: double.infinity,
