@@ -65,9 +65,7 @@ class UserProfileScreen extends StatelessWidget {
                             name: "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim(),
                             email: user['email'] ?? "No email available",
                             phoneNumber: user['phoneNumber'] ?? "No phone number available",
-                            onTap: () {
-                              _showBottomSheet(context, profileProvider, user);
-                            },
+
                           );
                         },
                       ),
@@ -113,6 +111,13 @@ class UserProfileScreen extends StatelessWidget {
                                 child: MenuRow(
                                   icon: Icons.person,
                                   text: "Personal Info",
+                                  onTap: () {
+                                    final userProvider = context.read<UserProvider>();
+                                    final user = userProvider.userDetails;
+                                    if (user != null)
+                                    _showBottomSheet(context, profileProvider, user);
+                                  },
+
                                 ),
                               ),
                               const Divider(),
@@ -157,7 +162,7 @@ class UserProfileScreen extends StatelessWidget {
       ),
       builder: (context) {
         return FractionallySizedBox(
-          heightFactor: 0.7,
+          heightFactor: 0.9,
           child: Padding(
             padding: EdgeInsets.only(
               bottom: MediaQuery.of(context).viewInsets.bottom,
