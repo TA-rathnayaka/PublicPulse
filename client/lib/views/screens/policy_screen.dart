@@ -76,7 +76,7 @@ class _PolicyDetailsState extends State<PolicyDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return FadeInUp(
+    return FadeIn(
       duration: const Duration(milliseconds: 1000),
       child: ClipRRect(
         borderRadius: const BorderRadius.only(

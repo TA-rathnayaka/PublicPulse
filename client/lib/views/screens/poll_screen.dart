@@ -122,7 +122,7 @@ class _PollDetailsState extends State<PollDetails> {
   // Helper function to build text with animations
   Widget _buildText(String text, double fontSize, FontWeight fontWeight,
       Color? color, int duration) {
-    return FadeInUp(
+    return FadeIn(
       duration: Duration(milliseconds: duration),
       child: Text(
         text,

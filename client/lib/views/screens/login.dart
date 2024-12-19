@@ -6,7 +6,7 @@ import 'package:client/providers/screens_providers/login_validation_provider.dar
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:client/views/screens/signup.dart';
-import 'package:client/views/screens/main_screen.dart';
+import 'package:client/views/screens/splash_screen.dart';
 
 class Login extends StatelessWidget {
   static const id = '/login';
@@ -170,7 +170,7 @@ class Login extends StatelessWidget {
                               .then((_) {
                             if (context.read<MyAuthProvider>().user != null) {
                               Navigator.pushReplacementNamed(
-                                  context, MainScreen.id);
+                                  context, SplashScreen.id);
                             } else {
                               context
                                   .read<LoginValidationProvider>()
