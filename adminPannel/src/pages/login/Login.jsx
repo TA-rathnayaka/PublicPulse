@@ -35,6 +35,7 @@ const Login = () => {
   
       if (!adminDocSnapshot.exists()) {
         setError("You are not authorized to access this page.");
+        console.log(error);
         auth.signOut(); // Sign out the user if they are not an admin
       } else {
         // Fetch user details from the users collection if admin

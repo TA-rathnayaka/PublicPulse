@@ -7,6 +7,7 @@ import 'package:client/Providers/polls_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:client/providers/screens_providers/poll_screen_provider.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:client/providers/votes_provider.dart';
 
 class Dashboard extends StatelessWidget {
   static String id = '/dashboard';
@@ -58,8 +59,11 @@ class Dashboard extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => ChangeNotifierProvider(
-                                  create: (_) => PollScreenProvider(),
+                                builder: (context) => MultiProvider(
+                                  providers: [
+                                    ChangeNotifierProvider(create: (_) => PollScreenProvider()),
+                                    ChangeNotifierProvider(create: (_) => VotesProvider())
+                                  ],
                                   child: PollScreen(poll: poll),
                                 ),
                               ),

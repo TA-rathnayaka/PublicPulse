@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:client/models/policy.dart';
@@ -9,26 +10,33 @@ class PolicyScreen extends StatelessWidget {
 
   final Policy policy;
 
-  const PolicyScreen({super.key, required this.policy}); // Constructor accepts a Policy object
+  const PolicyScreen({super.key, required this.policy});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Policy Details'),
+        backgroundColor: kPrimaryColor,
+      ),
       body: SingleChildScrollView(
         child: Container(
-          color: Colors.white,
+          color: Colors.grey[100], // Soft background for better contrast
           child: Column(
             children: <Widget>[
               PolicyCarousel(
                 images: policy.imageUrl != null ? [policy.imageUrl!] : [],
               ),
-              Transform.translate(
-                offset: const Offset(0, -40),
-                child: PolicyDetails(
-                  title: policy.title,
-                  description: policy.description,
-                  createDate: policy.createDate,
-                  endDate: policy.endDate,
+              SizedBox(height: 20),
+              PolicyDetails(policy: policy),
+              SizedBox(height: 20),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: PrimaryButton(
+                  label: 'Close',
+                  onPressed: () {
+                    Navigator.pop(context); // Navigate back to the previous screen
+                  },
                 ),
               ),
             ],
@@ -39,40 +47,10 @@ class PolicyScreen extends StatelessWidget {
   }
 }
 
-class PolicyDetails extends StatefulWidget {
-  final String title;
-  final String description;
-  final DateTime createDate;
-  final DateTime endDate;
+class PolicyDetails extends StatelessWidget {
+  final Policy policy;
 
-  const PolicyDetails({super.key, 
-    required this.title,
-    required this.description,
-    required this.createDate,
-    required this.endDate,
-  });
-
-  @override
-  _PolicyDetailsState createState() => _PolicyDetailsState();
-}
-
-class _PolicyDetailsState extends State<PolicyDetails> {
-  late DateTime endDate;
-
-  @override
-  void initState() {
-    super.initState();
-    endDate = widget.endDate;
-  }
-
-  void _extendPolicy() {
-    setState(() {
-      endDate = endDate.add(const Duration(days: 30)); // Extends the policy by 30 days
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Policy extended by 30 days')),
-    );
-  }
+  const PolicyDetails({super.key, required this.policy});
 
   @override
   Widget build(BuildContext context) {
@@ -85,22 +63,39 @@ class _PolicyDetailsState extends State<PolicyDetails> {
         ),
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(30),
+          padding: const EdgeInsets.all(20),
           decoration: const BoxDecoration(
             color: Colors.white,
+            boxShadow: [
+              BoxShadow(color: Colors.black26, blurRadius: 5, offset: Offset(0, 2))
+            ],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              _buildText(widget.title, 26, FontWeight.bold, Colors.grey[800], 1300),
-              const SizedBox(height: 15),
-              _buildText("Created on: ${widget.createDate.toLocal().toString().split(' ')[0]}", 18, FontWeight.normal, Colors.grey[600], 1500),
-              const SizedBox(height: 15),
-              _buildText("Ends on: ${endDate.toLocal().toString().split(' ')[0]}", 18, FontWeight.bold, kPrimaryColor, 1700),
-              const SizedBox(height: 15),
-              _buildText(widget.description, 18, FontWeight.normal, Colors.grey[600], 1900),
-              const SizedBox(height: 20),
-              _buildExtendButton(),
+              _buildSectionTitle("General Information"),
+              _buildPolicyDetail("Policy ID", policy.id),
+              _buildPolicyDetail("Title", policy.title),
+              _buildPolicyDetail("Description", policy.description),
+              _buildPolicyDetail("Category", policy.category),
+              _buildPolicyDetail("Tags", policy.tags.join(', ')),
+              _buildPolicyDetail("Status", policy.status),
+
+              SizedBox(height: 20),
+              _buildSectionTitle("Important Dates"),
+              _buildPolicyDetail("Creation Date", policy.creationDate.toLocal().toString().split(' ')[0]),
+              _buildPolicyDetail("Effective Date", policy.effectiveDate?.toLocal().toString().split(' ')[0] ?? 'Not Set'),
+              _buildPolicyDetail("Expiry Date", policy.expiryDate?.toLocal().toString().split(' ')[0] ?? 'No Expiry'),
+              _buildPolicyDetail("Approval Date", policy.approvalDate?.toLocal().toString().split(' ')[0] ?? 'Not Approved'),
+
+              SizedBox(height: 20),
+              _buildSectionTitle("Additional Information"),
+              _buildPolicyDetail("Assigned To", policy.assignedTo ?? 'Not Assigned'),
+              _buildPolicyDetail("Approved By", policy.approvedBy ?? 'Not Approved'),
+              _buildPolicyDetail("Notes", policy.notes ?? 'None'),
+              _buildPolicyDetail("Is Active", policy.isActive ? 'Yes' : 'No'),
+              _buildPolicyDetail("Currently Effective", policy.isCurrentlyEffective() ? 'Yes' : 'No'),
+              _buildPolicyDetail("Expired", policy.isExpired() ? 'Yes' : 'No'),
             ],
           ),
         ),
@@ -108,28 +103,43 @@ class _PolicyDetailsState extends State<PolicyDetails> {
     );
   }
 
-  // Helper function to build text with animations
-  Widget _buildText(String text, double fontSize, FontWeight fontWeight, Color? color, int duration) {
-    return FadeInUp(
-      duration: Duration(milliseconds: duration),
+  Widget _buildSectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10, bottom: 5),
       child: Text(
-        text,
+        title,
         style: TextStyle(
-          color: color,
-          fontSize: fontSize,
-          fontWeight: fontWeight,
+          fontSize: 18,
+          fontWeight: FontWeight.bold,
+          color: Colors.grey[800],
         ),
       ),
     );
   }
 
-  // Button to extend the policy duration
-  Widget _buildExtendButton() {
-    return FadeInUp(
-      duration: const Duration(milliseconds: 2000),
-      child: PrimaryButton(
-        onPressed: _extendPolicy,
-        label: "Extend Policy by 30 Days",
+  Widget _buildPolicyDetail(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: <Widget>[
+          Text(
+            "$label: ",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[600],
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[800],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -155,7 +165,7 @@ class PolicyCarousel extends StatelessWidget {
       duration: const Duration(milliseconds: 800),
       child: Container(
         width: double.infinity,
-        height: 300,
+        height: 250, // Adjust the height for better visual balance
         decoration: BoxDecoration(
           image: DecorationImage(
             image: NetworkImage(images.first),
@@ -167,7 +177,7 @@ class PolicyCarousel extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.bottomRight,
               colors: [
-                Colors.grey.shade700.withOpacity(.9),
+                Colors.grey.shade700.withOpacity(.7),
                 Colors.grey.withOpacity(.0),
               ],
             ),

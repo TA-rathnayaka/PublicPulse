@@ -8,12 +8,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Forbidden from "./components/forbidden/Forbidden";
 
-
 const Layout = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [navbarData, setNavbarData] = useState(null);
   const [user, loading, authError] = useAuthState(auth);
   const location = useLocation(); // Get current location
+
+  const excludedRoutes = ["/login", "/signup"]; // Routes to exclude from Layout
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -77,16 +78,16 @@ const Layout = ({ children }) => {
       case "/settings":
         setNavbarData("Settings");
         break;
-        case "/users":
+      case "/users":
         setNavbarData("Users");
         break;
-        case "/policies":
-          setNavbarData("Policies");
-          break;
-          case "/notifications":
+      case "/policies":
+        setNavbarData("Policies");
+        break;
+      case "/notifications":
         setNavbarData("Notifications");
         break;
-        case "/statistics":
+      case "/statistics":
         setNavbarData("Statistics");
         break;
       default:
@@ -94,12 +95,14 @@ const Layout = ({ children }) => {
     }
   }, [location.pathname]); // Run effect whenever the path changes
 
+  // Exclude Layout for specific routes
+  if (excludedRoutes.includes(location.pathname)) {
+    return <>{children}</>;
+  }
+
+  // If the user is not authenticated, show the Forbidden component
   if (!user) {
-    return (
-      <>
-        <Forbidden />
-      </>
-    );
+    return <Forbidden />;
   }
 
   return (
