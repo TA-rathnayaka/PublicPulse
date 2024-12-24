@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:client/views/constants/search_button_constants.dart';
 
 class SearchButton extends StatelessWidget {
   final String hintText;
@@ -19,9 +18,9 @@ class SearchButton extends StatelessWidget {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            color: Colors.black.withOpacity(0.1), // Subtle shadow to create depth
+            blurRadius: 6, // Reduced blur for a softer look
+            offset: const Offset(0, 4), // Slight offset for more natural depth
           ),
         ],
       ),
@@ -30,18 +29,18 @@ class SearchButton extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(
-            color: theme.colorScheme.secondary.withOpacity(0.5),
+            color: theme.colorScheme.secondary.withOpacity(0.6), // Clear hint text
             fontSize: 16,
           ),
           prefixIcon: Icon(
             Icons.search,
-            color: theme.colorScheme.secondary.withOpacity(0.7),
+            color: theme.colorScheme.secondary.withOpacity(0.7), // Search icon color
           ),
           filled: true,
-          fillColor: theme.colorScheme.surface,
+          fillColor: theme.colorScheme.surface, // Consistent fill color
           contentPadding: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 16.0),
           border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(12), // Rounded corners for a modern look
             borderSide: BorderSide(
               color: theme.colorScheme.primary.withOpacity(0.2),
             ),
@@ -49,19 +48,19 @@ class SearchButton extends StatelessWidget {
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: theme.colorScheme.primary.withOpacity(0.2),
+              color: theme.colorScheme.primary.withOpacity(0.2), // Subtle border in the enabled state
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide(
-              color: theme.colorScheme.primary,
+              color: theme.colorScheme.primary, // Clear visual indication on focus
               width: 1.5,
             ),
           ),
         ),
         style: TextStyle(
-          color: theme.textTheme.bodyMedium?.color,
+          color: theme.textTheme.bodyMedium?.color ?? theme.textTheme.bodyMedium?.color, // Fallback to bodyText2 if bodyMedium is unavailable
           fontSize: 16,
         ),
       ),

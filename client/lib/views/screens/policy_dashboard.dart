@@ -1,11 +1,8 @@
-import 'package:client/providers/screens_providers/policy_screen_provider.dart';
-
 import 'dummy_policies.dart';
 import 'package:flutter/material.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:client/views/components/search_button.dart';
 import 'package:client/views/components/dashboard_list_tile.dart';
-import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:client/views/screens/policy_screen.dart';
 
@@ -28,6 +25,7 @@ class _PolicyDashboardState extends State<PolicyDashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: kPaddingHorizontal),
       child: SafeArea(
@@ -36,14 +34,15 @@ class _PolicyDashboardState extends State<PolicyDashboard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 20),
-              Text(
-                "Policies",
-                style: kHeadlineStyle.copyWith(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
+          Text(
+            "Polls",
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: theme.primaryColor,
+            ),
+          ),
+   
               const SizedBox(height: 16),
               SearchButton(
                 hintText: "Search policies...",
