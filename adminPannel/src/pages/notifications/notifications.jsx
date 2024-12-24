@@ -1,89 +1,79 @@
 import React, { useEffect, useState } from 'react';
-import { firestore } from "../../backend/firebase/firebase";
-import { doc, getDoc } from "firebase/firestore";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../backend/firebase/firebase";
-import './notifications.scss';
+import { useNotifications } from '../../context/NotificationsContext';
+import { auth } from '../../services/firebaseConfig';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { collection, query, where, getDocs, writeBatch, doc,updateDoc } from "firebase/firestore"; 
+import { firestore } from '../../services/firebaseConfig'; // Make sure to import firestore
 
 const Notifications = () => {
-  const [notifications, setNotifications] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [user, loadingAuth] = useAuthState(auth);
+  const { notifications } = useNotifications();
+  const [user] = useAuthState(auth);
+  const [loading, setLoading] = useState(false);
 
-  const fetchUserNotifications = async (userId) => {
-    if (!userId) {
-      console.error("User ID is undefined or invalid.");
-      return [];
-    }
-  
-    const userRef = doc(firestore, "users", userId);
+  // Mark a single notification as read
+  const handleMarkAsRead = async (notificationId) => {
     try {
-      const userDoc = await getDoc(userRef);
-      
-      if (userDoc.exists()) {
-        const notifications = userDoc.data().notifications || [];
-        
-        // Convert Firestore Timestamp to Date and sort by latest
-        return notifications.map(notification => ({
-          ...notification,
-          dateTime: notification.dateTime 
-            ? new Date(notification.dateTime.seconds * 1000) 
-            : null // If dateTime is missing, set it to null
-        })).sort((a, b) => (b.dateTime || 0) - (a.dateTime || 0));
-      } else {
-        console.error("No such user document!");
-        return [];
-      }
+      const notificationRef = doc(firestore, 'notifications', notificationId);
+      await updateDoc(notificationRef, { isRead: true });
+      console.log(`Notification ${notificationId} marked as read`);
     } catch (error) {
-      console.error("Error fetching user notifications:", error);
-      return [];
+      console.error("Error marking notification as read:", error);
     }
   };
 
-  useEffect(() => {
-    const getNotifications = async () => {
-      if (loadingAuth) return;
-      if (!user) {
-        console.error("User is not authenticated");
-        setLoading(false);
-        return;
-      }
+  // Mark all notifications as read for the user
+  const markAllAsRead = async (userId) => {
+    setLoading(true); // Set loading state
+    try {
+      const notificationsRef = collection(firestore, 'notifications');
+      const q = query(notificationsRef, where('userId', '==', userId));
+      const querySnapshot = await getDocs(q);
 
-      setLoading(true);
-      const userNotifications = await fetchUserNotifications(user.uid);
-      setNotifications(userNotifications);
-      setLoading(false);
-    };
+      const batch = writeBatch(firestore);
+      querySnapshot.forEach((doc) => {
+        const notificationDocRef = doc.ref;
+        batch.update(notificationDocRef, { isRead: true });
+      });
 
-    getNotifications();
-  }, [user, loadingAuth]);
-
-  if (loading) {
-    return <div>Loading notifications...</div>;
-  }
+      await batch.commit();
+      console.log("All notifications marked as read");
+    } catch (error) {
+      console.error("Error marking notifications as read:", error);
+    } finally {
+      setLoading(false); // Reset loading state
+    }
+  };
 
   return (
     <div className="notifications">
-      <div className="header">
-        <h2>Your Notifications</h2>
-      </div>
+      <h2>Notifications</h2>
       {notifications.length === 0 ? (
-        <div className="emptyMessage">No notifications to display.</div>
+        <p>No notifications</p>
       ) : (
-        <ul className="notificationList">
-          {notifications.map((notification, index) => (
-            <li className="notificationItem" key={index}>
-              <p>{notification.message}</p>
-              <small>
-                {notification.dateTime 
-                  ? notification.dateTime.toLocaleString() 
-                  : "Date not available"}
-              </small>
-            </li>
+        <ul>
+          {notifications.map((notification) => (
+            <NotificationItem
+              key={notification.id}
+              notification={notification}
+              onMarkAsRead={handleMarkAsRead}
+            />
           ))}
         </ul>
       )}
+      <button onClick={() => markAllAsRead(user.uid)} disabled={loading}>
+        {loading ? "Marking All as Read..." : "Mark All as Read"}
+      </button>
     </div>
+  );
+};
+
+// Component for rendering individual notification items
+const NotificationItem = ({ notification, onMarkAsRead }) => {
+  return (
+    <li className={notification.isRead ? 'read' : 'unread'}>
+      <p>{notification.message}</p>
+      <button onClick={() => onMarkAsRead(notification.id)}>Mark as Read</button>
+    </li>
   );
 };
 

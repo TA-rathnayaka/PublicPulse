@@ -3,70 +3,85 @@ import { Link } from "react-router-dom";
 import "./widget.scss";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CircularProgress from "@mui/material/CircularProgress"; 
-import { getDataCount } from "../../backend/widgetsController"; // Consolidated function
+import { subscribeToDataCount } from "../../backend/widgetsController";
+
+const widgetConfig = {
+  user: {
+    title: "USERS",
+    link: "/users",
+    linkText: "See user details",
+    backgroundColor: "#f2e4d5",
+    collectionName: "users",
+  },
+  polls: {
+    title: "POLLS",
+    link: "/polls",
+    linkText: "View all Polls",
+    backgroundColor: "#e7d5e8",
+    collectionName: "polls",
+  },
+  participation: {
+    title: "PARTICIPATION",
+    link: "/participation",
+    linkText: "View participation details",
+    backgroundColor: "#e0f7fa",
+    collectionName: "votes",
+  },
+};
 
 const Widget = ({ type }) => {
   const [dataCount, setDataCount] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const fetchData = useCallback(async () => {
+  useEffect(() => {
+    const collectionName = widgetConfig[type]?.collectionName;
+
+    if (!collectionName) return;
+
+    // Set loading to true before subscribing
     setLoading(true);
-    setError(null);
-    try {
-      const count = await getDataCount(type);
+
+    const unsubscribe = subscribeToDataCount(collectionName, (count) => {
       setDataCount(count);
-    } catch (err) {
-      setError(err.message || "Error fetching data.");
-    } finally {
-      setLoading(false);
+      setLoading(false); // Set loading to false after data is fetched
+      setError(null); // Reset error state on successful fetch
+    }, (err) => {
+      setError(err);
+      setLoading(false); // Set loading to false even on error
+    });
+
+    return () => {
+      if (unsubscribe) unsubscribe(); // Clean up the subscription on unmount
+    };
+  }, [type]);
+
+  const handleRetry = useCallback(() => {
+    setLoading(true); // Reset loading state before retrying
+    setError(null);   // Clear error state
+    const collectionName = widgetConfig[type]?.collectionName;
+    if (collectionName) {
+      subscribeToDataCount(collectionName, setDataCount, setError);
     }
   }, [type]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const handleRetry = () => {
-    fetchData();
-  };
-
-  const widgetData = {
-    users: {
-      title: "USERS",
-      link: "/users",
-      linkText: "See user details",
-      backgroundColor: "#f2e4d5",
-    },
-    polls: {
-      title: "POLLS",
-      link: "/polls",
-      linkText: "View all Polls",
-      backgroundColor: "#e7d5e8",
-    },
-    votes: {
-      title: "PARTICIPATION",
-      link: "/participation",
-      linkText: "View participation details",
-      backgroundColor: "#e0f7fa",
-    },
-  };
-
-  const data = widgetData[type] || {};
-  const diff = 20; // Example static value; can be dynamic based on historical data
+  const data = widgetConfig[type] || {};
+  const diff = dataCount !== null ? Math.floor((dataCount / 100) * 20) : 0;
 
   return (
     <div className="widget" style={{ backgroundColor: data.backgroundColor }}>
-      {loading ? (
+      {loading && (
         <div className="widgetLoading">
           <CircularProgress size={30} />
         </div>
-      ) : error ? (
+      )}
+      {error && (
         <div className="error">
           {error}
           <button onClick={handleRetry} className="retryButton">Retry</button>
         </div>
-      ) : (
+      )}
+      {!loading && !error && (
         <>
           <div className="left">
             <span className="title">{data.title}</span>
@@ -76,7 +91,7 @@ const Widget = ({ type }) => {
             </Link>
           </div>
           <div className="right">
-            <div className="percentage positive">
+            <div className={`percentage ${diff >= 0 ? "positive" : "negative"}`}>
               <KeyboardArrowUpIcon />
               {diff} %
             </div>

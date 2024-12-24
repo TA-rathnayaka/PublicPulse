@@ -56,16 +56,4 @@ class PollsProvider extends ChangeNotifier {
     }
   }
 
-  // Count votes for a specific option across all polls
-  int countVotesForOption(String optionName) {
-    int totalVotes = 0;
-    for (var poll in _polls) {
-      for (var option in poll.options) {
-        if (option.containsKey(optionName)) {
-          totalVotes += option[optionName] ?? 0;
-        }
-      }
-    }
-    return totalVotes;
-  }
 }

@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--facebook setup here -->
+    <string name="facebook_app_id">470317789033016</string>
+    <string name="facebook_client_token">561ee6eef6c5f1160ddcaa09c5c741c1</string>
+
     <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is off -->
     <style name="LaunchTheme" parent="@android:style/Theme.Light.NoTitleBar">
         <!-- Show a splash screen on the activity. Automatically removed when

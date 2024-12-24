@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:provider/provider.dart';
-import 'package:client/providers/auth_provider.dart';
-import 'package:client/providers/screens_providers/login_validation_provider.dart';
-import 'package:client/views/components/primary_button.dart';
+import 'package:client/services/auth_service.dart';
+import 'package:client/views/screens/_all.dart';
 import 'package:client/views/constants/constants.dart';
-import 'package:client/views/screens/signup.dart';
-import 'package:client/views/screens/main_screen.dart';
+import 'package:client/views/components/top_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:client/providers/auth_provider.dart';
+import 'package:client/views/components/primary_button.dart';
+import 'package:client/providers/screens_providers/login_validation_provider.dart';
 
 class Login extends StatelessWidget {
   static const id = '/login';
@@ -14,19 +16,16 @@ class Login extends StatelessWidget {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Login({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Theme.of(context)
-          .scaffoldBackgroundColor, // Dynamically set the background color
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
             Container(
               height: 400,
-              decoration: const BoxDecoration(
+              decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('images/background.png'),
                   fit: BoxFit.fill,
@@ -39,7 +38,7 @@ class Login extends StatelessWidget {
                     width: 80,
                     height: 200,
                     child: FadeInUp(
-                      duration: const Duration(seconds: 1),
+                      duration: Duration(seconds: 1),
                       child: Image.asset('images/light-1.png'),
                     ),
                   ),
@@ -48,7 +47,7 @@ class Login extends StatelessWidget {
                     width: 80,
                     height: 150,
                     child: FadeInUp(
-                      duration: const Duration(milliseconds: 1200),
+                      duration: Duration(milliseconds: 1200),
                       child: Image.asset('images/light-2.png'),
                     ),
                   ),
@@ -58,16 +57,16 @@ class Login extends StatelessWidget {
                     width: 80,
                     height: 150,
                     child: FadeInUp(
-                      duration: const Duration(milliseconds: 1300),
+                      duration: Duration(milliseconds: 1300),
                       child: Image.asset('images/clock.png'),
                     ),
                   ),
                   Positioned(
                     child: FadeInUp(
-                      duration: const Duration(milliseconds: 1600),
+                      duration: Duration(milliseconds: 1600),
                       child: Container(
-                        margin: const EdgeInsets.only(top: 50),
-                        child: const Center(
+                        margin: EdgeInsets.only(top: 50),
+                        child: Center(
                           child: Text(
                             "Login",
                             style: TextStyle(
@@ -84,13 +83,14 @@ class Login extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(30.0),
+              padding: EdgeInsets.all(30.0),
               child: Column(
                 children: <Widget>[
                   FadeInUp(
-                    duration: const Duration(milliseconds: 1800),
+                    duration: Duration(milliseconds: 1800),
                     child: Column(
                       children: <Widget>[
+                        // Email TextField
                         TextField(
                           controller: _emailController,
                           decoration: InputDecoration(
@@ -103,9 +103,7 @@ class Login extends StatelessWidget {
                               color: Theme.of(context)
                                   .hintColor, // Use dynamic hint color
                             ),
-
                           ),
-
                         ),
                         Consumer<LoginValidationProvider>(
                           builder: (context, provider, child) {
@@ -118,8 +116,6 @@ class Login extends StatelessWidget {
                             );
                           },
                         ),
-
-                        // Password TextField
                         TextField(
                           controller: _passwordController,
                           obscureText: true,
@@ -149,9 +145,9 @@ class Login extends StatelessWidget {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 30),
+                  SizedBox(height: 30),
                   FadeInUp(
-                    duration: const Duration(milliseconds: 1900),
+                    duration: Duration(milliseconds: 1900),
                     child: PrimaryButton(
                       label: "Login",
                       onPressed: () {
@@ -166,11 +162,11 @@ class Login extends StatelessWidget {
                           context
                               .read<MyAuthProvider>()
                               .signInEmailAndPassword(_emailController.text,
-                                  _passwordController.text)
+                              _passwordController.text)
                               .then((_) {
                             if (context.read<MyAuthProvider>().user != null) {
                               Navigator.pushReplacementNamed(
-                                  context, MainScreen.id);
+                                  context, SplashScreen.id);
                             } else {
                               context
                                   .read<LoginValidationProvider>()
@@ -181,9 +177,9 @@ class Login extends StatelessWidget {
                       },
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   FadeInUp(
-                    duration: const Duration(milliseconds: 1900),
+                    duration: Duration(milliseconds: 1900),
                     child: PrimaryButton(
                       label: "Create Account",
                       onPressed: () {
@@ -191,14 +187,117 @@ class Login extends StatelessWidget {
                       },
                     ),
                   ),
-                  const SizedBox(height: 70),
+                  SizedBox(height: 20),
                   FadeInUp(
-                    duration: const Duration(milliseconds: 2000),
+                    duration: const Duration(milliseconds: 1900),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        // Google Icon Button
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(12),
+                            shape: const CircleBorder(),
+                            backgroundColor: Colors.white,
+                            side: BorderSide(
+                                color: Colors.grey.shade300, width: 1),
+                          ),
+                          onPressed: () {
+                            // Google Sign-In logic
+                            context
+                                .read<MyAuthProvider>()
+                                .signInWithGoogle()
+                                .then((_) {
+                              if (context.read<MyAuthProvider>().user != null) {
+                                Navigator.pushNamed(context, MainScreen.id);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("Google Sign-In failed")),
+                                );
+                              }
+                            }).catchError((error) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text("Error: ${error.toString()}")),
+                              );
+                            });
+                          },
+                          child: Image.network(
+                            "https://cdn-icons-png.flaticon.com/128/300/300221.png",
+                            height: 24,
+                            width: 24,
+                          ),
+                        ),
+
+                        // Facebook Icon Button
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(12),
+                            shape: const CircleBorder(),
+                            backgroundColor: Colors.white,
+                            side: BorderSide(
+                                color: Colors.grey.shade300, width: 1),
+                          ),
+                          onPressed: () {
+                            // Facebook Sign-In logic
+                            context
+                                .read<MyAuthProvider>()
+                                .signInWithFacebook()
+                                .then((_) {
+                              if (context.read<MyAuthProvider>().user != null) {
+                                Navigator.pushNamed(context, MainScreen.id);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text("Facebook Sign-In failed")),
+                                );
+                              }
+                            }).catchError((error) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text("Error: ${error.toString()}")),
+                              );
+                            });
+                          },
+                          child: Image.network(
+                            "https://cdn-icons-png.flaticon.com/128/145/145802.png",
+                            height: 24,
+                            width: 24,
+                          ),
+                        ),
+
+                        // Mobile Icon Button
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.all(12),
+                            shape: const CircleBorder(),
+                            backgroundColor: Colors.white,
+                            side: BorderSide(
+                                color: Colors.grey.shade300, width: 1),
+                          ),
+                          onPressed: () {
+                            // Mobile Sign-In logic
+                          },
+                          child: Icon(
+                            Icons.phone_android,
+                            color: Colors.black,
+                            size: 24,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 70),
+                  FadeInUp(
+                    duration: Duration(milliseconds: 2000),
                     child: TextButton(
                       onPressed: () {
                         // Forgot password logic here
                       },
-                      child: const Text(
+                      child: Text(
                         "Forgot Password?",
                         style: TextStyle(color: kPrimaryColor),
                       ),
