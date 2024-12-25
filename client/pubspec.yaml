@@ -45,6 +45,7 @@ dependencies:
   provider: ^6.1.2
   animate_do: ^3.3.4
   google_fonts: ^6.2.1
+  toggle_switch: ^2.3.0
 
 
 dev_dependencies:

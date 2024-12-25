@@ -24,36 +24,36 @@ class PollDashBoardCard extends StatelessWidget {
           MaterialPageRoute(
             builder: (context) => PollScreen(
               poll: Poll(
-                title: title, // replace with actual title
-                description: subtitle, // replace with actual subtitle or description
-                imageUrl: imageUrl, // replace with actual imageUrl
-                options: [], // replace with actual options if available
-                createDate: DateTime.now(), // replace with actual createDate if needed
-                duration: const Duration(days: 7), // example duration
-              ), // Pass actual comments if available
+                title: title,
+                description: subtitle,
+                imageUrl: imageUrl,
+                options: [], // Replace with actual options if available
+                createDate: DateTime.now(),
+                duration: const Duration(days: 7), // Example duration
+              ),
             ),
           ),
         );
       },
       child: Card(
-        elevation: kCardElevationPollDashBoardCard, // Use extracted elevation
+        elevation: kCardElevationPollDashBoardCard,
         shape: const RoundedRectangleBorder(
-          borderRadius: kCardBorderRadiusPollDashBoardCard, // Rounded corners
+          borderRadius: kCardBorderRadiusPollDashBoardCard,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0), // Adjust padding
+          padding: const EdgeInsets.all(16.0),
           child: Row(
             children: [
               // Left side image (network image or asset image)
               ClipRRect(
-                borderRadius: kCardBorderRadiusPollDashBoardCard, // Rounded corners for the image
+                borderRadius: kCardBorderRadiusPollDashBoardCard,
                 child: SizedBox(
                   width: 120, // Set image width
                   height: 120, // Set image height
                   child: Image.network(
                     imageUrl,
-                    fit: BoxFit.contain, // Ensure the image fits inside without distortion
-                    alignment: Alignment.centerLeft, // Align image to the left
+                    fit: BoxFit.contain,
+                    alignment: Alignment.centerLeft,
                   ),
                 ),
               ),
@@ -65,12 +65,12 @@ class PollDashBoardCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: kTitleTextStylePollDashBoardCard, // Use extracted title text style
+                      style: kTitleTextStylePollDashBoardCard, // Ensure text is legible and accessible
                     ),
                     const SizedBox(height: 8), // Spacing between title and subtitle
                     Text(
                       subtitle,
-                      style: kSubtitleTextStylePollDashBoardCard, // Use extracted subtitle text style
+                      style: kSubtitleTextStylePollDashBoardCard,
                     ),
                     const SizedBox(height: 16), // Space between subtitle and button
                     ElevatedButton(
@@ -78,16 +78,16 @@ class PollDashBoardCard extends StatelessWidget {
                         // Add button action here
                       },
                       style: ElevatedButton.styleFrom(
-                        side: kButtonBorderSidePollDashBoardCard, // Use extracted button border style
-                        backgroundColor: kButtonBackgroundColorPollDashBoardCard, // Use extracted button background
+                        side: kButtonBorderSidePollDashBoardCard,
+                        backgroundColor: kButtonBackgroundColorPollDashBoardCard,
                         shape: const RoundedRectangleBorder(
-                          borderRadius: kButtonBorderRadiusPollDashBoardCard, // Use extracted button border radius
+                          borderRadius: kButtonBorderRadiusPollDashBoardCard,
                         ),
-                        padding: kButtonPaddingPollDashBoardCard, // Use extracted button padding
+                        padding: kButtonPaddingPollDashBoardCard,
                       ),
                       child: const Text(
                         'View Policy',
-                        style: kButtonTextStylePollDashBoardCard, // Use extracted button text style
+                        style: kButtonTextStylePollDashBoardCard, // Ensure text is large and readable
                       ),
                     ),
                   ],

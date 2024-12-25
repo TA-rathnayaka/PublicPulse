@@ -13,7 +13,7 @@ class PollScreen extends StatelessWidget {
 
   const PollScreen(
       {super.key,
-      required this.poll}); // Constructor updated to accept Poll object
+      required this.poll});
 
   @override
   Widget build(BuildContext context) {
@@ -257,7 +257,7 @@ class PollCarousel extends StatelessWidget {
           onNext();
         }
       },
-      child: FadeInUp(
+      child: FadeIn(
         duration: const Duration(milliseconds: 800),
         child: Container(
           width: double.infinity,

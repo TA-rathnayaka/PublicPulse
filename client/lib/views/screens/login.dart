@@ -19,7 +19,7 @@ class Login extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -93,11 +93,15 @@ class Login extends StatelessWidget {
                         // Email TextField
                         TextField(
                           controller: _emailController,
-                          decoration: kTextFieldDecoration.copyWith(
+                          decoration: InputDecoration(
                             hintText: 'User name or email',
+                            hintStyle: TextStyle(
+                                color: Theme.of(context)
+                                    .hintColor), // Set hint style dynamically
                             suffixIcon: Icon(
                               Icons.person,
-                              color: kTextFieldHintColor,
+                              color: Theme.of(context)
+                                  .hintColor, // Use dynamic hint color
                             ),
                           ),
                         ),
@@ -105,20 +109,25 @@ class Login extends StatelessWidget {
                           builder: (context, provider, child) {
                             return Text(
                               provider.emailError ?? "",
-                              style: TextStyle(color: Colors.red, fontSize: 14),
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
                             );
                           },
                         ),
-
-                        // Password TextField
                         TextField(
                           controller: _passwordController,
                           obscureText: true,
-                          decoration: kTextFieldDecoration.copyWith(
+                          decoration: InputDecoration(
                             hintText: 'Password',
+                            hintStyle: TextStyle(
+                                color: Theme.of(context)
+                                    .hintColor),
                             suffixIcon: Icon(
                               Icons.lock,
-                              color: kTextFieldHintColor,
+                              color: Theme.of(context)
+                                  .hintColor, // Use dynamic hint color
                             ),
                           ),
                         ),
@@ -126,7 +135,10 @@ class Login extends StatelessWidget {
                           builder: (context, provider, child) {
                             return Text(
                               provider.passwordError ?? "",
-                              style: TextStyle(color: Colors.red, fontSize: 14),
+                              style: TextStyle(
+                                color: Colors.red,
+                                fontSize: 14,
+                              ),
                             );
                           },
                         ),
@@ -139,19 +151,26 @@ class Login extends StatelessWidget {
                     child: PrimaryButton(
                       label: "Login",
                       onPressed: () {
-                        // Validate inputs only when the button is pressed
-                        context.read<LoginValidationProvider>().validateEmail(_emailController.text);
-                        context.read<LoginValidationProvider>().validatePassword(_passwordController.text);
+                        context
+                            .read<LoginValidationProvider>()
+                            .validateEmail(_emailController.text);
+                        context
+                            .read<LoginValidationProvider>()
+                            .validatePassword(_passwordController.text);
 
                         if (context.read<LoginValidationProvider>().isValid) {
-                          // If valid, proceed with login
-                          context.read<MyAuthProvider>().signInEmailAndPassword(
-                              _emailController.text, _passwordController.text).then((_) {
+                          context
+                              .read<MyAuthProvider>()
+                              .signInEmailAndPassword(_emailController.text,
+                              _passwordController.text)
+                              .then((_) {
                             if (context.read<MyAuthProvider>().user != null) {
-                              Navigator.pushNamed(context, Dashboard.id);
+                              Navigator.pushReplacementNamed(
+                                  context, SplashScreen.id);
                             } else {
-                              // Show error if login failed
-                              context.read<LoginValidationProvider>().validatePassword('');
+                              context
+                                  .read<LoginValidationProvider>()
+                                  .validatePassword('');
                             }
                           });
                         }
@@ -180,21 +199,28 @@ class Login extends StatelessWidget {
                             padding: const EdgeInsets.all(12),
                             shape: const CircleBorder(),
                             backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.grey.shade300, width: 1),
+                            side: BorderSide(
+                                color: Colors.grey.shade300, width: 1),
                           ),
                           onPressed: () {
                             // Google Sign-In logic
-                            context.read<MyAuthProvider>().signInWithGoogle().then((_) {
+                            context
+                                .read<MyAuthProvider>()
+                                .signInWithGoogle()
+                                .then((_) {
                               if (context.read<MyAuthProvider>().user != null) {
                                 Navigator.pushNamed(context, MainScreen.id);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Google Sign-In failed")),
+                                  const SnackBar(
+                                      content: Text("Google Sign-In failed")),
                                 );
                               }
                             }).catchError((error) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Error: ${error.toString()}")),
+                                SnackBar(
+                                    content:
+                                        Text("Error: ${error.toString()}")),
                               );
                             });
                           },
@@ -211,21 +237,28 @@ class Login extends StatelessWidget {
                             padding: const EdgeInsets.all(12),
                             shape: const CircleBorder(),
                             backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.grey.shade300, width: 1),
+                            side: BorderSide(
+                                color: Colors.grey.shade300, width: 1),
                           ),
                           onPressed: () {
                             // Facebook Sign-In logic
-                            context.read<MyAuthProvider>().signInWithFacebook().then((_) {
+                            context
+                                .read<MyAuthProvider>()
+                                .signInWithFacebook()
+                                .then((_) {
                               if (context.read<MyAuthProvider>().user != null) {
                                 Navigator.pushNamed(context, MainScreen.id);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text("Facebook Sign-In failed")),
+                                  const SnackBar(
+                                      content: Text("Facebook Sign-In failed")),
                                 );
                               }
                             }).catchError((error) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text("Error: ${error.toString()}")),
+                                SnackBar(
+                                    content:
+                                        Text("Error: ${error.toString()}")),
                               );
                             });
                           },
@@ -242,11 +275,11 @@ class Login extends StatelessWidget {
                             padding: const EdgeInsets.all(12),
                             shape: const CircleBorder(),
                             backgroundColor: Colors.white,
-                            side: BorderSide(color: Colors.grey.shade300, width: 1),
+                            side: BorderSide(
+                                color: Colors.grey.shade300, width: 1),
                           ),
                           onPressed: () {
                             // Mobile Sign-In logic
-
                           },
                           child: Icon(
                             Icons.phone_android,
@@ -257,8 +290,6 @@ class Login extends StatelessWidget {
                       ],
                     ),
                   ),
-
-
                   SizedBox(height: 70),
                   FadeInUp(
                     duration: Duration(milliseconds: 2000),

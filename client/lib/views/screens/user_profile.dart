@@ -146,6 +146,105 @@ class UserProfileScreen extends StatelessWidget {
                               ],
                             ),
                           ),
+<<<<<<< HEAD
+=======
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: Consumer<UserProvider>(
+                        builder: (context, userProvider, child) {
+                          final user = userProvider.userDetails;
+
+                          // Check if user is null before proceeding
+                          if (user == null) {
+                            return Center(child: CircularProgressIndicator());
+                          }
+
+                          profileProvider.initializeProfile(user);
+
+                          return Identity(
+                            imagePath: user['profileImage'] ?? "assets/default_profile.jpg",
+                            name: "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim(),
+                            email: user['email'] ?? "No email available",
+                            phoneNumber: user['phoneNumber'] ?? "No phone number available",
+
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    FadeIn(
+                      duration: const Duration(milliseconds: 500),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(20),
+                          child: Column(
+                            children: [
+                              FadeInUp(
+                                duration: const Duration(milliseconds: 500),
+                                child: Consumer<ThemeProvider>(
+                                  builder: (context, themeProvider, child) {
+                                    return MenuRow(
+                                      icon: Icons.dark_mode,
+                                      text: themeProvider.isDarkMode
+                                          ? "Dark Mode"
+                                          : "Light Mode",
+                                      onTap: () {
+                                        themeProvider.toggleTheme();
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                              const Divider(),
+                              FadeInUp(
+                                duration: Duration(milliseconds: 500),
+                                child: MenuRow(
+                                  icon: Icons.privacy_tip,
+                                  text: "Privacy",
+                                ),
+                              ),
+                              const Divider(),
+                              FadeInUp(
+                                duration: Duration(milliseconds: 500),
+                                child: MenuRow(
+                                  icon: Icons.person,
+                                  text: "Personal Info",
+                                  onTap: () {
+                                    final userProvider = context.read<UserProvider>();
+                                    final user = userProvider.userDetails;
+                                    if (user != null)
+                                    _showBottomSheet(context, profileProvider, user);
+                                  },
+
+                                ),
+                              ),
+                              const Divider(),
+                              FadeInUp(
+                                duration: const Duration(milliseconds: 500),
+                                child: Consumer<MyAuthProvider>(
+                                  builder: (context, authProvider, child) {
+                                    return MenuRow(
+                                      icon: Icons.exit_to_app,
+                                      text: "Sign Out",
+                                      onTap: () {
+                                        Provider.of<MyAuthProvider>(context, listen: false)
+                                            .signOut();
+                                        Navigator.pushReplacementNamed(context, SplashScreen.id);
+                                      },
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+>>>>>>> origin/main
                         ),
                       ),
                       const SizedBox(height: 20),
@@ -164,6 +263,7 @@ class UserProfileScreen extends StatelessWidget {
       BuildContext context, ProfileScreenProvider profileProvider) {
     showGeneralDialog(
       context: context,
+<<<<<<< HEAD
       barrierDismissible: true,
       barrierLabel: 'Dismiss',
       transitionDuration: const Duration(milliseconds: 500),
@@ -226,6 +326,64 @@ class UserProfileScreen extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                     ],
+=======
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return FractionallySizedBox(
+          heightFactor: 0.9,
+          child: Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 20,
+              right: 20,
+              top: 20,
+            ),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTextField(context,
+                      label: "Your Name",
+                      controller: profileProvider.nameController),
+                  _buildTextField(context,
+                      label: "User Name",
+                      controller: profileProvider.usernameController),
+                  _buildTextField(context,
+                      label: "Email",
+                      controller: profileProvider.emailController),
+                  _buildTextField(context,
+                      label: "Date of Birth",
+                      controller: profileProvider.dobController,
+                      isDate: true),
+                  _buildTextField(context,
+                      label: "Present Address",
+                      controller: profileProvider.presentAddressController),
+                  _buildTextField(context,
+                      label: "Permanent Address",
+                      controller: profileProvider.permanentAddressController),
+                  _buildTextField(context,
+                      label: "City",
+                      controller: profileProvider.cityController),
+                  _buildTextField(context,
+                      label: "Postal Code",
+                      controller: profileProvider.postalCodeController),
+                  _buildTextField(context,
+                      label: "Country",
+                      controller: profileProvider.countryController),
+                  const SizedBox(height: 20),
+                  Center(
+                    child: PrimaryButton(
+                      label: 'Save',
+                      onPressed: () {
+                        if (profileProvider.validateProfile()) {
+                          profileProvider.saveProfile(context);
+                        }
+                      },
+                    ),
+>>>>>>> origin/main
                   ),
                 ),
               ),
