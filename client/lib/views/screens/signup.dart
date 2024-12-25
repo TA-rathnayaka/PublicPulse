@@ -236,9 +236,10 @@ class Signup extends StatelessWidget {
             String lastName = context.read<SignupValidationProvider>().lastNameController.text;
 
             await context.read<UserProvider>().storeUserDetails(uid, firstName, lastName, email);
+            await context.read<MyAuthProvider>().registerUserAndPassword(email, password);
             await context.read<MyAuthProvider>().signInEmailAndPassword(email, password);
             // Navigate to home or another screen
-            Navigator.pushReplacementNamed(context, MainScreen.id); // Adjust based on your app's flow
+            Navigator.pushReplacementNamed(context, SplashScreen.id); // Adjust based on your app's flow
           } else {
             ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Please fill in all the fields correctly")));
           }
