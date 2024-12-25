@@ -1,9 +1,11 @@
+
+
 import React, { useState } from "react";
 import "./managePolls.scss";
 import PollCreation from "../../components/pollCreation/PollCreation";
 import PollPage from "../../components/PollPage/PollPage"; // Import PollPage
 
-const SettingsPage = () => {
+const ManagePolls = () => {
   const [activeTab, setActiveTab] = useState("polls");
 
   return (
@@ -34,7 +36,7 @@ const SettingsPage = () => {
   );
 };
 
-export default SettingsPage; // Don't forget to export your component
+export default ManagePolls; // Don't forget to export your component
 
 
 
