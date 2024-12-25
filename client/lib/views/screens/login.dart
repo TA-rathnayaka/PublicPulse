@@ -15,6 +15,7 @@ class Login extends StatelessWidget {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _forgotEmailController = TextEditingController(); // Added
 
   @override
   Widget build(BuildContext context) {
@@ -281,7 +282,7 @@ class Login extends StatelessWidget {
                           onPressed: () {
                             // Mobile Sign-In logic
                           },
-                          child: Icon(
+                          child: const Icon(
                             Icons.phone_android,
                             color: Colors.black,
                             size: 24,
@@ -295,9 +296,9 @@ class Login extends StatelessWidget {
                     duration: Duration(milliseconds: 2000),
                     child: TextButton(
                       onPressed: () {
-                        // Forgot password logic here
+                        _showForgotPasswordSheet(context);
                       },
-                      child: Text(
+                      child: const Text(
                         "Forgot Password?",
                         style: TextStyle(color: kPrimaryColor),
                       ),
@@ -309,6 +310,95 @@ class Login extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+  void _showForgotPasswordSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Reset Password",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Enter your email address and we will send you a link to reset your password.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+                TextField(
+                  controller: _forgotEmailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email Address',
+                    hintText: 'example@example.com',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    prefixIcon: const Icon(Icons.email),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  onPressed: () {
+                    final email = _forgotEmailController.text;
+                    if (email.isNotEmpty) {
+                      context.read<MyAuthProvider>().resetPassword(email).then((_) {
+                        Navigator.of(context).pop(); // Close the dialog
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Password reset email sent!')),
+                        );
+                      }).catchError((error) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${error.toString()}')),
+                        );
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please enter an email')),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    "Send Reset Link",
+                    style: TextStyle(fontSize: 18,color: Colors.deepPurple),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog
+                  },
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(fontSize: 16, color: Colors.redAccent),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }
