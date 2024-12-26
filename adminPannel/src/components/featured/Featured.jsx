@@ -6,10 +6,38 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpOutlinedIcon from "@mui/icons-material/KeyboardArrowUpOutlined";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useEffect, useState } from "react";
-import {
-  getTotalUserParticipation,
+import { 
+  getTotalUserParticipation, 
   getTodayAndYesterdayVotes,
+  subscribeToDailyEventCounts 
 } from "../../services/analyticsService";
+
+// Subscription functions
+const subscribeToUserParticipation = (callback) => {
+  return subscribeToDailyEventCounts(
+    (eventData) => {
+      const totalVotes = eventData.reduce((sum, day) => sum + day.count, 0);
+      callback(totalVotes);
+    },
+    (error) => console.error("Error in user participation subscription:", error)
+  );
+};
+
+const subscribeToVotesChange = (callback) => {
+  return subscribeToDailyEventCounts(
+    (eventData) => {
+      const today = new Date().toISOString().split('T')[0];
+      const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+      
+      const todayVotes = eventData.find(day => day.date === today)?.count || 0;
+      const yesterdayVotes = eventData.find(day => day.date === yesterday)?.count || 0;
+      
+      callback(todayVotes, yesterdayVotes);
+    },
+    (error) => console.error("Error in votes change subscription:", error)
+  );
+};
+
 
 const Featured = () => {
   const [loading, setLoading] = useState(true);
@@ -24,11 +52,8 @@ const Featured = () => {
     const fetchData = async () => {
       try {
         setLoading(true);
-
-        // Fetch total participation and today's/yesterday's votes
         const totalVotes = await getTotalUserParticipation();
-        const { todayCount, yesterdayCount, percentageChange } =
-          await getTodayAndYesterdayVotes();
+        const { todayCount, yesterdayCount, percentageChange } = await getTodayAndYesterdayVotes();
 
         setData({
           totalVotes,
@@ -44,14 +69,33 @@ const Featured = () => {
     };
 
     fetchData();
+
+    const unsubscribeParticipation = subscribeToUserParticipation((totalVotes) => {
+      setData((prevData) => ({ ...prevData, totalVotes }));
+    });
+
+    const unsubscribeVotesChange = subscribeToVotesChange((todayCount, yesterdayCount) => {
+      const percentageChange = calculatePercentageChange(todayCount, yesterdayCount);
+      setData((prevData) => ({
+        ...prevData,
+        todayVotes: todayCount,
+        yesterdayVotes: yesterdayCount,
+        percentageChange,
+      }));
+    });
+
+    return () => {
+      unsubscribeParticipation();
+      unsubscribeVotesChange();
+    };
   }, []);
 
-  const {
-    totalVotes,
-    todayVotes,
-    yesterdayVotes,
-    percentageChange,
-  } = data;
+  const calculatePercentageChange = (todayVotes, yesterdayVotes) => {
+    if (yesterdayVotes === 0) return todayVotes > 0 ? 100 : 0;
+    return ((todayVotes - yesterdayVotes) / yesterdayVotes) * 100;
+  };
+
+  const { totalVotes, todayVotes, yesterdayVotes, percentageChange } = data;
 
   return (
     <div className="featured">
@@ -75,10 +119,7 @@ const Featured = () => {
             </div>
             <p className="title">Total votes cast today</p>
             <p className="amount">{todayVotes}</p>
-            <p className="desc">
-              This includes all interactions today. Votes from yesterday may not
-              be reflected.
-            </p>
+            <p className="desc">This includes all interactions today.</p>
             <div className="summary">
               <SummaryItem
                 title="Total Votes"

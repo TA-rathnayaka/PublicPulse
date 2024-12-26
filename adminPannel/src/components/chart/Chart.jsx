@@ -9,32 +9,45 @@ import {
 } from "recharts";
 import CircularProgress from "@mui/material/CircularProgress"; // Material UI loader
 import { useEffect, useState } from "react";
-import { getDailyEventCounts } from "../../services/analyticsService"; // Import only necessary service
+import {
+  subscribeToDailyEventCounts,
+} from "../../services/analyticsService"; // Import real-time listener service
 
 const Chart = ({ aspect, title }) => {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchAnalyticsData = async () => {
-      try {
-        setIsLoading(true);
-        const dailyData = await getDailyEventCounts();
-        setChartData(
-          dailyData.map((entry) => ({
-            name: entry.date, // Date displayed on the X-axis
-            Total: entry.count, // Engagement count on the Y-axis
-          }))
-        );
-      } catch (error) {
-        console.error("Error fetching analytics data:", error);
-      } finally {
+    // Set loading to true initially
+    setIsLoading(true);
+
+    // Subscribe to real-time event count updates
+    const unsubscribe = subscribeToDailyEventCounts(
+      (dailyData) => {
+        // Transform the daily data to match the chart format
+        const transformedData = dailyData.map((entry) => ({
+          name: entry.date, // Date displayed on the X-axis
+          Total: entry.count, // Engagement count on the Y-axis
+        }));
+        setChartData(transformedData);
+        setIsLoading(false); // Stop loading when data is updated
+      },
+      (err) => {
+        setError(err);
         setIsLoading(false);
       }
-    };
+    );
 
-    fetchAnalyticsData();
+    // Cleanup the subscription on component unmount
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
+  if (error) {
+    return <div className="error">Error loading chart data: {error.message}</div>;
+  }
 
   return (
     <div className="chart">
