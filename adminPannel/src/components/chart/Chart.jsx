@@ -9,32 +9,23 @@ import {
 } from "recharts";
 import CircularProgress from "@mui/material/CircularProgress"; // Material UI loader
 import { useEffect, useState } from "react";
-import { getAnalytics, logEvent } from "firebase/analytics";
-import { getFirestore, collection, getDocs } from "firebase/firestore"; // Import Firestore for fetching data
+import { getDailyEventCounts } from "../../services/analyticsService"; // Import only necessary service
 
-const Chart = ({ aspect, title, dataType, loading }) => {
+const Chart = ({ aspect, title }) => {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Initialize Firebase Analytics and Firestore
-  const analytics = getAnalytics();
-  const db = getFirestore();
 
   useEffect(() => {
     const fetchAnalyticsData = async () => {
       try {
         setIsLoading(true);
-        const querySnapshot = await getDocs(collection(db, "analyticsData")); // Replace "analyticsData" with your actual Firestore collection name
-
-        const data = [];
-        querySnapshot.forEach((doc) => {
-          const dataPoint = doc.data();
-          data.push({
-            name: dataPoint.name, // Adjust the field names based on your Firestore document structure
-            Total: dataPoint.Total,
-          });
-        });
-        setChartData(data);
+        const dailyData = await getDailyEventCounts();
+        setChartData(
+          dailyData.map((entry) => ({
+            name: entry.date, // Date displayed on the X-axis
+            Total: entry.count, // Engagement count on the Y-axis
+          }))
+        );
       } catch (error) {
         console.error("Error fetching analytics data:", error);
       } finally {
@@ -43,10 +34,7 @@ const Chart = ({ aspect, title, dataType, loading }) => {
     };
 
     fetchAnalyticsData();
-  }, [db]);
-
-  // Choose data based on the type of report requested
-  const data = dataType === "votes" ? chartData : chartData; // Update this based on your logic
+  }, []);
 
   return (
     <div className="chart">
@@ -58,9 +46,7 @@ const Chart = ({ aspect, title, dataType, loading }) => {
       ) : (
         <ResponsiveContainer width="100%" aspect={aspect}>
           <AreaChart
-            width={730}
-            height={250}
-            data={data}
+            data={chartData}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           >
             <defs>

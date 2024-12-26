@@ -65,17 +65,6 @@ const PollCreation = () => {
     return getDownloadURL(imageRef);
   };
 
-  /*const notifyUsers = async (message) => {
-    const usersCollectionRef = collection(firestore, "users");
-    const usersSnapshot = await getDocs(usersCollectionRef);
-    const userUpdates = usersSnapshot.docs.map(async (doc) => {
-      const userRef = doc.ref;
-      const notification = { message, dateTime: new Date() };
-      await updateDoc(userRef, { notifications: arrayUnion(notification) });
-    });
-    await Promise.all(userUpdates);
-  };*/
-
   useEffect(() => {
     const fetchPolicies = async () => {
       const policySnapshot = await getDocs(collection(firestore, "policies"));

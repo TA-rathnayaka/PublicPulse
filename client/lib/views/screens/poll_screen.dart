@@ -1,3 +1,5 @@
+import 'package:client/services/analytics_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
@@ -8,7 +10,6 @@ import 'package:client/models/poll.dart';
 
 class PollScreen extends StatelessWidget {
   static String id = '/poll-screen';
-
   final Poll poll;
 
   const PollScreen(
@@ -67,7 +68,7 @@ class PollDetails extends StatefulWidget {
   final List<Option> options; // Add options as parameter
   final Poll poll;
 
-  const PollDetails({
+  PollDetails({
     super.key,
     required this.question,
     required this.description,
@@ -188,14 +189,38 @@ class _PollDetailsState extends State<PollDetails> {
                 final selectedOptionId = widget.options
                     .firstWhere((option) => option.text == selectedOption)
                     .optionId;
-                // Check if the vote was successfully added (via _hasVoted)
+
+                // Get the current user
+                final user = FirebaseAuth.instance.currentUser;
+
+                if (user == null) {
+                  // Handle unauthenticated users
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('You need to log in to vote')),
+                  );
+                  return;
+                }
+
+                final userId = user.uid; // Get the user ID
+
+                // Check if the vote was successfully added
                 if (!votesProvider.hasVoted) {
                   await votesProvider.addVote(poll.id!, selectedOptionId!);
                   _voteForOption(selectedOptionId);
+
+                  // Log the vote action in AnalyticsService
+                  final AnalyticsService _analyticsService = AnalyticsService();
+                  _analyticsService.logCustomEvent(
+                    "voteButton",
+                    {
+                      "pollId": poll.id,
+                      "userId": userId, // Include userId
+                    },
+                  );
+
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Voted for $selectedOption')),
                   );
-
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('You have already voted for ${poll.title}')),
@@ -209,6 +234,7 @@ class _PollDetailsState extends State<PollDetails> {
       ),
     );
   }
+
 
   // Helper function to vote for the selected option
   void _voteForOption(String optionId) {
