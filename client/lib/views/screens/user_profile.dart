@@ -1,5 +1,6 @@
 import 'package:client/providers/screens_providers/theme_provider.dart';
 import 'package:client/views/screens/_all.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:client/views/components/identity.dart';
@@ -49,27 +50,35 @@ class UserProfileScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     FadeIn(
                       duration: const Duration(milliseconds: 500),
-                      child: Consumer<UserProvider>(
-                        builder: (context, userProvider, child) {
-                          final user = userProvider.userDetails;
+                      child: Builder(
+                        builder: (context) {
+                          final firebaseUser = FirebaseAuth.instance.currentUser;
 
-                          // Check if user is null before proceeding
-                          if (user == null) {
+                          // Check if the user is null
+                          if (firebaseUser == null) {
                             return Center(child: CircularProgressIndicator());
                           }
 
-                          profileProvider.initializeProfile(user);
+                          // ProfileProvider logic (optional)
+                          profileProvider.initializeProfile({
+                            'displayName': firebaseUser.displayName,
+                            'email': firebaseUser.email,
+                            'phoneNumber': firebaseUser.phoneNumber,
+                            'photoURL': firebaseUser.photoURL,
+                          });
+                          print(profileProvider);
 
                           return Identity(
-                            imagePath: user['profileImage'] ?? "assets/default_profile.jpg",
-                            name: "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim(),
-                            email: user['email'] ?? "No email available",
-                            phoneNumber: user['phoneNumber'] ?? "No phone number available",
-
+                            imagePath: firebaseUser.photoURL ?? "assets/default_profile.jpg",
+                            name: firebaseUser.displayName ?? "No name available",
+                            email: firebaseUser.email ?? "No email available",
+                            phoneNumber: firebaseUser.phoneNumber ?? "No phone number available",
                           );
+
                         },
                       ),
                     ),
+
                     const SizedBox(height: 20),
                     FadeIn(
                       duration: const Duration(milliseconds: 500),
