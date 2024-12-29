@@ -40,6 +40,7 @@ function App() {
                 element={<New inputs={userInputs} title="Add New User" />}
               />
             </Route>
+            
             <Route path="/policies" element={<Policies />} />
             <Route path="/policies/:policyId" element={<PolicyDetails />} />
             <Route path="/products">
