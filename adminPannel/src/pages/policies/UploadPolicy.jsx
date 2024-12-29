@@ -11,6 +11,10 @@ const UploadPolicy = () => {
   const [createdDate, setCreatedDate] = useState('');
   const [policyName, setPolicyName] = useState('');
   const [sectionNo, setSectionNo] = useState('');
+  const [gazetteNumber, setGazetteNumber] = useState('');
+  const [enforcementDate, setEnforcementDate] = useState('');
+  const [authorizedBy, setAuthorizedBy] = useState('');
+  const [additionalComments, setAdditionalComments] = useState('');
 
   const handleFileChange = (e) => {
     setPdfFile(e.target.files[0]);
@@ -29,6 +33,10 @@ const UploadPolicy = () => {
       policyName,
       sectionNo,
       pdfUrl: downloadURL,
+      gazetteNumber,
+      enforcementDate,
+      authorizedBy,
+      additionalComments,
     };
 
     await addDoc(collection(firestore, 'policies'), policyData);
@@ -37,6 +45,7 @@ const UploadPolicy = () => {
 
   return (
     <div className="upload-policy">
+      <h2>Upload New Policy</h2>
       <input type="file" accept="application/pdf" onChange={handleFileChange} />
       <input
         type="text"
@@ -67,6 +76,29 @@ const UploadPolicy = () => {
         placeholder="Section No"
         value={sectionNo}
         onChange={(e) => setSectionNo(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Gazette Number"
+        value={gazetteNumber}
+        onChange={(e) => setGazetteNumber(e.target.value)}
+      />
+      <input
+        type="date"
+        placeholder="Enforcement Date"
+        value={enforcementDate}
+        onChange={(e) => setEnforcementDate(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Authorized By"
+        value={authorizedBy}
+        onChange={(e) => setAuthorizedBy(e.target.value)}
+      />
+      <textarea
+        placeholder="Additional Comments"
+        value={additionalComments}
+        onChange={(e) => setAdditionalComments(e.target.value)}
       />
       <button onClick={handleUpload}>Upload Policy</button>
     </div>
