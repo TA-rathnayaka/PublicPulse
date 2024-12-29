@@ -12,10 +12,12 @@ import { productInputs, userInputs } from "./formSource";
 import "./style/dark.scss";
 import Settings from "./pages/settins/Settings"; // Fixed typo in the import path
 import ManagePolls from "./pages/managePoll/ManagePolls";
-import Policies from "./pages/policies/Policies";
+import Policies from "./pages/policies/PoliciesPage";
 import PolicyDetails from "./pages/policyDetails/PolicyDetails";
 import Notifications from "./pages/notifications/notifications";
 import { NotificationsProvider, useNotifications } from "./context/NotificationsContext";
+import PoliciesPage from './pages/policies/PoliciesPage';
+
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
