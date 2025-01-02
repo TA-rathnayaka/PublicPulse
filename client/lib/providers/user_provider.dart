@@ -36,6 +36,10 @@ class UserProvider with ChangeNotifier {
       final userData = await _userService.getUserDetails(uid!);
       if (userData != null) {
         _userDetails = userData;
+<<<<<<< HEAD
+=======
+
+>>>>>>> pasindu-models
         notifyListeners();
       }
     } catch (e) {
