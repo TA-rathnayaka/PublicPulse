@@ -208,16 +208,6 @@ class _PollDetailsState extends State<PollDetails> {
                   await votesProvider.addVote(poll.id!, selectedOptionId!);
                   _voteForOption(selectedOptionId);
 
-                  // Log the vote action in AnalyticsService
-                  final AnalyticsService _analyticsService = AnalyticsService();
-                  _analyticsService.logCustomEvent(
-                    "voteButton",
-                    {
-                      "pollId": poll.id,
-                      "userId": userId, // Include userId
-                    },
-                  );
-
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Voted for $selectedOption')),
                   );

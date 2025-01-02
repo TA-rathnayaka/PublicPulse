@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // Import useLocation
+import { matchPath, useLocation } from "react-router-dom"; // Import useLocation
 import Sidebar from "./components/sidebar/Sidebar";
 import Navbar from "./components/navbar/Navbar";
 import "./layout.scss";
@@ -68,7 +68,15 @@ const Layout = ({ children }) => {
 
   useEffect(() => {
     // Set navbarData based on the current path
-    switch (location.pathname) {
+    if (matchPath("/polls/:pollId", location.pathname)) {
+      setNavbarData("Poll Details");
+    } 
+    else
+    {
+      switch (location.pathname) {
+      case "/polls/:pollId":
+        setNavbarData("Poll Details");
+        break;
       case "/polls":
         setNavbarData("Polls");
         break;
@@ -92,7 +100,7 @@ const Layout = ({ children }) => {
         break;
       default:
         setNavbarData("Select a page");
-    }
+    }}
   }, [location.pathname]); // Run effect whenever the path changes
 
   // Exclude Layout for specific routes

@@ -64,7 +64,7 @@ class UserProfileScreen extends StatelessWidget {
                             'displayName': firebaseUser.displayName,
                             'email': firebaseUser.email,
                             'phoneNumber': firebaseUser.phoneNumber,
-                            'photoURL': firebaseUser.photoURL,
+                            'photoURL': firebaseUser.photoURL?? "assets/default_profile.jpg",
                           });
                           print(profileProvider);
 
