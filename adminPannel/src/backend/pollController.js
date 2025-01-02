@@ -1,4 +1,4 @@
-import { getFirestore, collection, query, where, onSnapshot } from "firebase/firestore";
+import { getFirestore, collection,doc,getDoc, query, where, onSnapshot } from "firebase/firestore";
 
 const db = getFirestore();
 
@@ -37,3 +37,24 @@ export const listenToOptionVoteCounts = (pollId, onUpdate) => {
     console.error("Error listening to option vote counts:", error);
   }
 };
+
+export const fetchPollById = async (pollId) => {
+  try {
+    const pollDocRef = doc(db, "polls", pollId); // Reference to the specific poll
+    const pollDoc = await getDoc(pollDocRef);
+
+    if (pollDoc.exists()) {
+      const pollData = { id: pollDoc.id, ...pollDoc.data() }; // Combine ID with document data
+      console.log("Fetched Poll:", pollData); // Debugging output
+      return pollData;
+    } else {
+      console.error(`Poll with ID ${pollId} does not exist.`);
+      return null;
+    }
+  } catch (error) {
+    console.error("Error fetching poll by ID:", error);
+    throw error;
+  }
+};
+
+
