@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom"; // Import useLocation
+import { matchPath, useLocation } from "react-router-dom"; // Import useLocation
 import Sidebar from "./components/sidebar/Sidebar";
 import Navbar from "./components/navbar/Navbar";
 import "./layout.scss";
@@ -8,12 +8,13 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 import Forbidden from "./components/forbidden/Forbidden";
 
-
 const Layout = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [navbarData, setNavbarData] = useState(null);
   const [user, loading, authError] = useAuthState(auth);
   const location = useLocation(); // Get current location
+
+  const excludedRoutes = ["/login", "/signup"]; // Routes to exclude from Layout
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -67,7 +68,15 @@ const Layout = ({ children }) => {
 
   useEffect(() => {
     // Set navbarData based on the current path
-    switch (location.pathname) {
+    if (matchPath("/polls/:pollId", location.pathname)) {
+      setNavbarData("Poll Details");
+    } 
+    else
+    {
+      switch (location.pathname) {
+      case "/polls/:pollId":
+        setNavbarData("Poll Details");
+        break;
       case "/polls":
         setNavbarData("Polls");
         break;
@@ -77,29 +86,31 @@ const Layout = ({ children }) => {
       case "/settings":
         setNavbarData("Settings");
         break;
-        case "/users":
+      case "/users":
         setNavbarData("Users");
         break;
-        case "/policies":
-          setNavbarData("Policies");
-          break;
-          case "/notifications":
+      case "/policies":
+        setNavbarData("Policies");
+        break;
+      case "/notifications":
         setNavbarData("Notifications");
         break;
-        case "/statistics":
+      case "/statistics":
         setNavbarData("Statistics");
         break;
       default:
         setNavbarData("Select a page");
-    }
+    }}
   }, [location.pathname]); // Run effect whenever the path changes
 
+  // Exclude Layout for specific routes
+  if (excludedRoutes.includes(location.pathname)) {
+    return <>{children}</>;
+  }
+
+  // If the user is not authenticated, show the Forbidden component
   if (!user) {
-    return (
-      <>
-        <Forbidden />
-      </>
-    );
+    return <Forbidden />;
   }
 
   return (

@@ -1,0 +1,99 @@
+.policies-page {
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: Arial, sans-serif;
+  position: relative;
+}
+
+.policies-page h1 {
+  text-align: center;
+  color: #333;
+}
+
+.sort-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background-color: #f1f1f1;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.sort-container label {
+  font-weight: bold;
+}
+
+.sort-container select {
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.policies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.policy-ticket {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin: 16px 0;
+  border-radius: 8px;
+  background-color: #fff;
+  transition: transform 0.2s;
+}
+
+.policy-ticket:hover {
+  transform: scale(1.02);
+}
+
+.policy-header {
+  font-size: 1.5em;
+  margin-bottom: 8px;
+  color: #007bff;
+}
+
+.policy-content {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.policy-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9em;
+  color: #666;
+}
+
+.policy-meta span {
+  margin-right: 10px;
+}
+
+.policy-ticket a {
+  display: inline-block;
+  margin-top: 10px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+.policy-ticket a:hover {
+  text-decoration: underline;
+}
+
+.policy-ticket button {
+  padding: 8px 12px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.policy-ticket button:hover {
+  background-color: #c82333;
+}

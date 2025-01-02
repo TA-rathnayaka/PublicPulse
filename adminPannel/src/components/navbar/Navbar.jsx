@@ -47,7 +47,7 @@ const Navbar = ({ imgURL, navbarData }) => {
           <div className="item">
             {user ? (
               <img
-                src={imgURL || user.photoURL || "/path/to/default/avatar.png"} // Fallback for avatar
+                src={user.photoURL || "/path/to/default/avatar.png"} // Fallback for avatar
                 alt="User Avatar"
                 className="avatar"
                 onClick={handleImageClick}
@@ -70,7 +70,7 @@ const NavbarItem = ({ icon, counter, onClick }) => (
 );
 
 Navbar.propTypes = {
-  imgURL: PropTypes.string,
+  imgURL: PropTypes.string | null,
   navbarData: PropTypes.string,
 };
 

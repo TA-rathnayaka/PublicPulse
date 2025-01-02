@@ -73,7 +73,7 @@ const Profile = () => {
           <div className="profileDetails">
             <div className="profileImage">
               <img
-                src={userData.imgURL || "https://images.pexels.com/photos/771742/pexels-photo-771742.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500"}
+                src={auth.currentUser.photoURL || ""}
                 alt="Profile"
               />
               <button className="editIcon">✏️</button>
