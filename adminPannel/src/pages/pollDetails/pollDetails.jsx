@@ -13,25 +13,22 @@ const PollDetails = () => {
     const fetchPollData = async () => {
       try {
         const fetchedPoll = await fetchPollById(pollId);
-        setPollData(fetchedPoll); // Set the fetched poll data in state
+        setPollData(fetchedPoll);
       } catch (error) {
         console.error("Error fetching poll details:", error);
       }
     };
     fetchPollData();
 
-    // Start listening for option vote counts and their texts
     const unsubscribe = listenToOptionVoteCounts(pollId, (updatedCounts) => {
-      setOptionCounts(updatedCounts); // Update state with new vote counts and option texts
+      setOptionCounts(updatedCounts);
     });
 
-    // Cleanup the listener when the component unmounts or pollId changes
     return () => {
       unsubscribe();
     };
   }, [pollId]);
 
-  // Fallback for null or undefined values
   const getDateDisplay = (timestamp) => {
     return timestamp?.seconds
       ? new Date(timestamp.seconds * 1000).toLocaleDateString()
@@ -40,10 +37,20 @@ const PollDetails = () => {
 
   return (
     <div>
+      <h1>Poll Details</h1>
 
       {pollData ? (
         <>
-          <h2>{pollData.title || "No title Available"}</h2>
+          {pollData.imageUrl ? (
+            <img
+              src={pollData.imageUrl}
+              alt="Poll Illustration"
+              style={{ maxWidth: "100%", height: "auto", marginBottom: "1em" }}
+            />
+          ) : (
+            <p>No image available for this poll.</p>
+          )}
+          <h2>{pollData.question || "No Question Available"}</h2>
           <p><strong>Description:</strong> {pollData.description || "No Description Available"}</p>
           <p><strong>Created on:</strong> {getDateDisplay(pollData.createdDate)}</p>
           <p><strong>Ends on:</strong> {getDateDisplay(pollData.endDate)}</p>
