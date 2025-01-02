@@ -226,8 +226,6 @@ class Signup extends StatelessWidget {
           if (context.read<SignupValidationProvider>().canProceed()) {
             String email = context.read<SignupValidationProvider>().emailController.text;
             String password = context.read<SignupValidationProvider>().passwordController.text;
-
-            // Register user via MyAuthProvider
             await context.read<MyAuthProvider>().registerUserAndPassword(email, password);
 
             // After successful registration, store user details in UserProvider
