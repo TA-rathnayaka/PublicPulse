@@ -37,7 +37,6 @@ const PollDetails = () => {
 
   return (
     <div>
-      <h1>Poll Details</h1>
 
       {pollData ? (
         <>
@@ -50,7 +49,7 @@ const PollDetails = () => {
           ) : (
             <p>No image available for this poll.</p>
           )}
-          <h2>{pollData.question || "No Question Available"}</h2>
+          <h2>{pollData.title || "No title Available"}</h2>
           <p><strong>Description:</strong> {pollData.description || "No Description Available"}</p>
           <p><strong>Created on:</strong> {getDateDisplay(pollData.createdDate)}</p>
           <p><strong>Ends on:</strong> {getDateDisplay(pollData.endDate)}</p>
