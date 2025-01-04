@@ -35,7 +35,6 @@ const Profile = () => {
 
   useEffect(() => {
     if (userId) {
-      // Fetch user data from local storage
       const storedUserData = localStorage.getItem(`userData_${userId}`);
       if (storedUserData) {
         setUserData(JSON.parse(storedUserData));

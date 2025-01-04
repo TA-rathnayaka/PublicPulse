@@ -1,0 +1,144 @@
+// polldetails.scss
+
+$primary-color: #031329; // Main theme color
+$secondary-color: #5f6368; // Subtle text color
+$accent-color: #34a853; // Accent highlights
+$text-color: #202124; // Default text color
+$background-color: #f8f9fa; // Light background
+$card-background: #ffffff; // Card background
+$border-color: #dadce0; // Border color
+
+.poll-details {
+  max-width: 900px;
+  margin: 3em auto;
+  padding: 2em;
+  background-color: $card-background;
+  border-radius: 12px;
+  border: 1px solid $border-color;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
+  color: $text-color;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  img {
+    display: block;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid $border-color;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1.5em;
+  }
+
+  h2 {
+    font-size: 1.8rem;
+    color: $primary-color;
+    margin-bottom: 1em;
+    text-align: center;
+    font-weight: 500;
+  }
+
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1em;
+    width: 100%; // Aligns text blocks
+    text-align: left;
+
+    strong {
+      color: $text-color;
+      font-weight: 500;
+    }
+  }
+
+  .poll-info {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1em;
+
+    & > * {
+      width: 100%;
+    }
+  }
+
+  .option-votes {
+    margin-top: 2em;
+    width: 100%;
+  
+    h2 {
+      font-size: 1.6rem;
+      color: $primary-color;
+      margin-bottom: 1em;
+      font-weight: 500;
+      text-align: center;
+    }
+  
+    ul {
+      list-style: none;
+      padding: 0;
+  
+      li {
+        display: flex;
+        flex-direction: column; 
+        padding: 1em;
+        margin-bottom: 0.8em;
+        background-color: $background-color;
+        border-radius: 8px;
+        border: 1px solid $border-color;
+        transition: background-color 0.2s ease, box-shadow 0.2s ease;
+  
+        &:hover {
+          background-color: $card-background;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+  
+        .option-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.5em;
+  
+          strong {
+            font-size: 1.1rem;
+            color: $text-color;
+          }
+  
+          span {
+            font-size: 1rem;
+            color: $secondary-color;
+          }
+        }
+  
+        .progress-bar-container {
+            width: 100%;
+            background-color: $border-color;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+          
+            .progress-bar {
+              height: 100%;
+              transition: width 0.3s ease;
+          
+              &.yes {
+                background-color: $accent-color; // Green for "Yes"
+              }
+          
+              &.no {
+                background-color: #ea4335; // Red for "No"
+              }
+          
+              &.undecided {
+                background-color: #fbbc04; // Yellow for "Undecided"
+              }
+            }
+          }
+      }
+    }
+  }
+}
