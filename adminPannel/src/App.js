@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DarkModeContext } from "./context/darkModeContext";
-import Layout from "./layout"; // Import the Layout component
+import Layout from "./layout"; 
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import List from "./pages/list/List";
@@ -10,7 +10,7 @@ import New from "./pages/new/New";
 import Profile from "./pages/profile/Profile";
 import { productInputs, userInputs } from "./formSource";
 import "./style/dark.scss";
-import Settings from "./pages/settins/Settings"; // Fixed typo in the import path
+import Settings from "./pages/settins/Settings"; 
 import ManagePolls from "./pages/managePoll/ManagePolls";
 import Policies from "./pages/policies/PoliciesPage";
 import PolicyDetails from "./pages/policyDetails/PolicyDetails";

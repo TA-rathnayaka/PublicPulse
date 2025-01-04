@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./profile.scss";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import logo from "../../Assets/logo.png"
 
 const Profile = () => {
   const auth = getAuth();
@@ -73,13 +74,12 @@ const Profile = () => {
           <div className="profileDetails">
             <div className="profileImage">
               <img
-                src={auth.currentUser.photoURL || ""}
+                src={auth.currentUser.photoURL || logo}
                 alt="Profile"
               />
               <button className="editIcon">✏️</button>
             </div>
             <div className="form">
-              {/* Form Fields */}
               {[
                 { label: "Your Name", name: "name", placeholder: "Name" },
                 { label: "User Name", name: "username", placeholder: "username" },
