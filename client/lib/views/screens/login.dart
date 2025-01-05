@@ -338,25 +338,23 @@ class Login extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
-                TextField(
-                  controller: _forgotEmailController,
-                  decoration: InputDecoration(
-                    labelText: 'Email Address',
-                    hintText: 'example@example.com',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    prefixIcon: const Icon(Icons.email),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  hintText: 'Email Address',
+                  hintStyle: TextStyle(
+                      color: Theme.of(context)
+                          .hintColor), // Set hint style dynamically
+                  suffixIcon: Icon(
+                    Icons.email,
+                    color: Theme.of(context)
+                        .hintColor, // Use dynamic hint color
                   ),
                 ),
+              ),
                 const SizedBox(height: 20),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    minimumSize: const Size(double.infinity, 50),
-                  ),
+                PrimaryButton(
+                  label: "Send Reset Link",
                   onPressed: () {
                     final email = _forgotEmailController.text;
                     if (email.isNotEmpty) {
@@ -376,21 +374,47 @@ class Login extends StatelessWidget {
                       );
                     }
                   },
-                  child: const Text(
-                    "Send Reset Link",
-                    style: TextStyle(fontSize: 18,color: Colors.deepPurple),
-                  ),
                 ),
                 const SizedBox(height: 10),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog
-                  },
-                  child: const Text(
-                    "Cancel",
-                    style: TextStyle(fontSize: 16, color: Colors.redAccent),
+            Material(
+              color: Colors.transparent,  // Transparent to allow child decoration to be visible
+              child: Container(
+                height: 56,  // Standard minimum height for touch targets
+                width: double.infinity,  // Button width expands to fit its parent
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),  // Slightly larger radius for modern design
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.redAccent,  // Primary red for the cancel button
+                      Colors.redAccent.withOpacity(0.6),  // Slightly faded color for a modern effect
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: Offset(0, 4),  // Creates a shadow effect
+                    ),
+                  ],
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },  // Single onTap callback to handle button press
+                  borderRadius: BorderRadius.circular(12),  // Ensures the ripple effect is within the button's shape
+                  child: Center(
+                    child: const Text(
+                      "Cancel",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,  // Adjusted font size for better readability
+                      ),
+                    ),
                   ),
                 ),
+              ),
+            )
               ],
             ),
           ),

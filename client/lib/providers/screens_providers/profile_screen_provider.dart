@@ -1,5 +1,6 @@
-
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:client/providers/user_provider.dart';
 
 
 class ProfileScreenProvider with ChangeNotifier {
@@ -39,7 +40,7 @@ class ProfileScreenProvider with ChangeNotifier {
   }
 
   Future<void> saveProfile(BuildContext context) async {
-    final userProvider=Provider.of<UserProvider>(context,listen: false);
+    final userProvider= Provider.of<UserProvider>(context,listen: false);
     try{
       // Extract and split the full name into firstName and lastName
       final nameParts = nameController.text.trim().split(' ');
