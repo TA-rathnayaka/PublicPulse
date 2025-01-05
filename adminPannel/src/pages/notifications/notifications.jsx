@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createNotification } from "../../backend/notifications"; // Adjust the import path
+import {  sendNotifications } from "../../backend/notifications"; // Adjust the import path
 
 const NotificationPage = () => {
   const [message, setMessage] = useState("");
@@ -17,7 +17,7 @@ const NotificationPage = () => {
     setSuccess("");
 
     try {
-      const notificationId = await createNotification({
+      const notificationId = await sendNotifications({
         message,
         target,
         type,

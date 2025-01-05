@@ -9,7 +9,7 @@ import {
   deleteDoc,
 } from "firebase/firestore";
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
-import { createNotification } from "../../backend/notifications";
+import { createNotification, sendNotifications } from "../../backend/notifications";
 import { getStorage, ref, uploadBytes, getDownloadURL,deleteObject } from "firebase/storage";
 import "./pollCreation.scss";
 
@@ -147,7 +147,7 @@ const PollCreation = () => {
       if (settings.notifyUsers) {
         console.log("notify users");
         try {
-          await createNotification({
+          await sendNotifications({
             message: `A new poll was added: ${title}`,
             target: "all",
             type: "poll",
