@@ -6,8 +6,8 @@ import 'package:client/views/components/bottom_navbar.dart';
 import 'package:provider/provider.dart';
 import 'package:client/Providers/polls_provider.dart';
 import 'package:client/Providers/notification_provider.dart';
-import 'package:client/providers/user_provider.dart';
 import 'package:client/providers/screens_providers/poll_creation_validation_provider.dart';
+import 'package:client/providers/policy_provider.dart';
 
 enum PageIndex { poll_dashboard, pollCreation, policy_dashbord, userProfile }
 
@@ -30,22 +30,32 @@ class MainScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<PollsProvider>(create: (context) => PollsProvider()),
-        ChangeNotifierProvider<NotificationProvider>(create: (context) => NotificationProvider()),
-        ChangeNotifierProvider<NavigatorProvider>(create: (context) => NavigatorProvider()),
+        ChangeNotifierProvider<PollsProvider>(
+            create: (context) => PollsProvider()),
+        ChangeNotifierProvider<NotificationProvider>(
+            create: (context) => NotificationProvider()),
+        ChangeNotifierProvider<NavigatorProvider>(
+            create: (context) => NavigatorProvider()),
+        ChangeNotifierProvider<PoliciesProvider>(
+            create: (context) => PoliciesProvider()),
       ],
       child: Consumer<NavigatorProvider>(
         builder: (context, navigatorProvider, child) {
-          PageIndex currentPage = PageIndex.values[navigatorProvider.currentIndex];
+          PageIndex currentPage =
+              PageIndex.values[navigatorProvider.currentIndex];
 
           return Scaffold(
             body: _pages[currentPage.index],
             bottomNavigationBar: BottomNavbar(
               items: [
-                BottomNavbarItem(icon: Icons.home, index: PageIndex.poll_dashboard.index),
-                BottomNavbarItem(icon: Icons.create, index: PageIndex.pollCreation.index),
-                BottomNavbarItem(icon: Icons.book, index: PageIndex.policy_dashbord.index),
-                BottomNavbarItem(icon: Icons.settings, index: PageIndex.userProfile.index),
+                BottomNavbarItem(
+                    icon: Icons.home, index: PageIndex.poll_dashboard.index),
+                BottomNavbarItem(
+                    icon: Icons.create, index: PageIndex.pollCreation.index),
+                BottomNavbarItem(
+                    icon: Icons.book, index: PageIndex.policy_dashbord.index),
+                BottomNavbarItem(
+                    icon: Icons.settings, index: PageIndex.userProfile.index),
               ],
               currentIndex: navigatorProvider.currentIndex,
               onTap: (int index) {

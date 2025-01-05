@@ -35,6 +35,7 @@ class VoteService {
       print("Vote created successfully!");
     } catch (e) {
       print("Error creating vote: $e");
+
     }
   }
 

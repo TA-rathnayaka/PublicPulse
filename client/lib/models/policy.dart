@@ -1,4 +1,4 @@
-import 'dart:convert';
+
 
 class Policy {
   final String id;
@@ -6,17 +6,17 @@ class Policy {
   String description;
   String category;
   List<String> tags;
-  String status; // E.g., Draft, Approved, Active, Archived
+  String status;
   String createdBy;
   String? assignedTo;
-  DateTime creationDate;
+  DateTime createdDate;
   DateTime? effectiveDate;
   DateTime? expiryDate;
   bool isActive;
   String? approvedBy;
   DateTime? approvalDate;
-  String? imageUrl; // For displaying policy-related images
-  String? documentUrl; // For linked documents or PDFs
+  String? imageUrl;
+  String? documentUrl;
   Map<String, dynamic> metadata;
   String? notes;
 
@@ -39,17 +39,17 @@ class Policy {
     this.documentUrl,
     this.metadata = const {},
     this.notes,
-  }) : creationDate = creationDate ?? DateTime.now() {
+  }) : createdDate = creationDate ?? DateTime.now() {
     _validateDates();
   }
 
   /// Validate that expiry date is after the effective date and creation date.
   void _validateDates() {
-    if (effectiveDate != null && effectiveDate!.isBefore(creationDate)) {
+    if (effectiveDate != null && effectiveDate!.isBefore(createdDate)) {
       throw ArgumentError('Effective date cannot be before the creation date.');
     }
 
-    if (expiryDate != null && expiryDate!.isBefore(creationDate)) {
+    if (expiryDate != null && expiryDate!.isBefore(createdDate)) {
       throw ArgumentError('Expiry date cannot be before the creation date.');
     }
 
@@ -94,7 +94,7 @@ class Policy {
       'status': status,
       'createdBy': createdBy,
       'assignedTo': assignedTo,
-      'creationDate': creationDate.toIso8601String(),
+      'creationDate': createdDate.toIso8601String(),
       'effectiveDate': effectiveDate?.toIso8601String(),
       'expiryDate': expiryDate?.toIso8601String(),
       'isActive': isActive,
@@ -143,7 +143,7 @@ Tags: ${tags.join(', ')}
 Status: $status
 Created By: $createdBy
 Assigned To: ${assignedTo ?? 'Not Assigned'}
-Creation Date: ${creationDate.toIso8601String()}
+Creation Date: ${createdDate.toIso8601String()}
 Effective Date: ${effectiveDate != null ? effectiveDate!.toIso8601String() : 'Not Set'}
 Expiry Date: ${expiryDate != null ? expiryDate!.toIso8601String() : 'No Expiry'}
 Approved By: ${approvedBy ?? 'Not Approved'}

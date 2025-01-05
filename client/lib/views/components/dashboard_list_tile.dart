@@ -54,12 +54,24 @@ class DashboardListTile extends StatelessWidget {
                         ? Image.network(
                       imageUrl!,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) =>
-                          Image.asset('images/placeholder.png'),
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        color: Theme.of(context).colorScheme.surface, // Box background based on theme
+                        alignment: Alignment.center, // Center the icon within the box
+                        child: Icon(
+                          Icons.image, // Icon to display
+                          size: 50, // Adjust size
+                          color: Theme.of(context).colorScheme.onSurfaceVariant, // Icon color based on theme
+                        ),
+                      ),
                     )
-                        : Image.asset(
-                      'images/placeholder.png',
-                      fit: BoxFit.cover,
+                        : Container(
+                      color: Theme.of(context).colorScheme.surface, // Box background based on theme
+                      alignment: Alignment.center, // Center the icon within the box
+                      child: Icon(
+                        Icons.image, // Icon to display
+                        size: 50, // Adjust size
+                        color: Theme.of(context).colorScheme.onSurfaceVariant, // Icon color based on theme
+                      ),
                     ),
                   ),
                 ),

@@ -5,7 +5,6 @@ import 'package:client/models/poll.dart';
 import 'package:client/Providers/polls_provider.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:client/providers/screens_providers/poll_creation_validation_provider.dart';
-import 'package:client/models/poll.dart';
 
 class PollCreationScreen extends StatelessWidget {
   static String id = '/poll-creation';

@@ -263,7 +263,7 @@ class PolicyDates extends StatelessWidget {
               _buildSectionTitle("Important Dates"),
               _buildExpandableSection(
                 title:
-                    "Creation Date: ${policy.creationDate.toLocal().toString().split(' ')[0]}",
+                    "Creation Date: ${policy.createdDate.toLocal().toString().split(' ')[0]}",
                 content: [
                   _buildPolicyDetail(
                       "Effective Date",
