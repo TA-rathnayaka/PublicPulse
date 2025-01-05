@@ -19,7 +19,6 @@ class PoliciesProvider extends ChangeNotifier {
   Future<void> fetchPolicies() async {
     try {
       _policies = await storageService.getPolicies();
-      print(policies);
       _filteredPolicies = _policies;
       notifyListeners();
     } catch (e) {

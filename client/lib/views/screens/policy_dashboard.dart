@@ -28,6 +28,7 @@ class _PolicyDashboardState extends State<PolicyDashboard> {
 
   @override
   void initState() {
+    super.initState();
     _filteredPolicies =
         Provider.of<PoliciesProvider>(context, listen: false).policies;
   }

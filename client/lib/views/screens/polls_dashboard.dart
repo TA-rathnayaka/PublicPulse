@@ -9,10 +9,8 @@ import 'package:client/providers/screens_providers/poll_screen_provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:client/providers/votes_provider.dart';
 
-class Dashboard extends StatelessWidget {
+class PollDashboard extends StatelessWidget {
   static String id = '/dashboard';
-
-  const Dashboard({super.key});
 
   @override
   Widget build(BuildContext context) {

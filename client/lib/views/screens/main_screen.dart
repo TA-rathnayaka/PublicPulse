@@ -14,7 +14,7 @@ class MainScreen extends StatelessWidget {
   static String id = '/main-screen';
 
   final List<Widget> _pages = [
-    const Dashboard(),
+    PollDashboard(),
     ChangeNotifierProvider(
       create: (_) => PollCreationValidationProvider(),
       child: const PollCreationScreen(),
