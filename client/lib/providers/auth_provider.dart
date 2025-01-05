@@ -36,7 +36,13 @@ class MyAuthProvider with ChangeNotifier {
     _user = FirebaseAuth.instance.currentUser;
     notifyListeners();
   }
-
+  Future<void> resetPassword(String email) async {
+    try {
+      await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      throw Exception("Failed to send password reset email: $e");
+    }
+  }
   void signOut() async {
     await _authService.signOut();
     _user = null;

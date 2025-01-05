@@ -6,10 +6,11 @@ import MoneyOutlinedIcon from "@mui/icons-material/MoneyOutlined";
 import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../../backend/firebase/firebase";
 import "./pollPage.scss";
+import { useNavigate } from "react-router-dom";
 
-const PollPage = () => {
+const  PollPage = () => {
   const [recentPolls, setRecentPolls] = useState([]);
-
+  const navigate = useNavigate();
   // Fetch data from Firebase
   useEffect(() => {
     const fetchPolls = async () => {
@@ -104,7 +105,7 @@ const PollPage = () => {
             <span>Comments: {poll.comments || "Empty"}</span>
             <span>Status: {poll.status}</span>
           </div>
-          <button className="view-details-button">View Details</button>
+          <button className="view-details-button" onClick={() => navigate(`${poll.id}`, { relative: "path" })}>View Details</button>
         </div>
       ))
     ) : (

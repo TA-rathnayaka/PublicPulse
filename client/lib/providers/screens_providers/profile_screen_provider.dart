@@ -39,8 +39,43 @@ class ProfileScreenProvider with ChangeNotifier {
   }
 
   Future<void> saveProfile(BuildContext context) async {
-    // Add logic to save the profile (e.g., make API calls)
-    // After saving, notify listeners or update UI accordingly
+    final userProvider=Provider.of<UserProvider>(context,listen: false);
+    try{
+      // Extract and split the full name into firstName and lastName
+      final nameParts = nameController.text.trim().split(' ');
+      final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
+
+      // Create a map with the updated user data
+      final updatedData = {
+        'firstName': firstName,
+        'lastName': lastName,
+        'username': usernameController.text.trim(),
+        'email': emailController.text.trim(),
+        'dob': dobController.text.trim(),
+        'presentAddress': presentAddressController.text.trim(),
+        'permanentAddress': permanentAddressController.text.trim(),
+        'city': cityController.text.trim(),
+        'postalCode': postalCodeController.text.trim(),
+        'country': countryController.text.trim(),
+      };
+
+      // Call UserProvider to update the data in the database
+      await userProvider.updateUserDetails(updatedData);
+
+      // Show success feedback to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Profile updated successfully!")),
+      );
+
+      notifyListeners();
+    }
+    catch(e){
+      print("Error saving profile: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to update profile.")),
+      );
+    }
   }
 
 

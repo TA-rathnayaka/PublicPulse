@@ -43,10 +43,7 @@ const Home = () => {
             loading={loading || dataLoading} // Pass loading prop to Chart
           />
         </div>
-        <div className="listContainer">
-          <div className="listTitle">Latest Polls</div>
-          <Table loading={loading || dataLoading} /> {/* Pass loading prop to Table */}
-        </div>
+       
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom"; 
 import "./widget.scss";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import CircularProgress from "@mui/material/CircularProgress"; 
 import { subscribeToDataCount } from "../../backend/widgetsController";
 
@@ -66,7 +65,6 @@ const Widget = ({ type }) => {
   }, [type]);
 
   const data = widgetConfig[type] || {};
-  const diff = dataCount !== null ? Math.floor((dataCount / 100) * 20) : 0;
 
   return (
     <div className="widget" style={{ backgroundColor: data.backgroundColor }}>
@@ -89,12 +87,6 @@ const Widget = ({ type }) => {
             <Link to={data.link} className="link" style={{ textDecoration: 'none', color: 'inherit' }}>
               {data.linkText}
             </Link>
-          </div>
-          <div className="right">
-            <div className={`percentage ${diff >= 0 ? "positive" : "negative"}`}>
-              <KeyboardArrowUpIcon />
-              {diff} %
-            </div>
           </div>
         </>
       )}
