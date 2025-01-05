@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../backend/firebase/firebase";
 import { useNotifications } from "../../context/NotificationsContext"; // Import your notifications context
+import logo from "../../Assets/logo.png"
 
 const Navbar = ({ imgURL, navbarData }) => {
   const [user] = useAuthState(auth); // Get user directly
@@ -47,7 +48,7 @@ const Navbar = ({ imgURL, navbarData }) => {
           <div className="item">
             {user ? (
               <img
-                src={user.photoURL || "adminPannel\src\Assets\logo.png"} // Fallback for avatar
+                src={user.photoURL || logo} // Fallback for avatar
                 alt="User Avatar"
                 className="avatar"
                 onClick={handleImageClick}
