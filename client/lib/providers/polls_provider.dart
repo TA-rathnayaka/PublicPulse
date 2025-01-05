@@ -7,10 +7,17 @@ import 'package:client/services/poll_service.dart';
 class PollsProvider extends ChangeNotifier {
   final PollService _storageService = PollService();
   final VoteService _voteService = VoteService();
+  int? _selectedIndex;
   List<Poll> _polls = [];
 
   PollsProvider() {
     fetchPolls();
+  }
+
+  void setSelectedIndex(int index) {
+    if (0 <= index && index < polls.length) {
+      _selectedIndex = index;
+    }
   }
 
   UnmodifiableListView<Poll> get polls => UnmodifiableListView(_polls);
@@ -21,10 +28,11 @@ class PollsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Poll? getPollByIndex(int index) {
-    if (0 <= index && index < polls.length) {
-      Poll selectedPoll = polls[index];
-      // _voteService.checkVotedStatus(optionId);
+  Future<Poll?> getPollByIndex() async {
+    if (_selectedIndex != null) {
+      Poll selectedPoll = polls[_selectedIndex!];
+      selectedPoll.hasVoted =
+          await _voteService.hasUserVoted(selectedPoll.id ?? "");
       return selectedPoll;
     }
     return null;
@@ -42,7 +50,6 @@ class PollsProvider extends ChangeNotifier {
     }
   }
 
-  // Remove a poll by index and sync with Firestore
   Future<void> removePoll(String pollId, int index) async {
     try {
       await _storageService.deletePoll(pollId);
@@ -55,7 +62,6 @@ class PollsProvider extends ChangeNotifier {
     }
   }
 
-  // Update a poll by index and sync with Firestore
   Future<void> updatePoll(String pollId, int index, Poll updatedPoll) async {
     try {
       await _storageService.updatePoll(pollId, updatedPoll);
@@ -69,9 +75,9 @@ class PollsProvider extends ChangeNotifier {
   }
 
 
-  Future<void> addVote(int index, String optionId) async {
+  Future<void> addVote(String optionId) async {
     try {
-      Poll? selected_poll = getPollByIndex(index);
+      Poll? selected_poll = await getPollByIndex();
 
       if (selected_poll != null) {
         await _voteService.addVote(selected_poll.id ?? "", optionId);

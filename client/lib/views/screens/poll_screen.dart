@@ -1,3 +1,4 @@
+import 'package:client/Providers/polls_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
@@ -11,16 +12,14 @@ class PollScreen extends StatelessWidget {
 
   final Poll poll;
 
-  const PollScreen(
-      {super.key,
-      required this.poll});
+  const PollScreen({super.key, required this.poll});
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
         body: Consumer<PollScreenProvider>(
-          builder: (context, pollProvider, child) {
+          builder: (context, pollScreenProvider, child) {
             return SingleChildScrollView(
               child: Container(
                 color: Theme.of(context).scaffoldBackgroundColor,
@@ -28,9 +27,9 @@ class PollScreen extends StatelessWidget {
                   children: <Widget>[
                     PollCarousel(
                       images: poll.imageUrl != null ? [poll.imageUrl!] : [],
-                      currentIndex: pollProvider.currentIndex,
-                      onNext: pollProvider.next,
-                      onPrevious: pollProvider.previous,
+                      currentIndex: pollScreenProvider.currentIndex,
+                      onNext: pollScreenProvider.next,
+                      onPrevious: pollScreenProvider.previous,
                     ),
                     Transform.translate(
                       offset: const Offset(0, -40),
@@ -38,7 +37,7 @@ class PollScreen extends StatelessWidget {
                         question: poll.title,
                         description: poll.description,
                         options: poll.options,
-                        poll: poll, // Add this line
+                        poll: poll,
                       ),
                     ),
                   ],
@@ -49,15 +48,6 @@ class PollScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  // Helper function to calculate the total votes from poll options
-  String _calculateVotes(List<Option> options) {
-    int totalVotes = 0;
-    for (var option in options) {
-      totalVotes += option.voteCount;
-    }
-    return totalVotes.toString();
   }
 }
 
@@ -72,7 +62,8 @@ class PollDetails extends StatefulWidget {
     required this.question,
     required this.description,
     required this.options,
-    required this.poll, // Add this line
+    required this.poll,
+
   });
 
   @override
@@ -84,7 +75,6 @@ class _PollDetailsState extends State<PollDetails> {
 
   @override
   Widget build(BuildContext context) {
-
     return FadeInUp(
       duration: const Duration(milliseconds: 1000),
       child: ClipRRect(
@@ -103,8 +93,6 @@ class _PollDetailsState extends State<PollDetails> {
             children: <Widget>[
               _buildText(widget.question, 26, FontWeight.bold,
                   Theme.of(context).textTheme.bodyMedium?.color, 1300),
-
-
               const SizedBox(height: 15),
               _buildText(widget.description, 18, FontWeight.normal,
                   Theme.of(context).textTheme.bodyMedium?.color, 1700),
@@ -180,24 +168,25 @@ class _PollDetailsState extends State<PollDetails> {
   Widget _buildVoteButton(Poll poll) {
     return FadeInUp(
       duration: const Duration(milliseconds: 1700),
-      child: Consumer<VotesProvider>(
-        builder: (context, votesProvider, child) {
+      child: Consumer<PollsProvider>(
+        builder: (context, pollsProvider, child) {
           return PrimaryButton(
             onPressed: () async {
               if (selectedOption != null) {
                 final selectedOptionId = widget.options
                     .firstWhere((option) => option.text == selectedOption)
                     .optionId;
-                if (!votesProvider.hasVoted) {
-                  await votesProvider.addVote(poll.id!, selectedOptionId!);
+                if (!poll.hasVoted) {
+                  await pollsProvider.addVote(selectedOptionId!);
                   _voteForOption(selectedOptionId);
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Voted for $selectedOption')),
                   );
-
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('You have already voted for ${poll.title}')),
+                    SnackBar(
+                        content:
+                            Text('You have already voted for ${poll.title}')),
                   );
                 }
               }

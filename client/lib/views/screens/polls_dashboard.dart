@@ -7,7 +7,7 @@ import 'package:client/Providers/polls_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:client/providers/screens_providers/poll_screen_provider.dart';
 import 'package:animate_do/animate_do.dart';
-import 'package:client/providers/votes_provider.dart';
+import 'package:client/models/poll.dart';
 
 class PollDashboard extends StatelessWidget {
   static String id = '/dashboard';
@@ -46,28 +46,56 @@ class PollDashboard extends StatelessWidget {
                     shrinkWrap: true,
                     itemCount: pollsProvider.polls.length,
                     itemBuilder: (context, index) {
-                      final poll = pollsProvider.polls[index];
-                      return FadeInUp(
-                        duration: Duration(milliseconds: 1200 + index * 400),
-                        child: DashboardListTile(
-                          title: poll.title,
-                          description: poll.description,
-                          imageUrl: poll.imageUrl ?? 'images/placeholder.png',
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => MultiProvider(
-                                  providers: [
-                                    ChangeNotifierProvider(create: (_) => PollScreenProvider()),
-                                    ChangeNotifierProvider(create: (_) => VotesProvider())
-                                  ],
-                                  child: PollScreen(poll: poll),
-                                ),
-                              ),
-                            );
-                          },
-                        ),
+                      pollsProvider.setSelectedIndex(index);
+                      // Ensure the function call returns a Future<Poll?>
+                      return FutureBuilder<Poll?>(
+                        future: pollsProvider.getPollByIndex(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return Container();
+                          }
+
+                          if (snapshot.hasError) {
+                            return Container();
+                          }
+
+                          final poll = snapshot.data;
+
+                          if (poll == null) {
+                            return Container(); // Placeholder or an empty widget
+                          }
+
+                          return FadeInUp(
+                            duration:
+                                Duration(milliseconds: 1200 + index * 400),
+                            child: DashboardListTile(
+                              title: poll.title ?? "No title",
+                              description: poll.description ?? "No description",
+                              imageUrl:
+                                  poll.imageUrl ?? 'images/placeholder.png',
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MultiProvider(
+                                      providers: [
+                                        ChangeNotifierProvider(
+                                            create: (_) =>
+                                                PollScreenProvider()),
+                                        ChangeNotifierProvider(
+                                          create: (_) => pollsProvider,
+                                          lazy: false,
+                                        )
+                                      ],
+                                      child: PollScreen(poll: poll),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        },
                       );
                     },
                   );

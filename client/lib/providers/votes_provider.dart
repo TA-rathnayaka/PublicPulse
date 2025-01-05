@@ -7,7 +7,6 @@ class VotesProvider with ChangeNotifier {
   bool _hasVoted = false;
 
   bool get hasVoted {
-    _triggerCheckVotedStatus();
     return _hasVoted;
   }
 
@@ -38,7 +37,7 @@ class VotesProvider with ChangeNotifier {
     if (_pollId != null && _optionId != null) {
       try {
 
-        _hasVoted = await _voteService.checkVotedStatus(_optionId!);
+        // _hasVoted = await _voteService.checkVotedStatus(_optionId!);
 
         print(_hasVoted);
         notifyListeners();

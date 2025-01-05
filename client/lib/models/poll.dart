@@ -6,7 +6,7 @@ class Poll {
   List<Option> options;     // List of Option objects
   DateTime createDate;
   DateTime endDate;
-  bool? hasVoted;
+  bool hasVoted;
 
   Poll({
     this.id,
@@ -16,7 +16,7 @@ class Poll {
     required this.options,
     required this.createDate,
     Duration? duration,
-    this.hasVoted,
+    this.hasVoted = false,
   }) : endDate = createDate.add(duration ?? const Duration(days: 0));
 
   Duration get duration => endDate.difference(createDate);

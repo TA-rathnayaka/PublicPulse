@@ -8,6 +8,7 @@ class PollDashBoardCard extends StatelessWidget {
   final String subtitle;
   final String imageUrl;
 
+
   const PollDashBoardCard({
     super.key,
     required this.title,
@@ -27,7 +28,8 @@ class PollDashBoardCard extends StatelessWidget {
                 title: title,
                 description: subtitle,
                 imageUrl: imageUrl,
-                options: [], // Replace with actual options if available
+                options: [],
+                // Replace with actual options if available
                 createDate: DateTime.now(),
                 duration: const Duration(days: 7), // Example duration
               ),
@@ -65,21 +67,25 @@ class PollDashBoardCard extends StatelessWidget {
                   children: [
                     Text(
                       title,
-                      style: kTitleTextStylePollDashBoardCard, // Ensure text is legible and accessible
+                      style:
+                          kTitleTextStylePollDashBoardCard, // Ensure text is legible and accessible
                     ),
-                    const SizedBox(height: 8), // Spacing between title and subtitle
+                    const SizedBox(height: 8),
+                    // Spacing between title and subtitle
                     Text(
                       subtitle,
                       style: kSubtitleTextStylePollDashBoardCard,
                     ),
-                    const SizedBox(height: 16), // Space between subtitle and button
+                    const SizedBox(height: 16),
+                    // Space between subtitle and button
                     ElevatedButton(
                       onPressed: () {
                         // Add button action here
                       },
                       style: ElevatedButton.styleFrom(
                         side: kButtonBorderSidePollDashBoardCard,
-                        backgroundColor: kButtonBackgroundColorPollDashBoardCard,
+                        backgroundColor:
+                            kButtonBackgroundColorPollDashBoardCard,
                         shape: const RoundedRectangleBorder(
                           borderRadius: kButtonBorderRadiusPollDashBoardCard,
                         ),
@@ -87,7 +93,8 @@ class PollDashBoardCard extends StatelessWidget {
                       ),
                       child: const Text(
                         'View Policy',
-                        style: kButtonTextStylePollDashBoardCard, // Ensure text is large and readable
+                        style:
+                            kButtonTextStylePollDashBoardCard, // Ensure text is large and readable
                       ),
                     ),
                   ],
