@@ -220,8 +220,8 @@ class Login extends StatelessWidget {
                               );
                             });
                           },
-                          child: Image.network(
-                            "https://cdn-icons-png.flaticon.com/128/300/300221.png",
+                          child: Image.asset(
+                            "images/google.png",
                             height: 24,
                             width: 24,
                           ),
@@ -258,8 +258,8 @@ class Login extends StatelessWidget {
                               );
                             });
                           },
-                          child: Image.network(
-                            "https://cdn-icons-png.flaticon.com/128/145/145802.png",
+                          child: Image.asset(
+                            "images/facebook.png",
                             height: 24,
                             width: 24,
                           ),
@@ -278,7 +278,7 @@ class Login extends StatelessWidget {
                             // Mobile Sign-In logic
                           },
                           child: Icon(
-                            Icons.phone_android,
+                            Icons.phone_iphone_outlined,
                             color: Colors.black,
                             size: 24,
                           ),

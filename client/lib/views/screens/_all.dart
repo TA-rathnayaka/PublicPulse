@@ -1,5 +1,4 @@
 export 'login.dart';
-export 'notifications.dart';
 export 'poll_creation.dart';
 export 'main_screen.dart';
 export 'poll_screen.dart';

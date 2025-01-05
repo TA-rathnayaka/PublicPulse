@@ -5,7 +5,6 @@ import 'package:client/views/screens/_all.dart';
 import 'package:client/views/components/bottom_navbar.dart';
 import 'package:provider/provider.dart';
 import 'package:client/Providers/polls_provider.dart';
-import 'package:client/Providers/notification_provider.dart';
 import 'package:client/providers/screens_providers/poll_creation_validation_provider.dart';
 import 'package:client/providers/policy_provider.dart';
 
@@ -32,8 +31,6 @@ class MainScreen extends StatelessWidget {
       providers: [
         ChangeNotifierProvider<PollsProvider>(
             create: (context) => PollsProvider()),
-        ChangeNotifierProvider<NotificationProvider>(
-            create: (context) => NotificationProvider()),
         ChangeNotifierProvider<NavigatorProvider>(
             create: (context) => NavigatorProvider()),
         ChangeNotifierProvider<PoliciesProvider>(

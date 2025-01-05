@@ -28,14 +28,8 @@ class _PolicyDashboardState extends State<PolicyDashboard> {
 
   @override
   void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final policiesProvider =
-      Provider.of<PoliciesProvider>(context, listen: false);
-      setState(() {
-        _filteredPolicies = policiesProvider.policies;
-      });
-    });
+    _filteredPolicies =
+        Provider.of<PoliciesProvider>(context, listen: false).policies;
   }
 
   void _filterAndSortPolicies() {
@@ -73,7 +67,6 @@ class _PolicyDashboardState extends State<PolicyDashboard> {
           style: theme.textTheme.headlineSmall?.copyWith(
             fontWeight: FontWeight.bold,
             color: theme.primaryColor,
-
           ),
         ),
         backgroundColor: theme.canvasColor,
@@ -104,9 +97,9 @@ class _PolicyDashboardState extends State<PolicyDashboard> {
                   value: _selectedSort,
                   items: ["Title", "Date"]
                       .map((sort) => DropdownMenuItem<String>(
-                    value: sort,
-                    child: Text(sort),
-                  ))
+                            value: sort,
+                            child: Text(sort),
+                          ))
                       .toList(),
                   onChanged: (value) {
                     setState(() {
@@ -120,18 +113,18 @@ class _PolicyDashboardState extends State<PolicyDashboard> {
                   spacing: 8.0,
                   children: ["Finance", "Health", "Technology"]
                       .map((tag) => FilterChip(
-                    label: Text(tag),
-                    selected: _selectedTags.contains(tag),
-                    onSelected: (isSelected) {
-                      setState(() {
-                        if (isSelected) {
-                          _selectedTags.add(tag);
-                        } else {
-                          _selectedTags.remove(tag);
-                        }
-                      });
-                    },
-                  ))
+                            label: Text(tag),
+                            selected: _selectedTags.contains(tag),
+                            onSelected: (isSelected) {
+                              setState(() {
+                                if (isSelected) {
+                                  _selectedTags.add(tag);
+                                } else {
+                                  _selectedTags.remove(tag);
+                                }
+                              });
+                            },
+                          ))
                       .toList(),
                 ),
                 const Spacer(),
