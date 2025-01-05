@@ -3,8 +3,27 @@ import { storage, firestore } from '../../services/firebaseConfig';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
 import './UploadPolicy.scss';
+import { createNotification } from '../../backend/notifications';
 
 const UploadPolicy = () => {
+  
+
+// Example usage:
+const notifyUser = async (policyId) => {
+  try {
+    const notificationId = await createNotification({
+      message: "New policy has been published",
+      target: "all",  // Target user ID or group
+      type: "policy",  // Notification type
+      metadata: { policyId: policyId }  // Extra data if needed
+    });
+
+    console.log("Notification created with ID:", notificationId);
+  } catch (error) {
+    console.error("Error notifying user:", error.message);
+  }
+};
+
   const [pdfFile, setPdfFile] = useState(null);
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
@@ -39,7 +58,8 @@ const UploadPolicy = () => {
       additionalComments,
     };
 
-    await addDoc(collection(firestore, 'policies'), policyData);
+    const policyref =await addDoc(collection(firestore, 'policies'), policyData);
+    notifyUser(policyref.id)
     console.log('Policy added successfully');
   };
 

@@ -369,8 +369,11 @@ const PollCreation = () => {
               <ToggleSwitch
                 label="Secure Mode"
                 checked={settings.SecureMode}
-                onChange={(checked) =>
+                onChange={(checked) =>{
+                  console.log("secure mode: ",checked);
                   setSettings({ ...settings, useCaptcha: checked })
+                }
+                  
                 }
               />
             </div>

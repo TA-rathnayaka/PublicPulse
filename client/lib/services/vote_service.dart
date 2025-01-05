@@ -6,7 +6,7 @@ class VoteService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AnalyticsService _analyticsService = AnalyticsService();
   // Private method to get the user ID and check if the user has already voted
-  Future<bool> _hasUserVoted(String pollId, String optionId) async {
+  Future<bool> hasUserVoted(String pollId, String optionId) async {
     try {
       final userId = await AuthService().getCurrentUserUid();
 
@@ -28,7 +28,7 @@ class VoteService {
   Future<void> addVote(String pollId, String optionId) async {
     try {
       // Check if the user has already voted for this poll and option
-      final hasVoted = await _hasUserVoted(pollId, optionId);
+      final hasVoted = await hasUserVoted(pollId, optionId);
 
       if (hasVoted) {
         throw Exception('User has already voted for this poll.');
@@ -61,7 +61,7 @@ class VoteService {
   Future<bool> checkVotedStatus(String optionId) async {
     try {
       final userId = await AuthService().getCurrentUserUid();
-      return await _hasUserVoted('', optionId);
+      return await hasUserVoted('', optionId);
     } catch (e) {
       print("Error checking voted status: $e");
       return false;

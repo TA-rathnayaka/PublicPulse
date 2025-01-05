@@ -184,16 +184,23 @@ class _PollDetailsState extends State<PollDetails> {
         builder: (context, votesProvider, child) {
           return PrimaryButton(
             onPressed: () async {
+              print("vote button pressed");
               if (selectedOption != null) {
                 final selectedOptionId = widget.options
                     .firstWhere((option) => option.text == selectedOption)
                     .optionId;
                 if (!votesProvider.hasVoted) {
-                  await votesProvider.addVote(poll.id!, selectedOptionId!);
-                  _voteForOption(selectedOptionId);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Voted for $selectedOption')),
-                  );
+                  if(!await votesProvider.getHasVoted()) {
+                    await votesProvider.addVote(poll.id!, selectedOptionId!);
+                    _voteForOption(selectedOptionId);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Voted for $selectedOption')),
+                    );
+                  }else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('You have already voted for ${poll.title}')),
+                    );
+                  }
 
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(

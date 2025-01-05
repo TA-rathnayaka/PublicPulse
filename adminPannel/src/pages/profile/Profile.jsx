@@ -1,16 +1,26 @@
 import React, { useEffect, useState } from "react";
 import "./profile.scss";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import logo from "../../Assets/logo.png"
+import {
+  getAuth,
+  onAuthStateChanged,
+  updateProfile,
+} from "firebase/auth";
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from "firebase/storage";
+import logo from "../../Assets/logo.png";
 
 const Profile = () => {
   const auth = getAuth();
+  const storage = getStorage();
   const [userId, setUserId] = useState(null);
   const [userData, setUserData] = useState({
     name: "",
     username: "",
     email: "",
-    password: "",
     dob: "",
     presentAddress: "",
     permanentAddress: "",
@@ -19,47 +29,55 @@ const Profile = () => {
     country: "",
     img: "",
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const [showPopup, setShowPopup] = useState(false); // For controlling popup visibility
 
   useEffect(() => {
-    // Listen to auth state change to set userId
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserId(user.uid);
+        setUserData((prev) => ({
+          ...prev,
+          email: user.email || "",
+          img: user.photoURL || logo,
+        }));
       } else {
         setUserId(null);
       }
     });
 
-    return () => unsubscribe(); // Cleanup on component unmount
+    return () => unsubscribe();
   }, [auth]);
 
-  useEffect(() => {
-    if (userId) {
-      const storedUserData = localStorage.getItem(`userData_${userId}`);
-      if (storedUserData) {
-        setUserData(JSON.parse(storedUserData));
-        console.log("Fetched user data:", JSON.parse(storedUserData));
-        console.log("userData: ",userData)
-      }
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+      setPreviewImage(URL.createObjectURL(file)); // Show preview
     }
-  }, [userId]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setUserData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
   };
 
-  const handleSave = () => {
-    if (!userId) {
-      alert("No user is logged in to save the profile.");
+  const handleImageUpload = async () => {
+    if (!imageFile) {
+      alert("Please select an image to upload.");
       return;
     }
-    
-    localStorage.setItem(`userData_${userId}`, JSON.stringify(userData));
-    alert("Profile saved successfully!");
+
+    const storageRef = ref(storage, `profileImages/${userId}`);
+    try {
+      await uploadBytes(storageRef, imageFile);
+      const downloadURL = await getDownloadURL(storageRef);
+      await updateProfile(auth.currentUser, { photoURL: downloadURL });
+
+      setUserData((prev) => ({ ...prev, img: downloadURL }));
+      setPreviewImage(null);
+      setShowPopup(false); // Close the popup
+      alert("Profile image updated successfully!");
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload the image.");
+    }
   };
 
   return (
@@ -73,21 +91,57 @@ const Profile = () => {
           <div className="profileDetails">
             <div className="profileImage">
               <img
-                src={auth.currentUser.photoURL || logo}
+                src={previewImage || userData.img}
                 alt="Profile"
+                onError={(e) => (e.target.src = logo)} // Fallback to default logo
               />
-              <button className="editIcon">✏️</button>
+              <button
+                className="editIcon"
+                onClick={() => setShowPopup(true)}
+              >
+                ✏️
+              </button>
             </div>
             <div className="form">
               {[
                 { label: "Your Name", name: "name", placeholder: "Name" },
-                { label: "User Name", name: "username", placeholder: "username" },
-                { label: "Email", name: "email", placeholder: "example@gmail.com", readOnly: true },
-                { label: "Date of Birth", name: "birthdate", type: "date", placeholder: "25 January 1990" },
-                { label: "Present Address", name: "presentAddress", placeholder: "San Jose, California, USA" },
-                { label: "Permanent Address", name: "permanentAddress", placeholder: "San Jose, California, USA" },
-                { label: "District", name: "district", placeholder: "San Jose" },
-                { label: "Postal Code", name: "postalCode", placeholder: "45962" },
+                {
+                  label: "User Name",
+                  name: "username",
+                  placeholder: "username",
+                },
+                {
+                  label: "Email",
+                  name: "email",
+                  placeholder: "example@gmail.com",
+                  readOnly: true,
+                },
+                {
+                  label: "Date of Birth",
+                  name: "birthdate",
+                  type: "date",
+                  placeholder: "25 January 1990",
+                },
+                {
+                  label: "Present Address",
+                  name: "presentAddress",
+                  placeholder: "San Jose, California, USA",
+                },
+                {
+                  label: "Permanent Address",
+                  name: "permanentAddress",
+                  placeholder: "San Jose, California, USA",
+                },
+                {
+                  label: "District",
+                  name: "district",
+                  placeholder: "San Jose",
+                },
+                {
+                  label: "Postal Code",
+                  name: "postalCode",
+                  placeholder: "45962",
+                },
                 { label: "Country", name: "country", placeholder: "USA" },
               ].map((field) => (
                 <div className="formGroup" key={field.name}>
@@ -96,17 +150,44 @@ const Profile = () => {
                     type={field.type || "text"}
                     name={field.name}
                     value={userData[field.name]}
-                    onChange={handleChange}
+              
                     placeholder={field.placeholder}
                     readOnly={field.readOnly || false}
                   />
                 </div>
               ))}
-              <button className="saveButton" onClick={handleSave}>Save</button>
+              <button className="saveButton" >
+                Save
+              </button>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Popup Modal */}
+      {showPopup && (
+        <div className="popupOverlay">
+          <div className="popupContent">
+            <h3>Upload Profile Picture</h3>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {previewImage && (
+              <img
+                src={previewImage}
+                alt="Preview"
+                className="previewImage"
+              />
+            )}
+            <div className="popupActions">
+              <button onClick={handleImageUpload}>Upload</button>
+              <button onClick={() => setShowPopup(false)}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

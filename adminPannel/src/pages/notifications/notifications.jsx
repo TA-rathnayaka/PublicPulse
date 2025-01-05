@@ -1,80 +1,150 @@
-import React, { useEffect, useState } from 'react';
-import { useNotifications } from '../../context/NotificationsContext';
-import { auth } from '../../services/firebaseConfig';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { collection, query, where, getDocs, writeBatch, doc,updateDoc } from "firebase/firestore"; 
-import { firestore } from '../../services/firebaseConfig'; // Make sure to import firestore
+import React, { useState } from "react";
+import { createNotification } from "../../backend/notifications"; // Adjust the import path
 
-const Notifications = () => {
-  const { notifications } = useNotifications();
-  const [user] = useAuthState(auth);
+const NotificationPage = () => {
+  const [message, setMessage] = useState("");
+  const [target, setTarget] = useState("");
+  const [type, setType] = useState("");
+  const [metadata, setMetadata] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState("");
 
-  // Mark a single notification as read
-  const handleMarkAsRead = async (notificationId) => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess("");
+
     try {
-      const notificationRef = doc(firestore, 'notifications', notificationId);
-      await updateDoc(notificationRef, { isRead: true });
-      console.log(`Notification ${notificationId} marked as read`);
-    } catch (error) {
-      console.error("Error marking notification as read:", error);
-    }
-  };
-
-  // Mark all notifications as read for the user
-  const markAllAsRead = async (userId) => {
-    setLoading(true); // Set loading state
-    try {
-      const notificationsRef = collection(firestore, 'notifications');
-      const q = query(notificationsRef, where('userId', '==', userId));
-      const querySnapshot = await getDocs(q);
-
-      const batch = writeBatch(firestore);
-      querySnapshot.forEach((doc) => {
-        const notificationDocRef = doc.ref;
-        batch.update(notificationDocRef, { isRead: true });
+      const notificationId = await createNotification({
+        message,
+        target,
+        type,
+        metadata: metadata ? JSON.parse(metadata) : {},
       });
-
-      await batch.commit();
-      console.log("All notifications marked as read");
-    } catch (error) {
-      console.error("Error marking notifications as read:", error);
+      setSuccess(`Notification created successfully! ID: ${notificationId}`);
+      setMessage("");
+      setTarget("");
+      setType("");
+      setMetadata("");
+    } catch (err) {
+      setError(err.message);
     } finally {
-      setLoading(false); // Reset loading state
+      setLoading(false);
     }
   };
 
   return (
-    <div className="notifications">
-      <h2>Notifications</h2>
-      {notifications.length === 0 ? (
-        <p>No notifications</p>
-      ) : (
-        <ul>
-          {notifications.map((notification) => (
-            <NotificationItem
-              key={notification.id}
-              notification={notification}
-              onMarkAsRead={handleMarkAsRead}
-            />
-          ))}
-        </ul>
-      )}
-      <button onClick={() => markAllAsRead(user.uid)} disabled={loading}>
-        {loading ? "Marking All as Read..." : "Mark All as Read"}
-      </button>
+    <div style={styles.container}>
+      <h2 style={styles.title}>Send Notification</h2>
+      <form onSubmit={handleSubmit} style={styles.form}>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Message:</label>
+          <input
+            type="text"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            placeholder="Enter notification message"
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Target:</label>
+          <input
+            type="text"
+            value={target}
+            onChange={(e) => setTarget(e.target.value)}
+            placeholder="Enter notification target (user ID or group)"
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Type:</label>
+          <input
+            type="text"
+            value={type}
+            onChange={(e) => setType(e.target.value)}
+            placeholder="Enter notification type (e.g., info, alert)"
+            style={styles.input}
+          />
+        </div>
+        <div style={styles.inputGroup}>
+          <label style={styles.label}>Metadata (JSON format):</label>
+          <textarea
+            value={metadata}
+            onChange={(e) => setMetadata(e.target.value)}
+            placeholder='{"key": "value"}'
+            style={styles.textarea}
+          />
+        </div>
+        <button type="submit" disabled={loading} style={styles.button}>
+          {loading ? "Sending..." : "Send Notification"}
+        </button>
+        {error && <p style={styles.error}>{error}</p>}
+        {success && <p style={styles.success}>{success}</p>}
+      </form>
     </div>
   );
 };
 
-// Component for rendering individual notification items
-const NotificationItem = ({ notification, onMarkAsRead }) => {
-  return (
-    <li className={notification.isRead ? 'read' : 'unread'}>
-      <p>{notification.message}</p>
-      <button onClick={() => onMarkAsRead(notification.id)}>Mark as Read</button>
-    </li>
-  );
+const styles = {
+  container: {
+    maxWidth: "600px",
+    margin: "20px auto",
+    padding: "20px",
+    border: "1px solid #ccc",
+    borderRadius: "8px",
+    backgroundColor: "#f9f9f9",
+    fontFamily: "Arial, sans-serif",
+  },
+  title: {
+    fontSize: "24px",
+    marginBottom: "20px",
+    textAlign: "center",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+  },
+  inputGroup: {
+    marginBottom: "15px",
+  },
+  label: {
+    display: "block",
+    marginBottom: "5px",
+    fontWeight: "bold",
+  },
+  input: {
+    width: "100%",
+    padding: "10px",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+  },
+  textarea: {
+    width: "100%",
+    padding: "10px",
+    borderRadius: "4px",
+    border: "1px solid #ccc",
+    minHeight: "80px",
+  },
+  button: {
+    padding: "10px 20px",
+    borderRadius: "4px",
+    border: "none",
+    backgroundColor: "#007BFF",
+    color: "#fff",
+    cursor: "pointer",
+    fontSize: "16px",
+  },
+  error: {
+    color: "red",
+    marginTop: "10px",
+  },
+  success: {
+    color: "green",
+    marginTop: "10px",
+  },
 };
 
-export default Notifications;
+export default NotificationPage;

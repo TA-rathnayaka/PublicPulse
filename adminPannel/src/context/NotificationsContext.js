@@ -1,39 +1,39 @@
-// NotificationsContext.jsx
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { firestore } from "../services/firebaseConfig";
-import { collection, getDocs, query, where, onSnapshot } from 'firebase/firestore';
-import { useAuthState } from 'react-firebase-hooks/auth';
-import { auth } from '../services/firebaseConfig';
+import React, { createContext, useState, useContext } from "react";
 
+// Create the Notifications Context
 const NotificationsContext = createContext();
 
-export const useNotifications = () => useContext(NotificationsContext);
-
+// Provider component
 export const NotificationsProvider = ({ children }) => {
-  const [user] = useAuthState(auth);
   const [notifications, setNotifications] = useState([]);
 
-  useEffect(() => {
-    if (user) {
-      const notificationsQuery = query(
-        collection(firestore, 'notifications'),
-        where('userId', '==', user.uid)
-      );
+  const addNotification = (message) => {
+    setNotifications((prevNotifications) => [
+      ...prevNotifications,
+      { message, id: Date.now() },
+    ]);
+  };
 
-      const unsubscribe = onSnapshot(notificationsQuery, (snapshot) => {
-        const notificationsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-        setNotifications(notificationsData);
-      });
-
-      return () => unsubscribe();
-    } else {
-      setNotifications([]); // Reset notifications if no user is logged in
-    }
-  }, [user]);
+  const removeNotification = (id) => {
+    setNotifications((prevNotifications) =>
+      prevNotifications.filter((notification) => notification.id !== id)
+    );
+  };
 
   return (
-    <NotificationsContext.Provider value={{ notifications }}>
+    <NotificationsContext.Provider
+      value={{
+        notifications,
+        addNotification,
+        removeNotification,
+      }}
+    >
       {children}
     </NotificationsContext.Provider>
   );
+};
+
+// Custom hook to use notifications
+export const useNotifications = () => {
+  return useContext(NotificationsContext);
 };
