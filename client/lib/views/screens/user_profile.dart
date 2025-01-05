@@ -1,9 +1,6 @@
 import 'package:client/providers/screens_providers/theme_provider.dart';
 import 'package:client/views/screens/_all.dart';
-<<<<<<< HEAD
 import 'package:firebase_auth/firebase_auth.dart';
-=======
->>>>>>> pasindu-models
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:client/views/components/identity.dart';
@@ -51,7 +48,6 @@ class UserProfileScreen extends StatelessWidget {
                     const SizedBox(height: 20),
                     FadeIn(
                       duration: const Duration(milliseconds: 500),
-<<<<<<< HEAD
                       child: Builder(
                         builder: (context) {
                           final firebaseUser = FirebaseAuth.instance.currentUser;
@@ -80,8 +76,6 @@ class UserProfileScreen extends StatelessWidget {
                         },
                       ),
                     ),
-
-=======
                       child: Consumer<UserProvider>(
                         builder: (context, userProvider, child) {
                           final user = userProvider.userDetails;
@@ -104,7 +98,6 @@ class UserProfileScreen extends StatelessWidget {
                         },
                       ),
                     ),
->>>>>>> pasindu-models
                     const SizedBox(height: 20),
                     FadeIn(
                       duration: const Duration(milliseconds: 500),

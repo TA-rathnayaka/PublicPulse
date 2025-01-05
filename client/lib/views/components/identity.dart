@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-<<<<<<< HEAD
-=======
-// The Identity widget
->>>>>>> pasindu-models
+
 class Identity extends StatelessWidget {
   final String imagePath;
   final String name;
@@ -29,7 +26,6 @@ class Identity extends StatelessWidget {
       onTap: onTap,
       child: Container(
         width: double.infinity,
-<<<<<<< HEAD
         padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: theme.cardColor,
@@ -41,18 +37,15 @@ class Identity extends StatelessWidget {
               offset: const Offset(0, 5),
             ),
           ],
-=======
         height: 200,
         decoration: BoxDecoration(
           color: theme.scaffoldBackgroundColor, // Using theme background color
           borderRadius: BorderRadius.circular(20),
->>>>>>> pasindu-models
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-<<<<<<< HEAD
             ClipOval(
               child: imagePath.startsWith('http')
                   ? Image.network(
@@ -77,48 +70,41 @@ class Identity extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 15),
-=======
             CircleAvatar(
               backgroundImage: AssetImage(imagePath),
               radius: 40,
             ),
             const SizedBox(height: 10),
->>>>>>> pasindu-models
             Text(
               name,
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
-<<<<<<< HEAD
                 fontSize: 20,
                 color: theme.colorScheme.onSurface,
-=======
                 fontSize: 21,
                 color: theme.colorScheme.onSurface, // Using the primary text color from the theme
->>>>>>> pasindu-models
               ),
             ),
             const SizedBox(height: 5),
             Text(
               email,
               style: GoogleFonts.poppins(
-<<<<<<< HEAD
                 fontSize: 14,
                 color: theme.textTheme.bodySmall?.color,
-=======
                 color: theme.unselectedWidgetColor, // Using the unselectedWidgetColor for muted text
->>>>>>> pasindu-models
+
               ),
             ),
             const SizedBox(height: 5),
             Text(
               phoneNumber,
               style: GoogleFonts.poppins(
-<<<<<<< HEAD
+
                 fontSize: 14,
                 color: theme.textTheme.bodySmall?.color,
-=======
+
                 color: theme.unselectedWidgetColor, // Using the unselectedWidgetColor for muted text
->>>>>>> pasindu-models
+
               ),
             ),
           ],
@@ -126,8 +112,8 @@ class Identity extends StatelessWidget {
       ),
     );
   }
-<<<<<<< HEAD
+
 }
-=======
+
 }
->>>>>>> pasindu-models
+
