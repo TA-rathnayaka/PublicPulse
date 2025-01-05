@@ -47,7 +47,7 @@ const Navbar = ({ imgURL, navbarData }) => {
           <div className="item">
             {user ? (
               <img
-                src={user.photoURL || "/path/to/default/avatar.png"} // Fallback for avatar
+                src={user.photoURL || "adminPannel\src\Assets\logo.png"} // Fallback for avatar
                 alt="User Avatar"
                 className="avatar"
                 onClick={handleImageClick}

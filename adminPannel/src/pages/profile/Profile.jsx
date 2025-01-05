@@ -73,7 +73,7 @@ const Profile = () => {
           <div className="profileDetails">
             <div className="profileImage">
               <img
-                src={auth.currentUser.photoURL || ""}
+                src={auth.currentUser.photoURL || "@/adminPannel\src\Assets\logo.png"}
                 alt="Profile"
               />
               <button className="editIcon">✏️</button>

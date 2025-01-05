@@ -6,9 +6,11 @@ import {
   getDocs,
   updateDoc,
   arrayUnion,
+  deleteDoc,
 } from "firebase/firestore";
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { createNotification } from "../../backend/notifications";
+import { getStorage, ref, uploadBytes, getDownloadURL,deleteObject } from "firebase/storage";
 import "./pollCreation.scss";
 
 const PollCreation = () => {
@@ -21,13 +23,13 @@ const PollCreation = () => {
   const [options, setOptions] = useState([{ option: "", count: 0 }]);
   const [relatedPolicy, setRelatedPolicy] = useState(null);
   const [settings, setSettings] = useState({
-    multipleSelection: false,
     requireNames: false,
     notifyUsers:false,
-    securityOption: "One vote per IP address",
-    blockVPN: true,
-    useCaptcha: false,
+    securityOption: "off",
+    blockVPN: false,
+    SecureMode: false,
   });
+  const [loading,setLoading]=useState(false);
 
   const storage = getStorage();
 
@@ -70,65 +72,148 @@ const PollCreation = () => {
       const policySnapshot = await getDocs(collection(firestore, "policies"));
       const policyList = policySnapshot.docs.map((doc) => ({
         id: doc.id,
-        title: doc.data().title,
+        title: doc.data().title||doc.data().policyName,
       }));
       setPolicies(policyList);
     };
   
     fetchPolicies();
   }, []);
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    // Input validation
+    if (!title.trim()) {
+      alert("Title is required.");
+      return;
+    }
+    if (!description.trim()) {
+      alert("Description is required.");
+      return;
+    }
+    if (options.length < 2 || options.some((opt) => !opt.option.trim())) {
+      alert("At least two valid options are required.");
+      return;
+    }
+  
+    setLoading(true);
+    let pollRef = null;
+    let optionRefs = [];
+    let imageUrl = null;
+  
     try {
-      // Upload image and get its URL
-      const imageUrl = await uploadImage();
-
-      // Create the poll in the 'polls' collection
-      const pollRef = await addDoc(collection(firestore, "polls"), {
-        title,
-        description,
-        relatedPolicy,
-        imageUrl,
+      // Step 1: Upload image if exists
+      if (imageFile) {
+        const imageRef = ref(storage, `polls/${imageFile.name}`);
+        await uploadBytes(imageRef, imageFile);
+        imageUrl = await getDownloadURL(imageRef);
+      }
+  
+      // Step 2: Create poll document
+      pollRef = await addDoc(collection(firestore, "polls"), {
+        title: title.trim(),
+        description: description.trim(),
+        relatedPolicy: relatedPolicy || null,
+        imageUrl: imageUrl || null,
+        settings,
         createdAt: new Date(),
+        options: [], // Will be populated with option IDs
       });
-
-      // Add associated options to the 'options' collection
-      const pollId = pollRef.id; // Get the poll ID
-      const optionPromises = options
-        .filter((option) => option.option.trim() !== "") // Ignore empty options
-        .map((option) =>
-          addDoc(collection(firestore, "options"), {
-            pollId,
-            text: option.option,
-            voteCount: 0,
-          })
-        );
-
-      await Promise.all(optionPromises); // Wait for all options to be added
-
+  
+      // Step 3: Create options
+      const validOptions = options.filter(opt => opt.option.trim() !== "");
+      const optionIds = [];
+  
+      for (const option of validOptions) {
+        const optionRef = await addDoc(collection(firestore, "options"), {
+          pollId: pollRef.id,
+          text: option.option.trim(),
+          voteCount: 0,
+          createdAt: new Date()
+        });
+        optionRefs.push(optionRef);
+        optionIds.push(optionRef.id);
+      }
+  
+      // Step 4: Update poll with option IDs
+      await updateDoc(pollRef, {
+        options: optionIds
+      });
+      console.log("notify users :", settings.notifyUsers);
+  
+      // Step 5: Send notification if enabled
+      if (settings.notifyUsers) {
+        console.log("notify users");
+        try {
+          await createNotification({
+            message: `A new poll was added: ${title}`,
+            target: "all",
+            type: "poll",
+            metadata: { 
+              pollId: pollRef.id,
+              title: title.trim()
+            },
+          });
+        } catch (notificationError) {
+          console.error("Notification error:", notificationError);
+          throw new Error(`Failed to notify users: ${notificationError.message}`);
+        }
+      }
+  
+      // Success! Reset the form
       alert("Poll created successfully!");
-
-      // Reset form fields
       setTitle("");
       setDescription("");
       setOptions([{ option: "", count: 0 }]);
       setImage(null);
       setImageFile(null);
       setSettings({
-        multipleSelection: false,
-        requireNames: false,
+        ...settings,
         notifyUsers: false,
-        securityOption: "One vote per IP address",
-        blockVPN: true,
-        useCaptcha: false,
       });
+  
     } catch (error) {
-      console.error("Error creating poll:", error);
-      alert("Failed to create poll.");
+      console.error("Error in poll creation process:", error);
+  
+      // Cleanup on error
+      try {
+        // 1. Delete options
+        for (const optionRef of optionRefs) {
+          try {
+            await deleteDoc(optionRef);
+          } catch (optionDeleteError) {
+            console.error("Error deleting option:", optionDeleteError);
+          }
+        }
+  
+        // 2. Delete poll
+        if (pollRef) {
+          await deleteDoc(pollRef);
+        }
+  
+        // 3. Delete image
+        if (imageUrl) {
+          const imageRef = ref(storage, imageUrl);
+          try {
+            await deleteObject(imageRef);
+          } catch (imageDeleteError) {
+            console.error("Error deleting image:", imageDeleteError);
+          }
+        }
+      } catch (cleanupError) {
+        console.error("Error during cleanup:", cleanupError);
+      }
+  
+      alert(`Failed to create poll: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
+  
+  
+  
 
   return (
     <div className="poll-container">
@@ -246,18 +331,7 @@ const PollCreation = () => {
           <div className="settings">
             <h3>Settings</h3>
             <hr />
-            <div className="setting-item">
-              <ToggleSwitch
-                label="Allow selection of multiple options"
-                checked={settings.multipleSelection}
-                onChange={(checked) =>
-                  setSettings({
-                    ...settings,
-                    multipleSelection: checked,
-                  })
-                }
-              />
-            </div>
+          
             <div className="setting-item">
               <ToggleSwitch
                 label="Require participant names"
@@ -279,6 +353,7 @@ const PollCreation = () => {
                 }
               >
                 <option>One vote per IP address</option>
+                <option>off</option>
               </select>
             </div>
             <div className="setting-item">
@@ -292,8 +367,8 @@ const PollCreation = () => {
             </div>
             <div className="setting-item">
               <ToggleSwitch
-                label="Use CAPTCHA"
-                checked={settings.useCaptcha}
+                label="Secure Mode"
+                checked={settings.SecureMode}
                 onChange={(checked) =>
                   setSettings({ ...settings, useCaptcha: checked })
                 }
@@ -303,16 +378,18 @@ const PollCreation = () => {
               Show advanced settings
             </a>
             <div className="setting-item">
-              <ToggleSwitch
-                label="Notify Users"
-                checked={settings.notifyUsers}
-                onChange={(checked) =>
-                  setSettings({
-                    ...settings,
-                    notifyUsers: checked,
-                  })
-                }
-              />
+            
+<ToggleSwitch
+  label="Notify Users"
+  checked={settings.notifyUsers}
+  onChange={(checked) => {
+    console.log("Notify Users updated:", checked); // Add console log to see the update
+    setSettings({
+      ...settings,
+      notifyUsers: checked,
+    });
+  }}
+/>
             </div>
           </div>
           <button type="submit" className="create-poll">

@@ -1,27 +1,23 @@
-<<<<<<< HEAD
+
 import 'package:client/services/analytics_service.dart';
-=======
->>>>>>> pasindu-models
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:client/services/auth_service.dart';
 
 class VoteService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-<<<<<<< HEAD
-  final AnalyticsService _analyticsService = AnalyticsService();
-=======
 
->>>>>>> pasindu-models
+  final AnalyticsService _analyticsService = AnalyticsService();
+
+
+
   // Create a new vote
   Future<void> addVote(String pollId, String optionId) async {
     try {
       final userId = await AuthService().getCurrentUserUid();  // Await the user ID
 
       // Check if the user has already voted for this poll
-      final existingVote = await _firestore
-<<<<<<< HEAD
-          .collection('analytics_events')
-=======
+      final existingVote = await _firestore.collection('analytics_events')
+
           .collection('votes')
 >>>>>>> pasindu-models
           .where('pollId', isEqualTo: pollId)
