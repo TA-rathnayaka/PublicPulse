@@ -1,4 +1,3 @@
-import 'package:client/services/analytics_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -6,13 +5,10 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  final AnalyticsService _analyticsService= AnalyticsService();
 
   Stream<User?> get userStream {
     return _auth.authStateChanges();
   }
-
-
 
   Future<User?> signInWithFacebook() async {
     try {
@@ -30,7 +26,7 @@ class AuthService {
         // Sign in to Firebase with the Facebook credential.
         UserCredential userCredential =
         await _auth.signInWithCredential(facebookCredential);
-        _analyticsService.logCustomEvent("login", {"userId": userCredential.user?.uid}); // track user login
+
         return userCredential.user;
       } else if (loginResult.status == LoginStatus.cancelled) {
         print("Facebook login cancelled by the user.");
@@ -68,7 +64,7 @@ class AuthService {
       // Sign in to Firebase with the Google credential.
       UserCredential userCredential =
       await _auth.signInWithCredential(credential);
-      _analyticsService.logCustomEvent("login", {"userId": userCredential.user?.uid});
+
       return userCredential.user;
     } catch (e) {
       print("Error signing in with Google: $e");
@@ -81,7 +77,6 @@ class AuthService {
       UserCredential result = await _auth.signInWithEmailAndPassword(
           email: email, password: password);
       User? user = result.user;
-      _analyticsService.logCustomEvent("login", {"userId": user?.uid});
       return user;
     } on FirebaseAuthException catch (e) {
       switch (e.code) {

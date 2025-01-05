@@ -36,6 +36,7 @@ class UserProvider with ChangeNotifier {
       final userData = await _userService.getUserDetails(uid!);
       if (userData != null) {
         _userDetails = userData;
+
         notifyListeners();
       }
     } catch (e) {

@@ -188,6 +188,7 @@ class _PollDetailsState extends State<PollDetails> {
                 final selectedOptionId = widget.options
                     .firstWhere((option) => option.text == selectedOption)
                     .optionId;
+                // Check if the vote was successfully added (via _hasVoted)
                 if (!votesProvider.hasVoted) {
                   await votesProvider.addVote(poll.id!, selectedOptionId!);
                   _voteForOption(selectedOptionId);
