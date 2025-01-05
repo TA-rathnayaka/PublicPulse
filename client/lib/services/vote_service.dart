@@ -1,19 +1,20 @@
+import 'package:client/services/analytics_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:client/services/auth_service.dart';
 
 class VoteService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  final AnalyticsService _analyticsService = AnalyticsService();
   // Private method to get the user ID and check if the user has already voted
   Future<bool> _hasUserVoted(String pollId, String optionId) async {
     try {
       final userId = await AuthService().getCurrentUserUid();
 
       final querySnapshot = await _firestore
-          .collection('votes')
-          .where('pollId', isEqualTo: pollId)
-          .where('userId', isEqualTo: userId)
-          .where('optionId', isEqualTo: optionId)
+          .collection('analytics_events')
+          .where('eventName', isEqualTo: "voteButton")
+          .where('eventData.userId', isEqualTo: userId)
+          .where('eventData.pollId', isEqualTo: pollId)
           .get();
 
       return querySnapshot.docs.isNotEmpty;
@@ -37,13 +38,18 @@ class VoteService {
 
       await voteRef.set({
         'pollId': pollId,
-        'userId': await AuthService().getCurrentUserUid(),
         'optionId': optionId,
       });
 
       await _firestore.collection('options').doc(optionId).update({
         'voteCount': FieldValue.increment(1),
       });
+      _analyticsService.logCustomEvent("voteButton",{
+        'userId': await AuthService().getCurrentUserUid(),
+        'pollId':pollId,
+      });
+
+
 
       print("Vote created successfully!");
     } catch (e) {
