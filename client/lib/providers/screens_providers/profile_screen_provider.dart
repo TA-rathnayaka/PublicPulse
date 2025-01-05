@@ -1,8 +1,6 @@
-import 'package:client/views/screens/_all.dart';
+
 import 'package:flutter/material.dart';
-import 'package:client/providers/user_provider.dart';
-import 'package:client/providers/auth_provider.dart';
-import 'package:provider/provider.dart';
+
 
 class ProfileScreenProvider with ChangeNotifier {
   // Controllers

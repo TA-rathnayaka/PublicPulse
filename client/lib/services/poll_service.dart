@@ -13,7 +13,6 @@ class PollService {
         'description': poll.description,
         'imageUrl': poll.imageUrl,
         'createdAt': poll.createDate,
-        // Updated field name
         'relatedPolicy': 'multiple-choice',
         // Assuming this is a constant for now
         'duration': poll.duration.inDays,

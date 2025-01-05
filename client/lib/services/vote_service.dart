@@ -1,58 +1,49 @@
-
-import 'package:client/services/analytics_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:client/services/auth_service.dart';
 
 class VoteService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final Fireb
+  // Private method to get the user ID and check if the user has already voted
+  Future<bool> _hasUserVoted(String pollId, String optionId) async {
+    try {
+      final userId = await AuthService().getCurrentUserUid();
 
-  final AnalyticsService _analyticsService = AnalyticsService();
+      final querySnapshot = await _firestore
+          .collection('votes')
+          .where('pollId', isEqualTo: pollId)
+          .where('userId', isEqualTo: userId)
+          .where('optionId', isEqualTo: optionId)
+          .get();
 
-
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print("Error checking vote status: $e");
+      return false;
+    }
+  }
 
   // Create a new vote
   Future<void> addVote(String pollId, String optionId) async {
     try {
-      final userId = await AuthService().getCurrentUserUid();  // Await the user ID
+      // Check if the user has already voted for this poll and option
+      final hasVoted = await _hasUserVoted(pollId, optionId);
 
-      // Check if the user has already voted for this poll
-      final existingVote = await _firestore.collection('analytics_events')
-
-          .collection('votes')
->>>>>>> pasindu-models
-          .where('pollId', isEqualTo: pollId)
-          .where('userId', isEqualTo: userId)
-          .get();
-
-      if (existingVote.docs.isNotEmpty) {
-<<<<<<< HEAD
-        print('User has already voted for this poll.');
+      if (hasVoted) {
         throw Exception('User has already voted for this poll.');
-
-=======
-        throw Exception('User has already voted for this poll.');
->>>>>>> pasindu-models
       }
 
       final voteRef = _firestore.collection('votes').doc();
 
       await voteRef.set({
         'pollId': pollId,
-<<<<<<< HEAD
-=======
-        'userId': userId,
->>>>>>> pasindu-models
+        'userId': await AuthService().getCurrentUserUid(),
         'optionId': optionId,
       });
 
       await _firestore.collection('options').doc(optionId).update({
         'voteCount': FieldValue.increment(1),
       });
-<<<<<<< HEAD
-      
-      _analyticsService.logCustomEvent("voteButton", {"pollId":pollId,"userId":userId});
-=======
->>>>>>> pasindu-models
 
       print("Vote created successfully!");
     } catch (e) {
@@ -60,36 +51,14 @@ class VoteService {
     }
   }
 
-<<<<<<< HEAD
-  Future<bool> checkVotedStatus(String pollId) async {
-=======
+  // Check if the user has already voted for a specific option
   Future<bool> checkVotedStatus(String optionId) async {
->>>>>>> pasindu-models
     try {
       final userId = await AuthService().getCurrentUserUid();
-
-      // Query the 'votes' collection to check if the user has voted for the specific poll and option
-      final querySnapshot = await _firestore
-<<<<<<< HEAD
-          .collection('analytics_events')
-          .where('userId', isEqualTo: userId)
-          .where('pollId', isEqualTo: pollId)
-=======
-          .collection('votes')
-          .where('userId', isEqualTo: userId)
-          .where('optionId', isEqualTo: optionId)
->>>>>>> pasindu-models
-          .get();
-
-      // If the query returns any documents, the user has already voted for this option
-      return querySnapshot.docs.isNotEmpty;
+      return await _hasUserVoted('', optionId);
     } catch (e) {
       print("Error checking voted status: $e");
-<<<<<<< HEAD
-      return false;   //
-=======
       return false;
->>>>>>> pasindu-models
     }
   }
 }

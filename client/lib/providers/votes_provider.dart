@@ -7,7 +7,6 @@ class VotesProvider with ChangeNotifier {
   bool _hasVoted = false;
 
   bool get hasVoted {
-    // Trigger a background check when the getter is accessed
     _triggerCheckVotedStatus();
     return _hasVoted;
   }
@@ -15,7 +14,6 @@ class VotesProvider with ChangeNotifier {
   String? _pollId;
   String? _optionId;
 
-  // Method to set the pollId and optionId before accessing hasVoted
   void setVoteContext(String pollId, String optionId) {
     _pollId = pollId;
     _optionId = optionId;
@@ -36,9 +34,13 @@ class VotesProvider with ChangeNotifier {
 
   // Asynchronous check for voting status
   Future<void> _triggerCheckVotedStatus() async {
+
     if (_pollId != null && _optionId != null) {
       try {
+
         _hasVoted = await _voteService.checkVotedStatus(_optionId!);
+
+        print(_hasVoted);
         notifyListeners();
       } catch (e) {
         print("Error checking voted status in provider: $e");
