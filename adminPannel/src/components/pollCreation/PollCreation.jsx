@@ -1,21 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import { firestore } from "../../backend/firebase/firebase";
-import { collection, addDoc, getDocs ,updateDoc, arrayUnion } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  updateDoc,
+  arrayUnion,
+} from "firebase/firestore";
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import "./pollCreation.scss";
 
 const PollCreation = () => {
+  const [policies, setPolicies] = useState([]);
   const [showImageUpload, setShowImageUpload] = useState(false);
   const [image, setImage] = useState(null);
   const [imageFile, setImageFile] = useState(null);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [options, setOptions] = useState([{ option: "", count: 0 }]);
-  const [relatedPolicy, setRelatedPolicy] = useState("multiple-choice");
+  const [relatedPolicy, setRelatedPolicy] = useState(null);
   const [settings, setSettings] = useState({
     multipleSelection: false,
     requireNames: false,
+    notifyUsers:false,
     securityOption: "One vote per IP address",
     blockVPN: true,
     useCaptcha: false,
@@ -40,7 +48,7 @@ const PollCreation = () => {
   };
 
   const handleOptionChange = (index, value) => {
-    const newOptions = options.map((opt, i) => 
+    const newOptions = options.map((opt, i) =>
       i === index ? { ...opt, option: value } : opt
     );
     setOptions(newOptions);
@@ -57,35 +65,52 @@ const PollCreation = () => {
     return getDownloadURL(imageRef);
   };
 
-  const notifyUsers = async (message) => {
-    const usersCollectionRef = collection(firestore, "users");
-    const usersSnapshot = await getDocs(usersCollectionRef);
-    const userUpdates = usersSnapshot.docs.map(async (doc) => {
-      const userRef = doc.ref;
-      const notification = { message, dateTime: new Date() };
-      await updateDoc(userRef, { notifications: arrayUnion(notification) });
-    });
-    await Promise.all(userUpdates);
-  };
+  useEffect(() => {
+    const fetchPolicies = async () => {
+      const policySnapshot = await getDocs(collection(firestore, "policies"));
+      const policyList = policySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        title: doc.data().title,
+      }));
+      setPolicies(policyList);
+    };
+  
+    fetchPolicies();
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
+      // Upload image and get its URL
       const imageUrl = await uploadImage();
-      await addDoc(collection(firestore, "polls"), {
+
+      // Create the poll in the 'polls' collection
+      const pollRef = await addDoc(collection(firestore, "polls"), {
         title,
         description,
-        options: options.filter((option) => option.option.trim() !== ""),
         relatedPolicy,
-        settings,
         imageUrl,
         createdAt: new Date(),
       });
-      const message = "New poll added: " + title;
-      await notifyUsers(message);
+
+      // Add associated options to the 'options' collection
+      const pollId = pollRef.id; // Get the poll ID
+      const optionPromises = options
+        .filter((option) => option.option.trim() !== "") // Ignore empty options
+        .map((option) =>
+          addDoc(collection(firestore, "options"), {
+            pollId,
+            text: option.option,
+            voteCount: 0,
+          })
+        );
+
+      await Promise.all(optionPromises); // Wait for all options to be added
 
       alert("Poll created successfully!");
+
+      // Reset form fields
       setTitle("");
       setDescription("");
       setOptions([{ option: "", count: 0 }]);
@@ -94,6 +119,7 @@ const PollCreation = () => {
       setSettings({
         multipleSelection: false,
         requireNames: false,
+        notifyUsers: false,
         securityOption: "One vote per IP address",
         blockVPN: true,
         useCaptcha: false,
@@ -113,7 +139,7 @@ const PollCreation = () => {
             <input
               type="text"
               id="title"
-              placeholder="Type your question here"
+              placeholder="Type your title here"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
@@ -173,9 +199,7 @@ const PollCreation = () => {
                     type="text"
                     placeholder={`Option ${index + 1}`}
                     value={optionObj.option}
-                    onChange={(e) =>
-                      handleOptionChange(index, e.target.value)
-                    }
+                    onChange={(e) => handleOptionChange(index, e.target.value)}
                   />
                   {index > 1 && (
                     <button
@@ -197,6 +221,22 @@ const PollCreation = () => {
                 </button>
               </div>
             </div>
+          </div>
+          <div className="form-group">
+            <label htmlFor="relatedPolicy">Related Policy</label>
+            <select
+              id="relatedPolicy"
+              className="form-control"
+              value={relatedPolicy || ""}
+              onChange={(e) => setRelatedPolicy(e.target.value || null)}
+            >
+              <option value="">-- None --</option>
+              {policies.map((policy) => (
+                <option key={policy.id} value={policy.title}>
+                  {policy.title}
+                </option>
+              ))}
+            </select>
           </div>
         </form>
       </div>
@@ -262,6 +302,18 @@ const PollCreation = () => {
             <a href="#" className="advanced-settings">
               Show advanced settings
             </a>
+            <div className="setting-item">
+              <ToggleSwitch
+                label="Notify Users"
+                checked={settings.notifyUsers}
+                onChange={(checked) =>
+                  setSettings({
+                    ...settings,
+                    notifyUsers: checked,
+                  })
+                }
+              />
+            </div>
           </div>
           <button type="submit" className="create-poll">
             Create poll

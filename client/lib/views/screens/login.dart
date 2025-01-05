@@ -12,6 +12,7 @@ class Login extends StatelessWidget {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _forgotEmailController = TextEditingController(); // Added
 
   @override
   Widget build(BuildContext context) {
@@ -277,6 +278,7 @@ class Login extends StatelessWidget {
                           onPressed: () {
                             // Mobile Sign-In logic
                           },
+
                           child: Icon(
                             Icons.phone_iphone_outlined,
                             color: Colors.black,
@@ -291,9 +293,9 @@ class Login extends StatelessWidget {
                     duration: Duration(milliseconds: 2000),
                     child: TextButton(
                       onPressed: () {
-                        // Forgot password logic here
+                        _showForgotPasswordSheet(context);
                       },
-                      child: Text(
+                      child: const Text(
                         "Forgot Password?",
                         style: TextStyle(color: kPrimaryColor),
                       ),
@@ -305,6 +307,119 @@ class Login extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+  void _showForgotPasswordSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: MediaQuery.of(context).viewInsets,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text(
+                  "Reset Password",
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Enter your email address and we will send you a link to reset your password.",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                const SizedBox(height: 20),
+              TextField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  hintText: 'Email Address',
+                  hintStyle: TextStyle(
+                      color: Theme.of(context)
+                          .hintColor), // Set hint style dynamically
+                  suffixIcon: Icon(
+                    Icons.email,
+                    color: Theme.of(context)
+                        .hintColor, // Use dynamic hint color
+                  ),
+                ),
+              ),
+                const SizedBox(height: 20),
+                PrimaryButton(
+                  label: "Send Reset Link",
+                  onPressed: () {
+                    final email = _forgotEmailController.text;
+                    if (email.isNotEmpty) {
+                      context.read<MyAuthProvider>().resetPassword(email).then((_) {
+                        Navigator.of(context).pop(); // Close the dialog
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('Password reset email sent!')),
+                        );
+                      }).catchError((error) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('Error: ${error.toString()}')),
+                        );
+                      });
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please enter an email')),
+                      );
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+            Material(
+              color: Colors.transparent,  // Transparent to allow child decoration to be visible
+              child: Container(
+                height: 56,  // Standard minimum height for touch targets
+                width: double.infinity,  // Button width expands to fit its parent
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),  // Slightly larger radius for modern design
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.redAccent,  // Primary red for the cancel button
+                      Colors.redAccent.withOpacity(0.6),  // Slightly faded color for a modern effect
+                    ],
+                  ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 6,
+                      offset: Offset(0, 4),  // Creates a shadow effect
+                    ),
+                  ],
+                ),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },  // Single onTap callback to handle button press
+                  borderRadius: BorderRadius.circular(12),  // Ensures the ripple effect is within the button's shape
+                  child: Center(
+                    child: const Text(
+                      "Cancel",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,  // Adjusted font size for better readability
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

@@ -114,7 +114,7 @@ class UserProfileScreen extends StatelessWidget {
                                     final userProvider = context.read<UserProvider>();
                                     final user = userProvider.userDetails;
                                     if (user != null)
-                                    _showBottomSheet(context, profileProvider, user);
+                                      _showBottomSheet(context, profileProvider, user);
                                   },
 
                                 ),

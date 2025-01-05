@@ -9,44 +9,45 @@ import {
 } from "recharts";
 import CircularProgress from "@mui/material/CircularProgress"; // Material UI loader
 import { useEffect, useState } from "react";
-import { getAnalytics, logEvent } from "firebase/analytics";
-import { getFirestore, collection, getDocs } from "firebase/firestore"; // Import Firestore for fetching data
+import {
+  subscribeToDailyEventCounts,
+} from "../../services/analyticsService"; // Import real-time listener service
 
-const Chart = ({ aspect, title, dataType, loading }) => {
+const Chart = ({ aspect, title }) => {
   const [chartData, setChartData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  // Initialize Firebase Analytics and Firestore
-  const analytics = getAnalytics();
-  const db = getFirestore();
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchAnalyticsData = async () => {
-      try {
-        setIsLoading(true);
-        const querySnapshot = await getDocs(collection(db, "analyticsData")); // Replace "analyticsData" with your actual Firestore collection name
+    // Set loading to true initially
+    setIsLoading(true);
 
-        const data = [];
-        querySnapshot.forEach((doc) => {
-          const dataPoint = doc.data();
-          data.push({
-            name: dataPoint.name, // Adjust the field names based on your Firestore document structure
-            Total: dataPoint.Total,
-          });
-        });
-        setChartData(data);
-      } catch (error) {
-        console.error("Error fetching analytics data:", error);
-      } finally {
+    // Subscribe to real-time event count updates
+    const unsubscribe = subscribeToDailyEventCounts(
+      (dailyData) => {
+        // Transform the daily data to match the chart format
+        const transformedData = dailyData.map((entry) => ({
+          name: entry.date, // Date displayed on the X-axis
+          Total: entry.count, // Engagement count on the Y-axis
+        }));
+        setChartData(transformedData);
+        setIsLoading(false); // Stop loading when data is updated
+      },
+      (err) => {
+        setError(err);
         setIsLoading(false);
       }
+    );
+
+    // Cleanup the subscription on component unmount
+    return () => {
+      unsubscribe();
     };
+  }, []);
 
-    fetchAnalyticsData();
-  }, [db]);
-
-  // Choose data based on the type of report requested
-  const data = dataType === "votes" ? chartData : chartData; // Update this based on your logic
+  if (error) {
+    return <div className="error">Error loading chart data: {error.message}</div>;
+  }
 
   return (
     <div className="chart">
@@ -58,9 +59,7 @@ const Chart = ({ aspect, title, dataType, loading }) => {
       ) : (
         <ResponsiveContainer width="100%" aspect={aspect}>
           <AreaChart
-            width={730}
-            height={250}
-            data={data}
+            data={chartData}
             margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
           >
             <defs>

@@ -4,7 +4,6 @@ class UserService {
 
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
 
-
   Future<void> storeUserDetails(
       String? uid, String firstName, String lastName, String email) async {
     try {
@@ -25,6 +24,7 @@ class UserService {
     }
   }
 
+  // Fetch user details
   Future<Map<String, dynamic>?> getUserDetails(String uid) async {
     try {
       DocumentSnapshot doc = await _fireStore.collection('users').doc(uid).get();
@@ -37,6 +37,17 @@ class UserService {
     } catch (e) {
       print("Error fetching user details for UID $uid: $e");
       return null;
+    }
+  }
+
+  // Update user details
+  Future<void> updateUserDetails(String uid, Map<String, dynamic> updatedData) async {
+    try {
+      await _fireStore.collection('users').doc(uid).update(updatedData);
+      print("User details updated successfully.");
+    } catch (e) {
+      print("Error updating user details for UID $uid: $e");
+      throw Exception("Failed to update user details.");
     }
   }
 }

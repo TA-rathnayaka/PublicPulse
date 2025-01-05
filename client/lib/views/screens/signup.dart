@@ -95,7 +95,7 @@ class Signup extends StatelessWidget {
           const SizedBox(height: 20),
           _buildLoginButton(context),
           const SizedBox(height: 70),
-          _buildForgotPasswordButton(),
+         
         ],
       ),
     );
@@ -226,8 +226,6 @@ class Signup extends StatelessWidget {
           if (context.read<SignupValidationProvider>().canProceed()) {
             String email = context.read<SignupValidationProvider>().emailController.text;
             String password = context.read<SignupValidationProvider>().passwordController.text;
-
-            // Register user via MyAuthProvider
             await context.read<MyAuthProvider>().registerUserAndPassword(email, password);
 
             // After successful registration, store user details in UserProvider
@@ -260,18 +258,5 @@ class Signup extends StatelessWidget {
     );
   }
 
-  Widget _buildForgotPasswordButton() {
-    return FadeInUp(
-      duration: const Duration(milliseconds: 2000),
-      child: TextButton(
-        onPressed: () {
-          // Forgot password logic here
-        },
-        child: const Text(
-          "Forgot Password?",
-          style: TextStyle(color: kPrimaryColor),
-        ),
-      ),
-    );
-  }
+
 }

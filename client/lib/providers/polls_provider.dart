@@ -83,7 +83,6 @@ class PollsProvider extends ChangeNotifier {
       }
     } catch (e) {
       print("Error adding vote in provider: $e");
-      // Indicates failure (e.g., if an error occurs)
     }
   }
 }
