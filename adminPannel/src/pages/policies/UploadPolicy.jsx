@@ -6,15 +6,22 @@ import './UploadPolicy.scss';
 
 const UploadPolicy = () => {
   const [pdfFile, setPdfFile] = useState(null);
+  const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [category, setCategory] = useState('');
+  const [tags, setTags] = useState('');
+  const [status, setStatus] = useState('');
+  const [createdBy, setCreatedBy] = useState('');
+  const [assignedTo, setAssignedTo] = useState('');
   const [createdDate, setCreatedDate] = useState('');
-  const [policyName, setPolicyName] = useState('');
-  const [sectionNo, setSectionNo] = useState('');
-  const [gazetteNumber, setGazetteNumber] = useState('');
-  const [enforcementDate, setEnforcementDate] = useState('');
-  const [authorizedBy, setAuthorizedBy] = useState('');
-  const [additionalComments, setAdditionalComments] = useState('');
+  const [effectiveDate, setEffectiveDate] = useState('');
+  const [expiryDate, setExpiryDate] = useState('');
+  const [isActive, setIsActive] = useState(true);
+  const [approvedBy, setApprovedBy] = useState('');
+  const [approvalDate, setApprovalDate] = useState('');
+  const [notes, setNotes] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [metadata, setMetadata] = useState('');
 
   const handleFileChange = (e) => {
     setPdfFile(e.target.files[0]);
@@ -27,16 +34,23 @@ const UploadPolicy = () => {
     const downloadURL = await getDownloadURL(storageRef);
 
     const policyData = {
+      title,
       description,
       category,
+      tags: tags.split(',').map(tag => tag.trim()),  // Convert comma-separated tags to an array
+      status,
+      createdBy,
+      assignedTo,
       createdDate,
-      policyName,
-      sectionNo,
+      effectiveDate,
+      expiryDate,
+      isActive,
+      approvedBy,
+      approvalDate,
       pdfUrl: downloadURL,
-      gazetteNumber,
-      enforcementDate,
-      authorizedBy,
-      additionalComments,
+      imageUrl,
+      metadata: JSON.parse(metadata || '{}'), // Parse metadata if exists
+      notes,
     };
 
     await addDoc(collection(firestore, 'policies'), policyData);
@@ -49,7 +63,13 @@ const UploadPolicy = () => {
       <input type="file" accept="application/pdf" onChange={handleFileChange} />
       <input
         type="text"
-        placeholder="Short Description"
+        placeholder="Title"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="Description"
         value={description}
         onChange={(e) => setDescription(e.target.value)}
       />
@@ -60,45 +80,90 @@ const UploadPolicy = () => {
         onChange={(e) => setCategory(e.target.value)}
       />
       <input
-        type="date"
-        placeholder="Created Date"
-        value={createdDate}
-        onChange={(e) => setCreatedDate(e.target.value)}
+        type="text"
+        placeholder="Tags (comma separated)"
+        value={tags}
+        onChange={(e) => setTags(e.target.value)}
       />
       <input
         type="text"
-        placeholder="Policy Name"
-        value={policyName}
-        onChange={(e) => setPolicyName(e.target.value)}
+        placeholder="Status"
+        value={status}
+        onChange={(e) => setStatus(e.target.value)}
       />
       <input
         type="text"
-        placeholder="Section No"
-        value={sectionNo}
-        onChange={(e) => setSectionNo(e.target.value)}
+        placeholder="Created By"
+        value={createdBy}
+        onChange={(e) => setCreatedBy(e.target.value)}
       />
       <input
         type="text"
-        placeholder="Gazette Number"
-        value={gazetteNumber}
-        onChange={(e) => setGazetteNumber(e.target.value)}
+        placeholder="Assigned To"
+        value={assignedTo}
+        onChange={(e) => setAssignedTo(e.target.value)}
       />
-      <input
-        type="date"
-        placeholder="Enforcement Date"
-        value={enforcementDate}
-        onChange={(e) => setEnforcementDate(e.target.value)}
-      />
+      <div className="date-field">
+        <label>Created Date:</label>
+        <input
+          type="date"
+          value={createdDate}
+          onChange={(e) => setCreatedDate(e.target.value)}
+        />
+      </div>
+      <div className="date-field">
+        <label>Effective Date:</label>
+        <input
+          type="date"
+          value={effectiveDate}
+          onChange={(e) => setEffectiveDate(e.target.value)}
+        />
+      </div>
+      <div className="date-field">
+        <label>Expiry Date:</label>
+        <input
+          type="date"
+          value={expiryDate}
+          onChange={(e) => setExpiryDate(e.target.value)}
+        />
+      </div>
+      <label>
+        Is Active:
+        <input
+          type="checkbox"
+          checked={isActive}
+          onChange={(e) => setIsActive(e.target.checked)}
+        />
+      </label>
       <input
         type="text"
-        placeholder="Authorized By"
-        value={authorizedBy}
-        onChange={(e) => setAuthorizedBy(e.target.value)}
+        placeholder="Approved By"
+        value={approvedBy}
+        onChange={(e) => setApprovedBy(e.target.value)}
       />
+      <div className="date-field">
+        <label>Approval Date:</label>
+        <input
+          type="date"
+          value={approvalDate}
+          onChange={(e) => setApprovalDate(e.target.value)}
+        />
+      </div>
+      <input
+        type="text"
+        placeholder="Image URL"
+        value={imageUrl}
+        onChange={(e) => setImageUrl(e.target.value)}
+      />
+      {/* <textarea
+        placeholder="Metadata (JSON)"
+        value={metadata}
+        onChange={(e) => setMetadata(e.target.value)}
+      /> */}
       <textarea
-        placeholder="Additional Comments"
-        value={additionalComments}
-        onChange={(e) => setAdditionalComments(e.target.value)}
+        placeholder="Notes"
+        value={notes}
+        onChange={(e) => setNotes(e.target.value)}
       />
       <button onClick={handleUpload}>Upload Policy</button>
     </div>
