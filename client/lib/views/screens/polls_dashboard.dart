@@ -48,7 +48,7 @@ class PollDashboard extends StatelessWidget {
                     itemBuilder: (context, index) {
                       final poll = pollsProvider.polls[index];
                       return FadeInUp(
-                        duration: Duration(milliseconds: 1200 + index * 100),
+                        duration: Duration(milliseconds: 1200 + index * 400),
                         child: DashboardListTile(
                           title: poll.title,
                           description: poll.description,
