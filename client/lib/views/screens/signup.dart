@@ -95,7 +95,7 @@ class Signup extends StatelessWidget {
           const SizedBox(height: 20),
           _buildLoginButton(context),
           const SizedBox(height: 70),
-          _buildForgotPasswordButton(),
+         
         ],
       ),
     );
@@ -258,18 +258,5 @@ class Signup extends StatelessWidget {
     );
   }
 
-  Widget _buildForgotPasswordButton() {
-    return FadeInUp(
-      duration: const Duration(milliseconds: 2000),
-      child: TextButton(
-        onPressed: () {
-          // Forgot password logic here
-        },
-        child: const Text(
-          "Forgot Password?",
-          style: TextStyle(color: kPrimaryColor),
-        ),
-      ),
-    );
-  }
+
 }
