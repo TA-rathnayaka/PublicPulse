@@ -3,7 +3,7 @@ import 'package:client/services/auth_service.dart';
 
 class VoteService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
+  final Fireb
   // Private method to get the user ID and check if the user has already voted
   Future<bool> _hasUserVoted(String pollId, String optionId) async {
     try {
