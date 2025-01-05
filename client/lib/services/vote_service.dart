@@ -4,19 +4,32 @@ import 'package:client/services/auth_service.dart';
 class VoteService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Create a new vote
-  Future<void> addVote(String pollId, String optionId) async {
+  // Private method to get the user ID and check if the user has already voted
+  Future<bool> _hasUserVoted(String pollId, String optionId) async {
     try {
-      final userId = await AuthService().getCurrentUserUid();  // Await the user ID
+      final userId = await AuthService().getCurrentUserUid();
 
-      // Check if the user has already voted for this poll
-      final existingVote = await _firestore
+      final querySnapshot = await _firestore
           .collection('votes')
           .where('pollId', isEqualTo: pollId)
           .where('userId', isEqualTo: userId)
+          .where('optionId', isEqualTo: optionId)
           .get();
 
-      if (existingVote.docs.isNotEmpty) {
+      return querySnapshot.docs.isNotEmpty;
+    } catch (e) {
+      print("Error checking vote status: $e");
+      return false;
+    }
+  }
+
+  // Create a new vote
+  Future<void> addVote(String pollId, String optionId) async {
+    try {
+      // Check if the user has already voted for this poll and option
+      final hasVoted = await _hasUserVoted(pollId, optionId);
+
+      if (hasVoted) {
         throw Exception('User has already voted for this poll.');
       }
 
@@ -24,7 +37,7 @@ class VoteService {
 
       await voteRef.set({
         'pollId': pollId,
-        'userId': userId,
+        'userId': await AuthService().getCurrentUserUid(),
         'optionId': optionId,
       });
 
@@ -38,19 +51,11 @@ class VoteService {
     }
   }
 
+  // Check if the user has already voted for a specific option
   Future<bool> checkVotedStatus(String optionId) async {
     try {
       final userId = await AuthService().getCurrentUserUid();
-
-      // Query the 'votes' collection to check if the user has voted for the specific poll and option
-      final querySnapshot = await _firestore
-          .collection('votes')
-          .where('userId', isEqualTo: userId)
-          .where('optionId', isEqualTo: optionId)
-          .get();
-
-      // If the query returns any documents, the user has already voted for this option
-      return querySnapshot.docs.isNotEmpty;
+      return await _hasUserVoted('', optionId);
     } catch (e) {
       print("Error checking voted status: $e");
       return false;

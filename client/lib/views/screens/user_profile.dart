@@ -11,8 +11,6 @@ import 'package:client/providers/screens_providers/profile_screen_provider.dart'
 import 'package:client/providers/user_provider.dart';
 import 'package:animate_do/animate_do.dart';
 
-import 'package:animate_do/animate_do.dart';  // Make sure to import animate_do
-
 class UserProfileScreen extends StatelessWidget {
   static const id = '/combinedProfile';
 
@@ -65,6 +63,7 @@ class UserProfileScreen extends StatelessWidget {
                             name: "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim(),
                             email: user['email'] ?? "No email available",
                             phoneNumber: user['phoneNumber'] ?? "No phone number available",
+
 
                           );
                         },
@@ -178,30 +177,12 @@ class UserProfileScreen extends StatelessWidget {
                       label: "Your Name",
                       controller: profileProvider.nameController),
                   _buildTextField(context,
-                      label: "User Name",
-                      controller: profileProvider.usernameController),
-                  _buildTextField(context,
                       label: "Email",
                       controller: profileProvider.emailController),
                   _buildTextField(context,
                       label: "Date of Birth",
                       controller: profileProvider.dobController,
                       isDate: true),
-                  _buildTextField(context,
-                      label: "Present Address",
-                      controller: profileProvider.presentAddressController),
-                  _buildTextField(context,
-                      label: "Permanent Address",
-                      controller: profileProvider.permanentAddressController),
-                  _buildTextField(context,
-                      label: "City",
-                      controller: profileProvider.cityController),
-                  _buildTextField(context,
-                      label: "Postal Code",
-                      controller: profileProvider.postalCodeController),
-                  _buildTextField(context,
-                      label: "Country",
-                      controller: profileProvider.countryController),
                   const SizedBox(height: 20),
                   Center(
                     child: PrimaryButton(

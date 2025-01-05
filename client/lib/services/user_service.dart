@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class UserService {
+
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+
 
   Future<void> storeUserDetails(
       String? uid, String firstName, String lastName, String email) async {

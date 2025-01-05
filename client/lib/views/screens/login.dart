@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:provider/provider.dart';
-import 'package:client/services/auth_service.dart';
 import 'package:client/views/screens/_all.dart';
 import 'package:client/views/constants/constants.dart';
-import 'package:client/views/components/top_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/providers/screens_providers/login_validation_provider.dart';
@@ -121,9 +118,8 @@ class Login extends StatelessWidget {
                           obscureText: true,
                           decoration: InputDecoration(
                             hintText: 'Password',
-                            hintStyle: TextStyle(
-                                color: Theme.of(context)
-                                    .hintColor),
+                            hintStyle:
+                                TextStyle(color: Theme.of(context).hintColor),
                             suffixIcon: Icon(
                               Icons.lock,
                               color: Theme.of(context)
@@ -162,7 +158,7 @@ class Login extends StatelessWidget {
                           context
                               .read<MyAuthProvider>()
                               .signInEmailAndPassword(_emailController.text,
-                              _passwordController.text)
+                                  _passwordController.text)
                               .then((_) {
                             if (context.read<MyAuthProvider>().user != null) {
                               Navigator.pushReplacementNamed(
@@ -224,8 +220,8 @@ class Login extends StatelessWidget {
                               );
                             });
                           },
-                          child: Image.network(
-                            "https://cdn-icons-png.flaticon.com/128/300/300221.png",
+                          child: Image.asset(
+                            "images/google.png",
                             height: 24,
                             width: 24,
                           ),
@@ -262,8 +258,8 @@ class Login extends StatelessWidget {
                               );
                             });
                           },
-                          child: Image.network(
-                            "https://cdn-icons-png.flaticon.com/128/145/145802.png",
+                          child: Image.asset(
+                            "images/facebook.png",
                             height: 24,
                             width: 24,
                           ),
@@ -282,7 +278,7 @@ class Login extends StatelessWidget {
                             // Mobile Sign-In logic
                           },
                           child: Icon(
-                            Icons.phone_android,
+                            Icons.phone_iphone_outlined,
                             color: Colors.black,
                             size: 24,
                           ),

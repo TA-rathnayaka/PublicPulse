@@ -37,7 +37,7 @@ List<Policy> dummy_policies = [
     imageUrl: 'https://example.com/cookie-image.png',
     documentUrl: 'https://example.com/cookie-policy.pdf',
     creationDate: DateTime.parse('2024-01-01'),
-    effectiveDate: DateTime.parse('2024-01-01'), // Adjusted effective date
+    effectiveDate: DateTime.parse('2024-01-01'),
     expiryDate: DateTime.parse('2025-01-01'),
   ),
   Policy(
