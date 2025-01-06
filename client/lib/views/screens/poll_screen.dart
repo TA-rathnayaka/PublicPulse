@@ -15,6 +15,7 @@ class PollScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('User has voted: ${poll.hasVoted}');
     return SafeArea(
       child: Scaffold(
         body: Consumer<PollScreenProvider>(
