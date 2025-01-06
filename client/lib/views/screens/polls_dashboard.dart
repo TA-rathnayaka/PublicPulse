@@ -35,63 +35,49 @@ class PollDashboard extends StatelessWidget {
               const SizedBox(height: 16),
               SearchButton(
                 hintText: "Search polls...",
-                onChanged: (value) {},
+                onChanged: (value) {
+                  // Implement search logic here
+                },
               ),
               const SizedBox(height: 20),
               Consumer<PollsProvider>(
                 builder: (context, pollsProvider, child) {
+                  // Check if the polls list is not null or empty
+                  if (pollsProvider.polls == null || pollsProvider.polls.isEmpty) {
+                    return Center(child: Text("No polls available."));
+                  }
+
                   return ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
                     itemCount: pollsProvider.polls.length,
                     itemBuilder: (context, index) {
-                      pollsProvider.setSelectedIndex(index);
-                      // Ensure the function call returns a Future<Poll?>
-                      return FutureBuilder<Poll?>(
-                        future: pollsProvider.getPollByIndex(),
-                        builder: (context, snapshot) {
-                          if (snapshot.connectionState ==
-                              ConnectionState.waiting) {
-                            return Container();
-                          }
-
-                          if (snapshot.hasError) {
-                            return Container();
-                          }
-
-                          final poll = snapshot.data;
-
-                          if (poll == null) {
-                            return Container(); // Placeholder or an empty widget
-                          }
-
-                          return FadeInUp(
-                            duration:
-                                Duration(milliseconds: 1200 + index * 400),
-                            child: DashboardListTile(
-                              title: poll.title ?? "No title",
-                              description: poll.description ?? "No description",
-                              imageUrl:
-                                  poll.imageUrl ?? 'images/placeholder.png',
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => MultiProvider(
-                                      providers: [
-                                        ChangeNotifierProvider(
-                                            create: (_) =>
-                                                PollScreenProvider()),
-                                        ChangeNotifierProvider.value(value: pollsProvider),
-                                      ],
-                                      child: PollScreen(poll: poll),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ),
-                          );
-                        },
+                      Poll? poll = pollsProvider.polls[index];
+                      return FadeInUp(
+                        duration: Duration(milliseconds: 1200 + index * 400),
+                        child: DashboardListTile(
+                          title: poll.title ?? "No title",
+                          description: poll.description ?? "No description",
+                          imageUrl: poll.imageUrl ?? 'images/placeholder.png',
+                          onTap: () async {
+                            pollsProvider.setSelectedIndex(index);
+                            poll = await pollsProvider.getPollByIndex();
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => MultiProvider(
+                                  providers: [
+                                    ChangeNotifierProvider(
+                                        create: (_) => PollScreenProvider()),
+                                    ChangeNotifierProvider.value(
+                                        value: pollsProvider),
+                                  ],
+                                  child: PollScreen(poll: poll!),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
                       );
                     },
                   );
