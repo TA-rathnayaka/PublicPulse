@@ -19,7 +19,7 @@ class MainScreen extends StatelessWidget {
       create: (_) => PollCreationValidationProvider(),
       child: const PollCreationScreen(),
     ),
-    const PolicyDashboard(),
+    PolicyDashboard(),
     const UserProfileScreen(),
   ];
 
