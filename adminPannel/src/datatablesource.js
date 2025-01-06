@@ -1,33 +1,106 @@
-// src/services/userService.js
-import { firestore } from './backend/firebase/firebase'; // Import Firestore instance
-import { collection, getDocs } from 'firebase/firestore';
+
+import logo from './Assets/logo.png';
 
 export const userColumns = [
-  { field: 'id', headerName: 'ID', width: 90 },
+  {
+    field: 'photoUrl',
+    headerName: '',
+    width: 100,
+    renderCell: (params) => (
+      <img
+        src={params.value || logo} // Fallback to default profile image
+        alt="Profile"
+        style={{ width: 40, height: 40, borderRadius: '50%' }}
+      />
+    ),
+  },
   { field: 'username', headerName: 'Username', width: 150 },
   { field: 'email', headerName: 'Email', width: 200 },
   { field: 'status', headerName: 'Status', width: 120 },
-  { field: 'birthdate', headerName: 'Birthdate', width: 150 },
-  { field: 'district', headerName: 'District', width: 120 }
+  {
+    field: 'actions',
+    headerName: 'Actions',
+    width: 200,
+    renderCell: (params) => {
+      const handleDelete = async() => {
+        const confirmed = window.confirm(`Are you sure you want to delete user: ${params.row.email}?`);
+        if (confirmed) {
+          console.log(`Deleting user: ${params.row.username}`);
+          try {
+            const response = await fetch(`http://localhost:3001/api/users/${params.row.id}`, {
+              method: 'DELETE',
+            });
+            if (response.ok) {
+              console.log(`User ${params.row.username} deleted`);
+              // Refresh the list or update the UI after successful deletion
+            } else {
+              console.error(`Failed to delete user ${params.row.username}`);
+            }
+          } catch (error) {
+            console.error('Error deleting user:', error);
+          }
+          // Add logic for deleting the user here (e.g., API call)
+        } else {
+          console.log('Deletion cancelled');
+        }
+      };
+      
+      const handleMakeAdmin = async() => {
+        const confirmed = window.confirm(`Are you sure you want to make user: ${params.row.username} an admin?`);
+        if (confirmed) {
+          console.log(`Making user: ${params.row.username} an admin`);
+          // Add logic for promoting the user to admin here (e.g., API call)
+          try {
+            const response = await fetch(`http://localhost:3001/api/users/${params.row.id}/make-admin`, {
+              method: 'POST',
+            });
+            if (response.ok) {
+              console.log(`User ${params.row.username} made admin`);
+              // Refresh the list or update the UI after promotion
+            } else {
+              console.error(`Failed to make user ${params.row.username} an admin`);
+            }
+          } catch (error) {
+            console.error('Error making user admin:', error);
+          }
+        } else {
+          console.log('Action cancelled');
+        }
+      };
+      
+      return (
+        <div>
+          <button onClick={handleDelete} style={{ marginRight: '10px' }}>
+            Delete
+          </button>
+          <button onClick={handleMakeAdmin}>Make as Admin</button>
+        </div>
+      );
+    },
+  },
 ];
 
+
+
+
+
+// src/services/userService.js
 export const fetchUserData = async () => {
   try {
-    const usersCollection = collection(firestore, 'users');
-    const snapshot = await getDocs(usersCollection);
-
-    const usersWithId = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      username: doc.data().username || '',
-      email: doc.data().email || '',
-      status: doc.data().status ? 'active' : 'inactive',
-      birthdate: doc.data().Birthdate || null, // Check for correct field casing
-      district: doc.data().District || null  // Check for correct field casing
-    }));
-    
-    return usersWithId;
+    console.log('Fetching users...');
+    const response = await fetch('http://localhost:3001/api/users'); // Ensure your backend is running
+    if (!response.ok) {
+      console.log("failed to fetch");
+      throw new Error('Failed to fetch users');
+    }
+    const users = await response.json();
+    console.log('Fetched users:', users); // Log the fetched users data
+    return users;
   } catch (error) {
-    console.error('Error fetching users from Firestore:', error);
+    console.error('Error fetching users:', error);
     return [];
   }
 };
+
+
+
