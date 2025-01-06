@@ -6,7 +6,6 @@
   font-size: 24px;
   color: #55697b66;
 
-
   .wrapper {
     width: 100%;
     padding: 20px;
@@ -65,8 +64,8 @@
         }
 
         .avatar {
-          width: 40px;
-          height: 40px; /* Maintain a consistent aspect ratio */
+          width: 30px;
+          height: 30px; /* Maintain a consistent aspect ratio */
           border-radius: 50%;
           object-fit: cover; 
           transition: transform 0.2s ease, box-shadow 0.2s ease;
