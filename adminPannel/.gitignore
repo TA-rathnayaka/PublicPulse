@@ -1,6 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 # sdk configuration file
-backend-v2/policymaker-ee7e9-firebase-adminsdk-mhbqj-3fb1249b9a.json
+/policymaker-ee7e9-firebase-adminsdk-mhbqj-3fb1249b9a.json
 
 # dependencies
 /node_modules
