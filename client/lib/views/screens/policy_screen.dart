@@ -59,14 +59,14 @@ class _PolicyScreenState extends State<PolicyScreen> {
                               inactiveFgColor: Colors.white,
                               totalSwitches: 4,
                               // Increase totalSwitches to match the sections
-                              icons: [
+                              icons: const [
                                 Icons.summarize_outlined,
                                 Icons.info,
                                 Icons.date_range,
                                 Icons.download
                               ],
                               iconSize: 30.0,
-                              activeBgColors: [
+                              activeBgColors: const [
                                 [Colors.black45, Colors.black26],
                                 // for Policy Details
                                 [Colors.yellow, Colors.orange],
@@ -228,13 +228,13 @@ class PolicyDetails extends StatelessWidget {
         style: const TextStyle(
             fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
       ),
-      children: content,
       initiallyExpanded: false,
-      tilePadding: EdgeInsets.symmetric(vertical: 10),
+      tilePadding: const EdgeInsets.symmetric(vertical: 10),
       // Improved padding for better touch targets
       expandedAlignment: Alignment.topLeft,
       iconColor:
-          Theme.of(context).iconTheme.color, // Use context for icon color
+      Theme.of(context).iconTheme.color,
+      children: content, // Use context for icon color
     );
   }
 }
@@ -263,14 +263,14 @@ class PolicyDates extends StatelessWidget {
               _buildSectionTitle("Important Dates"),
               _buildExpandableSection(
                 title:
-                    "Creation Date: ${policy.createdDate.toLocal().toString().split(' ')[0]}",
+                "Creation Date: ${policy.createdDate.toLocal().toString().split(' ')[0]}",
                 content: [
                   _buildPolicyDetail(
                       "Effective Date",
                       policy.effectiveDate
-                              ?.toLocal()
-                              .toString()
-                              .split(' ')[0] ??
+                          ?.toLocal()
+                          .toString()
+                          .split(' ')[0] ??
                           'Not Set'),
                   _buildPolicyDetail(
                       "Expiry Date",
@@ -340,20 +340,22 @@ class PolicyDates extends StatelessWidget {
         style: const TextStyle(
             fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
       ),
-      children: content,
       initiallyExpanded: false,
+      children: content,
     );
   }
 }
 
 class Summary extends StatelessWidget {
+  const Summary({super.key});
+
   @override
   Widget build(BuildContext context) {
     return FadeInUp(
       duration: const Duration(milliseconds: 1000),
       child: Container(
         padding: const EdgeInsets.all(20),
-        child: Text("Summary goes here."),
+        child: const Text("Summary goes here."),
       ),
     );
   }
@@ -366,7 +368,7 @@ class Downloads extends StatelessWidget {
       duration: const Duration(milliseconds: 1000),
       child: Container(
         padding: const EdgeInsets.all(20),
-        child: Text("Downloads goes here."),
+        child: const Text("Downloads goes here."),
       ),
     );
   }

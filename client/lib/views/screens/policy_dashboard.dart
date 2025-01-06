@@ -34,7 +34,10 @@ class PolicyDashboard extends StatelessWidget {
               const SizedBox(height: 16),
               SearchButton(
                 hintText: "Search policies...", // Updated hint text
-                onChanged: (value) {},
+                onChanged: (value) {
+                  // Call setFilteredPolicies when the search query changes
+                  context.read<PoliciesProvider>().setFilteredPolicies(value);
+                },
               ),
               const SizedBox(height: 20),
               Consumer<PoliciesProvider>(
@@ -42,9 +45,9 @@ class PolicyDashboard extends StatelessWidget {
                   return ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
-                    itemCount: policiesProvider.policies.length,
+                    itemCount: policiesProvider.filteredPolicies.length, // Use filteredPolicies here
                     itemBuilder: (context, index) {
-                      final policy = policiesProvider.policies[index];
+                      final policy = policiesProvider.filteredPolicies[index]; // Use filteredPolicies here
                       return FadeInUp(
                         duration: Duration(milliseconds: 1200 + index * 400),
                         child: DashboardListTile(
