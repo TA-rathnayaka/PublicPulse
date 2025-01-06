@@ -4,8 +4,8 @@ import {
   collection,
   addDoc,
   getDocs,
-  updateDoc,
-  arrayUnion,
+  // updateDoc,
+  // arrayUnion,
 } from "firebase/firestore";
 import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
