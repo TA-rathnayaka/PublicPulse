@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import "./navbar.scss";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
@@ -7,21 +7,50 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import { useNavigate } from "react-router-dom";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { auth } from "../../backend/firebase/firebase";
-import { useNotifications } from "../../context/NotificationsContext"; // Import your notifications context
-import logo from "../../Assets/logo.png"
+import logo from "../../Assets/logo.png";
+import { fetchNotifications as fetchNotificationsFromBackend } from "../../backend/notifications";
 
-const Navbar = ({ imgURL, navbarData }) => {
-  const [user] = useAuthState(auth); // Get user directly
+const Navbar = ({ navbarData }) => {
+  const [user] = useAuthState(auth);
   const navigate = useNavigate();
-  const { notifications } = useNotifications(); // Use context to get notifications
-  const unreadCount = notifications.filter(notification => !notification.isRead).length; // Calculate unread notifications
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  // Fetch notifications from the backend
+  const fetchUnreadNotifications = async () => {
+    if (!user) return;
+
+    try {
+      const notifications = await fetchNotificationsFromBackend(user.uid);
+
+      // Filter notifications with 'pending' status or unread logic
+      const unreadNotifications = notifications.filter(
+        (notif) => notif.status === "pending"
+      );
+
+      setUnreadCount(unreadNotifications.length);
+    } catch (error) {
+      console.error("Error fetching notifications:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (user) {
+      fetchUnreadNotifications();
+
+      // Poll for updates every 30 seconds if the user is logged in
+      const interval = setInterval(fetchUnreadNotifications, 30000);
+
+      return () => clearInterval(interval); // Cleanup interval on unmount or user logout
+    }
+  }, [user]);
 
   const handleImageClick = () => {
-    navigate("/profile"); // Navigate to the profile page
+    navigate("/profile");
   };
 
   const handleNotificationsClick = () => {
-    navigate("/notifications"); // Navigate to the notifications page
+    navigate("/notifications");
+    // Optionally, you can mark notifications as read here if needed
   };
 
   return (
@@ -34,21 +63,21 @@ const Navbar = ({ imgURL, navbarData }) => {
             <SearchOutlinedIcon className="icon" />
             <input type="text" placeholder="Search..." />
           </div>
-          
-          <NavbarItem 
-            icon={<SettingsIcon className="icon" />} 
-            onClick={() => navigate("/settings")} // Navigate to settings page
+
+          <NavbarItem
+            icon={<SettingsIcon className="icon" />}
+            onClick={() => navigate("/settings")}
           />
-          <NavbarItem 
-            icon={<NotificationsNoneOutlinedIcon className="icon" />} 
+          <NavbarItem
+            icon={<NotificationsNoneOutlinedIcon className="icon" />}
             counter={unreadCount}
-            onClick={handleNotificationsClick} // Navigate to notifications page
+            onClick={handleNotificationsClick}
           />
 
           <div className="item">
             {user ? (
               <img
-                src={user.photoURL || logo} // Fallback for avatar
+                src={user.photoURL || logo}
                 alt="User Avatar"
                 className="avatar"
                 onClick={handleImageClick}
@@ -66,19 +95,18 @@ const Navbar = ({ imgURL, navbarData }) => {
 const NavbarItem = ({ icon, counter, onClick }) => (
   <div className="item" onClick={onClick}>
     {icon}
-    {counter > 0 && <div className="counter">{counter}</div>} {/* Show counter only if greater than 0 */}
+    {counter > 0 && <div className="counter">{counter}</div>}
   </div>
 );
 
 Navbar.propTypes = {
-  imgURL: PropTypes.string | null,
   navbarData: PropTypes.string,
 };
 
 NavbarItem.propTypes = {
   icon: PropTypes.element.isRequired,
   counter: PropTypes.number,
-  onClick: PropTypes.func, // Allow passing a click handler
+  onClick: PropTypes.func,
 };
 
 export default React.memo(Navbar);

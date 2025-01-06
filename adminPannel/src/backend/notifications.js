@@ -1,5 +1,35 @@
-import { collection, addDoc ,getDocs} from "firebase/firestore";
+import { collection, addDoc ,getDocs,query, where,} from "firebase/firestore";
 import { firestore } from "./firebase/firebase";
+
+
+export const fetchNotifications = async (userId) => {
+  try {
+    if (!userId) {
+      throw new Error("User ID is required to fetch notifications.");
+    }
+
+    // Define the Firestore query to get notifications for the specific user
+    const notificationsQuery = query(
+      collection(firestore, "notifications"),
+      where("userId", "==", userId)
+    );
+
+    // Execute the query and retrieve the documents
+    const querySnapshot = await getDocs(notificationsQuery);
+
+    // Map the documents into an array of notification objects
+    const notifications = querySnapshot.docs.map((doc) => ({
+      id: doc.id, // Include document ID for updates or deletions
+      ...doc.data(), // Include the notification data
+    }));
+
+    console.log("Notifications fetched successfully:", notifications);
+    return notifications; // Return the fetched notifications
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    throw new Error(`Failed to fetch notifications: ${error.message}`);
+  }
+};
 
 export const sendNotifications = async ({ message, target, type, metadata }) => {
 
