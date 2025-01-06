@@ -59,8 +59,8 @@ class UserProfileScreen extends StatelessWidget {
                           profileProvider.initializeProfile(user);
 
                           return Identity(
-                            imagePath: user['profileImage'] ?? "assets/default_profile.jpg",
-                            name: "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim(),
+                            imagePath: user['photoURL'] ?? "assets/default_profile.jpg",
+                            name: "${user['displayName']}".trim(),
                             email: user['email'] ?? "No email available",
                             phoneNumber: user['phoneNumber'] ?? "No phone number available",
 

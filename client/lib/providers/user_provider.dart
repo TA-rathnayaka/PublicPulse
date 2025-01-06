@@ -12,7 +12,7 @@ class UserProvider with ChangeNotifier {
   Future<void> storeUserDetails(
       String? uid, String firstName, String lastName, String email) async {
     try {
-      await _userService.storeUserDetails(uid, firstName, lastName, email);
+      await _userService.storeUserDetails(firstName, lastName, email);
       await getUserDetails(uid!); // Fetch the user details after storing
     } catch (e) {
       print("Error storing user details: $e");
@@ -21,7 +21,7 @@ class UserProvider with ChangeNotifier {
 
   Future<void> getUserDetails(String uid) async {
     try {
-      final userData = await _userService.getUserDetails(uid);
+      final userData = await _userService.getUserDetails();
       if (userData != null) {
         _userDetails = userData;
         notifyListeners();
@@ -32,8 +32,7 @@ class UserProvider with ChangeNotifier {
   }
   Future<void> getCurrentUserDetails() async {
     try {
-      final uid = await _authService.getCurrentUserUid();
-      final userData = await _userService.getUserDetails(uid!);
+      final userData = await _userService.getUserDetails();
       if (userData != null) {
         _userDetails = userData;
 
@@ -47,7 +46,7 @@ class UserProvider with ChangeNotifier {
     try {
       final uid = await _authService.getCurrentUserUid(); // Get current user UID
       if (uid != null) {
-        await _userService.updateUserDetails(uid, updatedData);
+        // await _userService.updateUserDetails(updatedData);
         await getUserDetails(uid); // Fetch updated details
         notifyListeners();
       }

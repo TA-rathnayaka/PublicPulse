@@ -21,7 +21,7 @@ class User {
 
   Future<void> _initializeUserDetails() async {
     Map<String, dynamic>? userDetails =
-        await _storageService.getUserDetails(uid);
+        await _storageService.getUserDetails();
     if (userDetails != null) {
       _first_name = userDetails['firstName'];
       _last_name = userDetails['lastName'];
