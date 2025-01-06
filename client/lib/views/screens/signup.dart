@@ -233,6 +233,7 @@ class Signup extends StatelessWidget {
             await context.read<MyAuthProvider>().registerUserAndPassword(email, password);
             await context.read<MyAuthProvider>().signInEmailAndPassword(email, password);
             await context.read<UserProvider>().storeUserDetails(displayName: "$firstName $lastName");
+            await context.read<UserProvider>().getCurrentUserDetails();
             // Navigate to home or another screen
             Navigator.pushReplacementNamed(context, SplashScreen.id); // Adjust based on your app's flow
           } else {

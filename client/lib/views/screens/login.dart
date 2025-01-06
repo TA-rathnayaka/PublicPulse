@@ -6,13 +6,15 @@ import 'package:client/views/constants/constants.dart';
 import 'package:client/providers/auth_provider.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/providers/screens_providers/login_validation_provider.dart';
+import 'package:client/providers/user_provider.dart';
 
 class Login extends StatelessWidget {
   static const id = '/login';
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _forgotEmailController = TextEditingController(); // Added
+  final TextEditingController _forgotEmailController =
+      TextEditingController(); // Added
 
   @override
   Widget build(BuildContext context) {
@@ -205,6 +207,10 @@ class Login extends StatelessWidget {
                                 .read<MyAuthProvider>()
                                 .signInWithGoogle()
                                 .then((_) {
+                              context
+                                  .read<UserProvider>()
+                                  .getCurrentUserDetails();
+                            }).then((_) {
                               if (context.read<MyAuthProvider>().user != null) {
                                 Navigator.pushNamed(context, MainScreen.id);
                               } else {
@@ -243,6 +249,10 @@ class Login extends StatelessWidget {
                                 .read<MyAuthProvider>()
                                 .signInWithFacebook()
                                 .then((_) {
+                              context
+                                  .read<UserProvider>()
+                                  .getCurrentUserDetails();
+                            }).then((_) {
                               if (context.read<MyAuthProvider>().user != null) {
                                 Navigator.pushNamed(context, MainScreen.id);
                               } else {
@@ -278,7 +288,6 @@ class Login extends StatelessWidget {
                           onPressed: () {
                             // Mobile Sign-In logic
                           },
-
                           child: Icon(
                             Icons.phone_iphone_outlined,
                             color: Colors.black,
@@ -309,6 +318,7 @@ class Login extends StatelessWidget {
       ),
     );
   }
+
   void _showForgotPasswordSheet(BuildContext context) {
     showModalBottomSheet(
       context: context,
@@ -338,30 +348,34 @@ class Login extends StatelessWidget {
                   style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
                 const SizedBox(height: 20),
-              TextField(
-                controller: _emailController,
-                decoration: InputDecoration(
-                  hintText: 'Email Address',
-                  hintStyle: TextStyle(
-                      color: Theme.of(context)
-                          .hintColor), // Set hint style dynamically
-                  suffixIcon: Icon(
-                    Icons.email,
-                    color: Theme.of(context)
-                        .hintColor, // Use dynamic hint color
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    hintText: 'Email Address',
+                    hintStyle: TextStyle(
+                        color: Theme.of(context)
+                            .hintColor), // Set hint style dynamically
+                    suffixIcon: Icon(
+                      Icons.email,
+                      color:
+                          Theme.of(context).hintColor, // Use dynamic hint color
+                    ),
                   ),
                 ),
-              ),
                 const SizedBox(height: 20),
                 PrimaryButton(
                   label: "Send Reset Link",
                   onPressed: () {
                     final email = _forgotEmailController.text;
                     if (email.isNotEmpty) {
-                      context.read<MyAuthProvider>().resetPassword(email).then((_) {
+                      context
+                          .read<MyAuthProvider>()
+                          .resetPassword(email)
+                          .then((_) {
                         Navigator.of(context).pop(); // Close the dialog
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Password reset email sent!')),
+                          const SnackBar(
+                              content: Text('Password reset email sent!')),
                         );
                       }).catchError((error) {
                         ScaffoldMessenger.of(context).showSnackBar(
@@ -376,45 +390,54 @@ class Login extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 10),
-            Material(
-              color: Colors.transparent,  // Transparent to allow child decoration to be visible
-              child: Container(
-                height: 56,  // Standard minimum height for touch targets
-                width: double.infinity,  // Button width expands to fit its parent
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),  // Slightly larger radius for modern design
-                  gradient: LinearGradient(
-                    colors: [
-                      Colors.redAccent,  // Primary red for the cancel button
-                      Colors.redAccent.withOpacity(0.6),  // Slightly faded color for a modern effect
-                    ],
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
-                      blurRadius: 6,
-                      offset: Offset(0, 4),  // Creates a shadow effect
+                Material(
+                  color: Colors.transparent,
+                  // Transparent to allow child decoration to be visible
+                  child: Container(
+                    height: 56,
+                    // Standard minimum height for touch targets
+                    width: double.infinity,
+                    // Button width expands to fit its parent
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      // Slightly larger radius for modern design
+                      gradient: LinearGradient(
+                        colors: [
+                          Colors.redAccent,
+                          // Primary red for the cancel button
+                          Colors.redAccent.withOpacity(0.6),
+                          // Slightly faded color for a modern effect
+                        ],
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          blurRadius: 6,
+                          offset: Offset(0, 4), // Creates a shadow effect
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.pop(context);
-                  },  // Single onTap callback to handle button press
-                  borderRadius: BorderRadius.circular(12),  // Ensures the ripple effect is within the button's shape
-                  child: Center(
-                    child: const Text(
-                      "Cancel",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,  // Adjusted font size for better readability
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.pop(context);
+                      },
+                      // Single onTap callback to handle button press
+                      borderRadius: BorderRadius.circular(12),
+                      // Ensures the ripple effect is within the button's shape
+                      child: Center(
+                        child: const Text(
+                          "Cancel",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize:
+                                16, // Adjusted font size for better readability
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
-            )
+                )
               ],
             ),
           ),
