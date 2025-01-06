@@ -11,9 +11,14 @@ import logo from "../../Assets/logo.png";
 import { fetchNotifications as fetchNotificationsFromBackend } from "../../backend/notifications";
 
 const Navbar = ({ navbarData }) => {
+  console.log("logo ",logo);
   const [user] = useAuthState(auth);
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+
+
 
   // Fetch notifications from the backend
   const fetchUnreadNotifications = async () => {
@@ -28,6 +33,7 @@ const Navbar = ({ navbarData }) => {
       );
 
       setUnreadCount(unreadNotifications.length);
+      setNotifications(notifications); // Store all notifications to display in the dropdown
     } catch (error) {
       console.error("Error fetching notifications:", error);
     }
@@ -49,8 +55,7 @@ const Navbar = ({ navbarData }) => {
   };
 
   const handleNotificationsClick = () => {
-    navigate("/notifications");
-    // Optionally, you can mark notifications as read here if needed
+    setShowNotifications(!showNotifications); // Toggle dropdown visibility
   };
 
   return (
@@ -68,11 +73,39 @@ const Navbar = ({ navbarData }) => {
             icon={<SettingsIcon className="icon" />}
             onClick={() => navigate("/settings")}
           />
-          <NavbarItem
-            icon={<NotificationsNoneOutlinedIcon className="icon" />}
-            counter={unreadCount}
-            onClick={handleNotificationsClick}
+          <div className="item" onClick={handleNotificationsClick}>
+            <NotificationsNoneOutlinedIcon className="icon" />
+            {unreadCount > 0 && <div className="counter">{unreadCount}</div>}
+            {/* Dropdown toggle on click */}
+            {showNotifications && (
+  <div className="notification-dropdown">
+  {notifications.length > 0 ? (
+    notifications.map((notif, index) => {
+      // Extract the type and ID (either pollId or policyId)
+      const type = notif.type;
+      const id = notif.metadata.pollId || notif.metadata.policyId;
+      const photoURL = notif.metadata.photoURL || logo; // Default photo URL if not available
+
+      return (
+        <div key={index} className="notification-item" onClick={() => navigate(`/${type}/${id}`)}>
+          <img 
+            src={photoURL} 
+            alt="Notification Avatar" 
+            onError={(e) => e.target.src = logo} // Set fallback on error
           />
+          <p>{notif.message}</p>
+          <span>{notif.time}</span>
+        </div>
+      );
+    })
+  ) : (
+    <p>No new notifications</p>
+  )}
+</div>
+
+)}
+
+          </div>
 
           <div className="item">
             {user ? (
