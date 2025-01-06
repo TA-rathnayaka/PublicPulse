@@ -1,40 +1,50 @@
 .poll-page-container {
   padding: 2rem;
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.05)
+  );
+  position: relative;
 }
 
 .stats-container {
   display: flex;
   justify-content: space-between;
-  margin: 2rem 0;
   gap: 20px;
+  margin: 2rem 0;
 
   .stat-item {
     flex: 1;
     display: flex;
     align-items: center;
-    padding: 1rem;
-    border-radius: 16px; /* Increased for rounder corners */
+    padding: 1.5rem;
+    border-radius: 12px;
     color: white;
     font-weight: bold;
+    border: 2px solid;
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+    position: relative;
+    backdrop-filter: blur(8px); /* Applying blur effect on the stats */
+    transition: all 0.3s ease;
 
-    /* Increase the border thickness */
-    border: 3px solid; /* Adjusted border thickness */
+    &:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      transform: translateY(-4px);
+    }
 
-    /* Use a lighter background color */
-    background: rgba(255, 255, 255, 0.2); /* Light background for inside */
-
-    /* Define the border colors manually */
     &.recent-polls {
-      border-color: #CDAA00; /* Darker shade of #FAD02E */
+      border-color: #cdaa00;
     }
     &.active-polls {
-      border-color: #006699; /* Darker shade of #84C9FB */
+      border-color: #006699;
     }
     &.ended-polls {
-      border-color: #BF2B2B; /* Darker shade of #FF8484 */
+      border-color: #bf2b2b;
     }
     &.dormant-polls {
-      border-color: #007E7D; /* Darker shade of #A1E2D7 */
+      border-color: #007e7d;
     }
 
     .MuiSvgIcon-root {
@@ -47,12 +57,14 @@
       flex-direction: column;
 
       span {
-        font-size: 0.9rem;
+        font-size: 1rem;
+        opacity: 0.8;
       }
 
       h3 {
         margin: 0;
-        font-size: 1.5rem;
+        font-size: 1.75rem;
+        font-weight: 600;
       }
     }
   }
@@ -62,73 +74,101 @@
   .poll-list {
     display: flex;
     flex-direction: column;
-    padding: 20px;
     gap: 1rem;
 
     .poll-item {
       display: flex;
       align-items: center;
-      padding: 1rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      background: #f9f9f9;
+      padding: 2rem;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.85);
+      border: 0.01px solid #dddfdd;
+      box-shadow: 0 2px 8px rgba(83, 83, 83, 0.1);
+      backdrop-filter: blur(8px); /* Apply blur on poll items */
+      transition: all 0.3s ease;
+
+      &:hover {
+        box-shadow: 0 6px 16px rgba(155, 155, 155, 0.1);
+        transform: translateY(-4px);
+      }
 
       .poll-info {
         flex: 2;
         display: flex;
         align-items: center;
-        gap: 1rem;
+        gap: 1.5rem;
 
-        /* Styling for both image and icon */
-        .poll-image, .poll-icon {
-          width: 100px; /* Consistent size */
-          height: 100px; /* Consistent size */
+        .poll-image,
+        .poll-icon {
+          width: 80px;
+          height: 80px;
           object-fit: cover;
-          border-radius: 8px;
-          margin-right: 15px;
+          border-radius: 10px;
+          margin-right: 1rem;
         }
 
-        /* Poll icon-specific styling */
         .poll-icon {
           font-size: 2rem;
-          color: #ff8484;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          background-color: #f0f0f0; /* Background to match icon size with image */
+          color: #ff5c5c;
+          background-color: rgba(255, 92, 92, 0.1);
+          padding: 10px;
         }
 
         h4 {
           margin: 0;
-          font-size: 1rem;
+          font-size: 1.1rem;
+          color: #333;
         }
 
         p {
           margin: 0;
-          color: #666;
-          font-size: 0.9rem;
+          color: #777;
+          font-size: 0.95rem;
         }
       }
 
-      .poll-details {
+      .poll-details-list {
         flex: 1;
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
 
         span {
-          font-size: 0.9rem;
-          color: #666;
+          font-size: 1rem;
+          color: #555;
         }
       }
 
       .view-details-button {
-        padding: 0.5rem 1rem;
+        padding: 0.75rem 1.25rem;
         background: #007bff;
         color: white;
         border: none;
-        border-radius: 4px;
+        border-radius: 10px;
         cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+
+        &:hover {
+          background-color: #0056b3;
+          transform: scale(1.05);
+        }
+      }
+      .delete-button {
+        background: #ff5c5c;
+        margin-left: 1rem;
+        padding: 0.75rem 1.25rem;
+        color: white;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+
+        &:hover {
+          background: #ff3d3d;
+          transform: scale(1.05);
+        }
       }
     }
   }
