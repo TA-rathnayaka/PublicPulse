@@ -10,11 +10,10 @@ import 'package:animate_do/animate_do.dart';
 import 'package:client/models/poll.dart';
 
 class PollDashboard extends StatelessWidget {
-  static String id = '/dashboard';
+  static String id = '/poll-dashboard';
 
   @override
   Widget build(BuildContext context) {
-    // Get the current theme
     final theme = Theme.of(context);
 
     return Padding(
@@ -83,10 +82,7 @@ class PollDashboard extends StatelessWidget {
                                         ChangeNotifierProvider(
                                             create: (_) =>
                                                 PollScreenProvider()),
-                                        ChangeNotifierProvider(
-                                          create: (_) => pollsProvider,
-                                          lazy: false,
-                                        )
+                                        ChangeNotifierProvider.value(value: pollsProvider),
                                       ],
                                       child: PollScreen(poll: poll),
                                     ),

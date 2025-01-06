@@ -30,20 +30,4 @@ class VotesProvider with ChangeNotifier {
 // Indicates failure (e.g., if an error occurs)
     }
   }
-
-  // Asynchronous check for voting status
-  Future<void> _triggerCheckVotedStatus() async {
-
-    if (_pollId != null && _optionId != null) {
-      try {
-
-        // _hasVoted = await _voteService.checkVotedStatus(_optionId!);
-
-        print(_hasVoted);
-        notifyListeners();
-      } catch (e) {
-        print("Error checking voted status in provider: $e");
-      }
-    }
-  }
 }

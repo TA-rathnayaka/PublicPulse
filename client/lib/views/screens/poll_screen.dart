@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:client/providers/screens_providers/poll_screen_provider.dart';
 import 'package:client/views/components/primary_button.dart';
-import 'package:client/providers/votes_provider.dart';
 import 'package:client/models/poll.dart';
 
 class PollScreen extends StatelessWidget {
