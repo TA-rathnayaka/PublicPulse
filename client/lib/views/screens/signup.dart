@@ -95,7 +95,7 @@ class Signup extends StatelessWidget {
           const SizedBox(height: 20),
           _buildLoginButton(context),
           const SizedBox(height: 70),
-         
+
         ],
       ),
     );
@@ -227,15 +227,12 @@ class Signup extends StatelessWidget {
             String email = context.read<SignupValidationProvider>().emailController.text;
             String password = context.read<SignupValidationProvider>().passwordController.text;
             await context.read<MyAuthProvider>().registerUserAndPassword(email, password);
-
-            // After successful registration, store user details in UserProvider
-            String uid = context.read<MyAuthProvider>().user!.uid;  // Assuming user is authenticated
             String firstName = context.read<SignupValidationProvider>().firstNameController.text;
             String lastName = context.read<SignupValidationProvider>().lastNameController.text;
 
-            await context.read<UserProvider>().storeUserDetails(uid, firstName, lastName, email);
             await context.read<MyAuthProvider>().registerUserAndPassword(email, password);
             await context.read<MyAuthProvider>().signInEmailAndPassword(email, password);
+            await context.read<UserProvider>().storeUserDetails(displayName: "$firstName $lastName");
             // Navigate to home or another screen
             Navigator.pushReplacementNamed(context, SplashScreen.id); // Adjust based on your app's flow
           } else {

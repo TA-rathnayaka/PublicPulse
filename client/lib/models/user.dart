@@ -5,10 +5,9 @@ class User {
   final UserService _storageService = UserService();
   final AuthService _authService = AuthService();
   final String uid;
-  String? _first_name;
-  String? _last_name;
-  String? _email;
-  String? _image_url;
+  late String _displayName;
+  late String _email;
+  String? _imageUrl;
   String? _phoneNumber;
 
   User({required this.uid});
@@ -20,60 +19,74 @@ class User {
   }
 
   Future<void> _initializeUserDetails() async {
-    Map<String, dynamic>? userDetails =
-        await _storageService.getUserDetails();
-    if (userDetails != null) {
-      _first_name = userDetails['firstName'];
-      _last_name = userDetails['lastName'];
-      _email = userDetails['email'];
-      _image_url = userDetails['imageUrl'];
-      _phoneNumber = userDetails['phoneNumber'];
+    try {
+      Map<String, dynamic>? userDetails =
+      await _storageService.getUserDetails();
+      if (userDetails != null) {
+        _displayName = userDetails['displayName'] ?? 'Unknown User';
+        _email = userDetails['email'] ?? 'No Email';
+        _imageUrl = userDetails['imageUrl'];
+        _phoneNumber = userDetails['phoneNumber'];
+      } else {
+        // Fallback values
+        _displayName = 'Unknown User';
+        _email = 'No Email';
+      }
+    } catch (e) {
+      // Handle errors while fetching user details
+      _displayName = 'Unknown User';
+      _email = 'No Email';
+      _imageUrl = null;
+      _phoneNumber = null;
     }
   }
 
-
+  // Getters
   String get phoneNumber => _phoneNumber ?? '';
-
-  String get image_url => _image_url ?? '';
-
-  String get email => _email ?? '';
-
-  String get last_name => _last_name ?? '';
-
-  String get first_name => _first_name ?? '';
+  String get imageUrl => _imageUrl ?? '';
+  String get email => _email;
+  String get displayName => _displayName;
 
   // Setters
   set phoneNumber(String value) {
     _phoneNumber = value;
   }
-  set image_url(String value) {
-    _image_url = value;
+
+  set imageUrl(String value) {
+    _imageUrl = value;
   }
 
-  set email(String value) {
-    _authService.changeUserEmail(value);
-    _email = value;
+  Future<void> setEmail(String value) async {
+    try {
+      await _authService.changeUserEmail(value);
+      _email = value;
+    } catch (e) {
+      // Handle error while updating email
+      throw Exception("Failed to update email: $e");
+    }
   }
 
-  set last_name(String value) {
-    _last_name = value;
-  }
-
-  set first_name(String value) {
-    _first_name = value;
-  }
-
-  void updateUserInfo({
-    String? firstName,
-    String? lastName,
-    String? email,
-    String? imageUrl,
-    String? phoneNumber,
-  }) {
-    if (firstName != null) _first_name = firstName;
-    if (lastName != null) _last_name = lastName;
-    if (email != null) _email = email;
-    if (imageUrl != null) _image_url = imageUrl;
-    if (phoneNumber != null) _phoneNumber = phoneNumber;
-  }
+  // // Update user information and sync with storage
+  // Future<void> updateUserInfo({
+  //   String? email,
+  //   String? imageUrl,
+  //   String? phoneNumber,
+  // }) async {
+  //   if (email != null) {
+  //     await setEmail(email);
+  //   }
+  //   if (imageUrl != null) _imageUrl = imageUrl;
+  //   if (phoneNumber != null) _phoneNumber = phoneNumber;
+  //
+  //   try {
+  //     await _storageService.updateUserDetails({
+  //       'email': _email,
+  //       'imageUrl': _imageUrl,
+  //       'phoneNumber': _phoneNumber,
+  //     });
+  //   } catch (e) {
+  //     // Handle error while updating user details in storage
+  //     throw Exception("Failed to update user details: $e");
+  //   }
+  // }
 }

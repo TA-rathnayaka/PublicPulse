@@ -5,10 +5,12 @@ class UserService {
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // Store basic user profile in Firebase Auth and additional details in Firestore
-  Future<void> storeUserDetails(String firstName, String lastName, String email) async {
+  Future<void> storeUserDetails(
+      {String? displayName,
+      String? photoUrl,
+      Map<String, dynamic>? customData}) async {
     try {
-      // Get current user UID
+      // Ensure the user is authenticated
       User? user = _auth.currentUser;
       if (user == null) {
         throw Exception("User is not authenticated.");
@@ -16,59 +18,61 @@ class UserService {
 
       String uid = user.uid;
 
-      // Update Firebase Auth profile
-      await user.updateDisplayName('$firstName $lastName');
-      await user.updatePhotoURL('https://example.com/photo.jpg'); // If you have a photo URL
+      if (displayName != null) {
+        await user.updateDisplayName(displayName);
+      }
 
-      // Store additional details in Firestore
-      await _fireStore.collection('users').doc(uid).set({
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'createdAt': Timestamp.now(),
-      });
+      if (photoUrl != null) {
+        await user.updatePhotoURL(photoUrl);
+      }
 
-      print("User details stored successfully in both Auth and Firestore.");
+      if (customData != null) {
+        customData.removeWhere((key, value) => value == null);
+
+        await _fireStore
+            .collection('users')
+            .doc(uid)
+            .set(customData, SetOptions(merge: true));
+      }
+      print("User details stored successfully in Firebase Auth and Firestore.");
     } catch (e) {
       print("Error storing user details: $e");
+      rethrow; // Optionally rethrow to propagate the error
     }
   }
 
-  // Fetch user details from both Firebase Auth and Firestore
   Future<Map<String, dynamic>?> getUserDetails() async {
     try {
-      // Get the current authenticated user from Firebase Auth
       User? user = _auth.currentUser;
       if (user == null) {
         throw Exception("User is not authenticated.");
       }
 
-      // Fetch user details from Firestore
-      DocumentSnapshot doc = await _fireStore.collection('users').doc(user.uid).get();
+      DocumentSnapshot doc =
+          await _fireStore.collection('users').doc(user.uid).get();
 
-      // Check if the user exists in Firestore
+      Map<String, dynamic> firestoreData = {
+        'uid': user.uid,
+        'displayName': user.displayName ?? "No display name",
+        'photoURL': user.photoURL ?? "No photo",
+      };
+
       if (doc.exists && doc.data() != null) {
-        Map<String, dynamic> firestoreData = doc.data() as Map<String, dynamic>;
-
-        // Add Firebase Auth data to Firestore data
-        firestoreData['uid'] = user.uid;
-        firestoreData['displayName'] = user.displayName ?? "No display name";
-        firestoreData['photoURL'] = user.photoURL ?? "No photo";
-
-        return firestoreData;
+        Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+        firestoreData.addAll(docData);
       } else {
         print("User document not found in Firestore.");
-        return null;
       }
+
+      return firestoreData;
     } catch (e) {
       print("Error fetching user details: $e");
       return null;
     }
   }
 
-  // Update user details in both Firebase Auth and Firestore
-  Future<void> updateUserDetails(
-      String firstName, String lastName, String email) async {
+  Future<void> updateUserDetails(String? displayName, String? photoUrl,
+      Map<String, dynamic>? userDetails) async {
     try {
       // Get the current authenticated user from Firebase Auth
       User? user = _auth.currentUser;
@@ -78,18 +82,19 @@ class UserService {
 
       String uid = user.uid;
 
-      // Update Firebase Auth profile (e.g., display name)
-      await user.updateDisplayName('$firstName $lastName');
-      await user.updatePhotoURL('https://example.com/photo.jpg'); // If you have a new photo URL
+      if (displayName != null) {
+        await user.updateDisplayName(displayName);
+      }
+
+      if (photoUrl != null) {
+        await user.updatePhotoURL(photoUrl);
+      }
+
 
       // Update Firestore with the new user details
-      await _fireStore.collection('users').doc(uid).update({
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'updatedAt': Timestamp.now(), // Add the update timestamp
-      });
-
+      if (userDetails != null) {
+        await _fireStore.collection('users').doc(uid).update(userDetails);
+      }
       print("User details updated successfully in both Auth and Firestore.");
     } catch (e) {
       print("Error updating user details: $e");
@@ -97,7 +102,6 @@ class UserService {
     }
   }
 
-  // Get the current authenticated user from FirebaseAuth
   User? getCurrentUser() {
     return _auth.currentUser;
   }
