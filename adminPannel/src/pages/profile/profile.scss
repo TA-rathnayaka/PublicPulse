@@ -134,4 +134,70 @@
       }
     }
   }
+  .popupOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); // Semi-transparent overlay
+    backdrop-filter: blur(5px); // Blur effect for the background
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; // Ensure it's above other elements
+    opacity: 0;
+    animation: fadeIn 0.3s forwards; // Smooth fade-in animation
+  
+    .popupContent {
+      background: #fff;
+      width: 90%;
+      max-width: 400px;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+      position: relative;
+      transform: scale(0.8); // Start smaller for animation
+      animation: zoomIn 0.3s forwards; // Smooth zoom-in animation
+  
+      .previewImage {
+        align-items: center;
+        align-content: center;
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        border: 2px solid #6439ff;
+        object-fit: cover;
+        margin-bottom: 20px;
+      }
+  
+      .popupActions {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+  
+        
+      }
+    }
+  }
+  
+  // Keyframes for animations
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  
+  @keyframes zoomIn {
+    from {
+      transform: scale(0.8);
+    }
+    to {
+      transform: scale(1);
+    }
+  }
+  
 }
