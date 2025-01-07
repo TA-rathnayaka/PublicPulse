@@ -16,7 +16,7 @@ app.use(express.json());
 const adminDb = admin.firestore();
 
 app.use(cors({
-  origin: 'http://localhost:3000', // React frontend URL
+  origin: 'http://localhost:3000'||'http://localhost:3001', // React frontend URL
 }));
 // Fetch all users
 app.get('/api/users', async (req, res) => {
