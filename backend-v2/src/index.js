@@ -2,22 +2,24 @@ const express = require('express');
 const admin = require('firebase-admin');
 
 // Initialize Firebase Admin SDK
-const serviceAccount = require('../policymaker-ee7e9-firebase-adminsdk-mhbqj-3fb1249b9a.json'); // Replace with the correct path
+const serviceAccount = require("../policymaker-ee7e9-firebase-adminsdk-mhbqj-ffd5979fcb.json"); // Replace with the correct path
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
 const app = express();
-const PORT = process.env.PORT || 3001;
-const cors = require('cors')
+const PORT = process.env.PORT || 3000;
+const cors = require("cors");
 // Middleware
 app.use(express.json());
 const adminDb = admin.firestore();
 
-app.use(cors({
-  origin: 'http://localhost:3000', // React frontend URL
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3001", // React frontend URL
+  })
+);
 // Fetch all users
 app.get('/api/users', async (req, res) => {
   try {
