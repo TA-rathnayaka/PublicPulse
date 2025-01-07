@@ -15,6 +15,7 @@ const Home = () => {
   
   const [dataLoading, setDataLoading] = useState(true); // Loading state for user data
   const [fetchError, setFetchError] = useState(null); // To handle errors during data fetch
+  console.log("Loading : ",loading);
 
 
 

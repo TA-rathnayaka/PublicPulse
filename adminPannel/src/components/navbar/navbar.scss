@@ -110,6 +110,13 @@
           border-radius: 6px;
           cursor: pointer;
           transition: background-color 0.2s ease-in-out;
+          &.pending {
+            background-color: #e0e0e0; /* Yellow for pending */
+          }
+        
+          &.read {
+            background-color: transparent; /* Light gray for read */
+          }
         }
         
         .notification-item:hover {

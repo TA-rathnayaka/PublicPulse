@@ -9,9 +9,7 @@ import {
 } from "recharts";
 import CircularProgress from "@mui/material/CircularProgress"; // Material UI loader
 import { useEffect, useState } from "react";
-import {
-  subscribeToDailyEventCounts,
-} from "../../services/analyticsService"; // Import real-time listener service
+import { subscribeToDailyEventCounts } from "../../services/analyticsService";
 
 const Chart = ({ aspect, title }) => {
   const [chartData, setChartData] = useState([]);
@@ -19,31 +17,36 @@ const Chart = ({ aspect, title }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Set loading to true initially
-    setIsLoading(true);
+    console.log("Chart component mounted, subscribing to data...");
 
-    // Subscribe to real-time event count updates
     const unsubscribe = subscribeToDailyEventCounts(
       (dailyData) => {
-        // Transform the daily data to match the chart format
+        console.log("Data received:", dailyData);
+
         const transformedData = dailyData.map((entry) => ({
-          name: entry.date, // Date displayed on the X-axis
-          Total: entry.count, // Engagement count on the Y-axis
+          name: entry.date,
+          Total: entry.count,
         }));
+
         setChartData(transformedData);
-        setIsLoading(false); // Stop loading when data is updated
+        setIsLoading(false);
       },
       (err) => {
+        console.error("Error in subscription:", err);
         setError(err);
         setIsLoading(false);
       }
     );
 
-    // Cleanup the subscription on component unmount
     return () => {
+      console.log("Chart component unmounted, unsubscribing...");
       unsubscribe();
     };
   }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (error) {
     return <div className="error">Error loading chart data: {error.message}</div>;
