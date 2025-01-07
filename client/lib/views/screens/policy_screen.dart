@@ -88,13 +88,22 @@ class _PolicyScreenState extends State<PolicyScreen> {
                           ),
                           // Add additional Transform.translate effects for the content sections
                           if (_selectedIndex == 0)
-                            Summary(),
-                          if (_selectedIndex == 1)
-                            PolicyDetails(policy: widget.policy),
+                            Summary(
+                              title: widget.policy.title,
+                              description: widget.policy.description,
+                              status: widget.policy.status,
+                            ),
+                          // if (_selectedIndex == 2)
+                          //   PolicyDates(
+                          //     createdDate: widget.policy.createdDate,
+                          //     effectiveDate: widget.policy.effectiveDate,
+                          //     expiryDate: widget.policy.expiryDate,
+                          //     approvalDate: widget.policy.approvalDate,
+                          //   ),
                           if (_selectedIndex == 2)
                             PolicyDates(policy: widget.policy),
                           if (_selectedIndex == 3)
-                            Downloads(),
+                            Downloads(documentUrl: widget.policy.documentUrl),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             child: PrimaryButton(
@@ -345,9 +354,12 @@ class PolicyDates extends StatelessWidget {
     );
   }
 }
-
 class Summary extends StatelessWidget {
-  const Summary({super.key});
+  final String title;
+  final String description;
+  final String status;
+
+  const Summary({super.key, required this.title, required this.description, required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -355,25 +367,53 @@ class Summary extends StatelessWidget {
       duration: const Duration(milliseconds: 1000),
       child: Container(
         padding: const EdgeInsets.all(20),
-        child: const Text("Summary goes here."),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Title: $title", style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 10),
+            Text("Description: $description", style: Theme.of(context).textTheme.bodyMedium),
+            const SizedBox(height: 10),
+            Text("Status: $status", style: Theme.of(context).textTheme.bodySmall),
+          ],
+        ),
       ),
     );
   }
 }
-
 class Downloads extends StatelessWidget {
+  final String? documentUrl;
+
+  const Downloads({super.key, this.documentUrl});
+
   @override
   Widget build(BuildContext context) {
+    if (documentUrl == null) {
+      return FadeInUp(
+        duration: const Duration(milliseconds: 1000),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          child: const Text("No documents available for download."),
+        ),
+      );
+    }
+
     return FadeInUp(
       duration: const Duration(milliseconds: 1000),
       child: Container(
         padding: const EdgeInsets.all(20),
-        child: const Text("Downloads goes here."),
+        child: ElevatedButton.icon(
+          icon: const Icon(Icons.download),
+          label: const Text("Download Document"),
+          onPressed: () {
+            // Handle download logic here
+            print("Downloading from: $documentUrl");
+          },
+        ),
       ),
     );
   }
 }
-
 class PolicyCarousel extends StatelessWidget {
   final List<String> images;
 
