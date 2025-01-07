@@ -13,40 +13,38 @@ import { subscribeToDailyEventCounts } from "../../services/analyticsService";
 
 const Chart = ({ aspect, title }) => {
   const [chartData, setChartData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     console.log("Chart component mounted, subscribing to data...");
-
+  
     const unsubscribe = subscribeToDailyEventCounts(
       (dailyData) => {
-        console.log("Data received:", dailyData);
 
+  
         const transformedData = dailyData.map((entry) => ({
           name: entry.date,
           Total: entry.count,
         }));
-
+        
         setChartData(transformedData);
-        setIsLoading(false);
+        setLoading(false); 
       },
       (err) => {
         console.error("Error in subscription:", err);
         setError(err);
-        setIsLoading(false);
+        setLoading(false);
       }
     );
-
+  
     return () => {
       console.log("Chart component unmounted, unsubscribing...");
       unsubscribe();
     };
   }, []);
+  
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
     return <div className="error">Error loading chart data: {error.message}</div>;
@@ -55,16 +53,18 @@ const Chart = ({ aspect, title }) => {
   return (
     <div className="chart">
       <div className="title">{title}</div>
-      {isLoading ? (
+      {loading ? (
         <div className="chartLoading">
-          <CircularProgress size={40} />
+          <ResponsiveContainer width="100%" height={400}  aspect={aspect}>
+          <div className="skeleton-loader"></div>
+          </ResponsiveContainer>
         </div>
       ) : (
-        <ResponsiveContainer width="100%" aspect={aspect}>
+        <ResponsiveContainer width="100%" height={400}  aspect={aspect}>
           <AreaChart
-            data={chartData}
-            margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-          >
+    data={chartData}
+    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+  >
             <defs>
               <linearGradient id="total" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />

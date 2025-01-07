@@ -40,8 +40,7 @@ const Home = () => {
           <Featured />
           <Chart
             title="User Engagement"
-            aspect={2 / 1}
-            loading={loading || dataLoading} // Pass loading prop to Chart
+            aspect={2 / 1} 
           />
         </div>
        
