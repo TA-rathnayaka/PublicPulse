@@ -1,16 +1,7 @@
 import React, { useEffect, useState } from "react";
 import "./profile.scss";
-import {
-  getAuth,
-  onAuthStateChanged,
-  updateProfile,
-} from "firebase/auth";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
+import { getAuth, onAuthStateChanged, updateProfile } from "firebase/auth";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import logo from "../../Assets/logo.png";
 
 const Profile = () => {
@@ -91,14 +82,11 @@ const Profile = () => {
           <div className="profileDetails">
             <div className="profileImage">
               <img
-                src={previewImage || userData.img}
+                src={userData.img}
                 alt="Profile"
                 onError={(e) => (e.target.src = logo)} // Fallback to default logo
               />
-              <button
-                className="editIcon"
-                onClick={() => setShowPopup(true)}
-              >
+              <button className="editIcon" onClick={() => setShowPopup(true)}>
                 ✏️
               </button>
             </div>
@@ -150,37 +138,27 @@ const Profile = () => {
                     type={field.type || "text"}
                     name={field.name}
                     value={userData[field.name]}
-              
                     placeholder={field.placeholder}
                     readOnly={field.readOnly || false}
                   />
                 </div>
               ))}
-              <button className="saveButton" >
-                Save
-              </button>
+              <button className="saveButton">Save</button>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Popup Modal */}
       {showPopup && (
         <div className="popupOverlay">
           <div className="popupContent">
             <h3>Upload Profile Picture</h3>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageChange}
+            <input type="file" accept="image/*" onChange={handleImageChange} />
+            <img
+              src={previewImage || userData.img}
+              alt="Current or Preview"
+              className="previewImage"
+              onError={(e) => (e.target.src = logo)} // Fallback to default logo
             />
-            {previewImage && (
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="previewImage"
-              />
-            )}
             <div className="popupActions">
               <button onClick={handleImageUpload}>Upload</button>
               <button onClick={() => setShowPopup(false)}>Cancel</button>

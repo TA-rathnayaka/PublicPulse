@@ -25,7 +25,6 @@ function App() {
 
   return (
     <div className={darkMode ? "app dark" : "app"}>
-      <NotificationsProvider>
         <BrowserRouter>
           <Layout > 
           <Routes>
@@ -57,7 +56,7 @@ function App() {
           </Routes>
           </Layout > 
         </BrowserRouter>
-      </NotificationsProvider>
+     
     </div>
   );
 }

@@ -12,6 +12,9 @@ import ToggleSwitch from "../ToggleSwitch/ToggleSwitch";
 import { createNotification, sendNotifications } from "../../backend/notifications";
 import { getStorage, ref, uploadBytes, getDownloadURL,deleteObject } from "firebase/storage";
 import "./pollCreation.scss";
+import {logo} from "../../Assets/logo.png"
+import { useAuthState } from "react-firebase-hooks/auth";
+import { getAuth } from "firebase/auth";
 
 const PollCreation = () => {
   const [policies, setPolicies] = useState([]);
@@ -30,7 +33,7 @@ const PollCreation = () => {
     SecureMode: false,
   });
   const [loading,setLoading]=useState(false);
-
+  const user= getAuth().currentUser;
   const storage = getStorage();
 
   const handleAddImageClick = () => {
@@ -150,10 +153,11 @@ const PollCreation = () => {
           await sendNotifications({
             message: `A new poll was added: ${title}`,
             target: "all",
-            type: "poll",
+            type: "polls",
             metadata: { 
               pollId: pollRef.id,
-              title: title.trim()
+              title: title.trim(),
+              photoUrl: user.photoURL,
             },
           });
         } catch (notificationError) {
