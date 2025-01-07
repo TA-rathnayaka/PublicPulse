@@ -2,13 +2,17 @@
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
-  font-family: Arial, sans-serif;
-  position: relative;
+  font-family: 'Roboto', sans-serif;
 }
 
 .policies-page h1 {
   text-align: center;
   color: #333;
+  margin-bottom: 20px;
+}
+
+.upload-policy-section {
+  margin-bottom: 30px;
 }
 
 .sort-container {
@@ -84,7 +88,7 @@
   text-decoration: underline;
 }
 
-.policy-ticket button {
+.delete-button {
   padding: 8px 12px;
   background-color: #dc3545;
   color: white;
@@ -94,6 +98,6 @@
   margin-top: 10px;
 }
 
-.policy-ticket button:hover {
+.delete-button:hover {
   background-color: #c82333;
 }

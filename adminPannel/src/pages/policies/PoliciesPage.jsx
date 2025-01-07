@@ -13,7 +13,8 @@ const PoliciesPage = () => {
       const querySnapshot = await getDocs(collection(firestore, 'policies'));
       const policiesData = querySnapshot.docs.map(doc => {
         const data = doc.data();
-        data.id = doc.id; 
+        data.id = doc.id; // Add document ID for deletion
+        // Convert Firestore Timestamp to a readable date string
         if (data.createdDate && data.createdDate.seconds) {
           data.createdDate = new Date(data.createdDate.seconds * 1000).toLocaleDateString();
         }
@@ -29,6 +30,10 @@ const PoliciesPage = () => {
     setPolicies(policies.filter(policy => policy.id !== id));
   };
 
+  const handleNewPolicy = (newPolicy) => {
+    setPolicies([...policies, newPolicy]);
+  };
+
   const sortedPolicies = [...policies].sort((a, b) => {
     if (sortType === 'createdDate') {
       return new Date(b.createdDate) - new Date(a.createdDate);
@@ -42,8 +47,10 @@ const PoliciesPage = () => {
 
   return (
     <div className="policies-page">
-  
-      <UploadPolicy />
+      <h1>Policies Management</h1>
+      <div className="upload-policy-section">
+        <UploadPolicy onPolicyUpload={handleNewPolicy} />
+      </div>
       <div className="sort-container">
         <label>Sort by: </label>
         <select onChange={(e) => setSortType(e.target.value)} value={sortType}>
@@ -53,19 +60,25 @@ const PoliciesPage = () => {
         </select>
       </div>
       <div className="policies-list">
-        {sortedPolicies.map((policy, index) => (
-          <div key={index} className="policy-ticket">
-            <div className="policy-header">{policy.policyName}</div>
-            <div className="policy-content">{policy.description}</div>
-            <div className="policy-meta">
-              <span>Category: {policy.category}</span>
-              <span>Section: {policy.sectionNo}</span>
-              <span>Created: {policy.createdDate}</span>
+        {sortedPolicies.length > 0 ? (
+          sortedPolicies.map((policy, index) => (
+            <div key={index} className="policy-ticket">
+              <div className="policy-header">{policy.policyName}</div>
+              <div className="policy-content">{policy.description}</div>
+              <div className="policy-meta">
+                <span>Category: {policy.category}</span>
+                <span>Section: {policy.sectionNo}</span>
+                <span>Created: {policy.createdDate}</span>
+              </div>
+              <a href={policy.pdfUrl} target="_blank" rel="noopener noreferrer">View PDF</a>
+              <button className="delete-button" onClick={() => handleDelete(policy.id)}>
+                Delete
+              </button>
             </div>
-            <a href={policy.pdfUrl} target="_blank" rel="noopener noreferrer">View PDF</a>
-            <button onClick={() => handleDelete(policy.id)}>Delete</button>
-          </div>
-        ))}
+          ))
+        ) : (
+          <p>No policies found.</p>
+        )}
       </div>
     </div>
   );
