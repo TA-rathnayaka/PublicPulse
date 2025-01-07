@@ -6,60 +6,40 @@ import './datatable.scss';
 const Datatable = () => {
   const [userRows, setUserRows] = useState([]);
 
-  // Fetch data from Firestore
   useEffect(() => {
     const fetchUsers = async () => {
-      const users = await fetchUserData();
-      setUserRows(users);
+      try {
+        const users = await fetchUserData();
+        console.log("Fetched users:", users); // Debug the fetched data
+        if (Array.isArray(users)) {
+          setUserRows(users);
+        } else {
+          console.error("Fetched data is not an array:", users);
+        }
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
     };
 
     fetchUsers();
   }, []);
 
-  // Add custom rendering for the status column
-  const columnsWithStatus = userColumns.map((column) => {
-    if (column.field === 'status') {
-      return {
-        ...column,
-        renderCell: (params) => (
-          <div className={`cellWithStatus ${params.row.status.toLowerCase()}`}>
-            {params.row.status}
-          </div>
-        ),
-      };
-    }
-    return column;
-  });
-
   return (
     <div className="datatable">
       <div className="datatableTitle">
-        Data Table
-        <a href="/add-user" className="link">
-          Add New User
-        </a>
+        Users
+        <a href="/add-user" className="link">Add New User</a>
       </div>
 
-      {/* Data Table */}
       <DataGrid
         rows={userRows}
-        columns={columnsWithStatus}
+        columns={userColumns}
         pageSize={8}
         rowsPerPageOptions={[8]}
-        rowHeight={60}
+        rowHeight={80}
         disableSelectionOnClick
         getRowId={(row) => row.id}
-        sx={{
-          '& .MuiDataGrid-footerContainer': {
-            display: 'none', // Hide the default footer
-          },
-        }}
       />
-
-      {/* Custom Footer Section */}
-      <div className="footerContainer">
-        <span>Showing 1–{Math.min(8, userRows.length)} of {userRows.length} entries</span>
-      </div>
     </div>
   );
 };
