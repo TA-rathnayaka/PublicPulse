@@ -93,15 +93,14 @@ class _PolicyScreenState extends State<PolicyScreen> {
                               description: widget.policy.description,
                               status: widget.policy.status,
                             ),
-                          // if (_selectedIndex == 2)
-                          //   PolicyDates(
-                          //     createdDate: widget.policy.createdDate,
-                          //     effectiveDate: widget.policy.effectiveDate,
-                          //     expiryDate: widget.policy.expiryDate,
-                          //     approvalDate: widget.policy.approvalDate,
-                          //   ),
+                          if (_selectedIndex == 1)
+                            PolicyDetails(
+                              policy: widget.policy,
+                            ),
                           if (_selectedIndex == 2)
-                            PolicyDates(policy: widget.policy),
+                            PolicyDates(
+                              policy: widget.policy,
+                            ),
                           if (_selectedIndex == 3)
                             Downloads(documentUrl: widget.policy.documentUrl),
                           Padding(
@@ -141,24 +140,19 @@ class PolicyDetails extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             color: Theme.of(context).scaffoldBackgroundColor,
-            // Use context to get theme color
-            // Rounded corners for a softer design
             boxShadow: const [],
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               _buildSectionTitle(context, "General Information"),
-              // Pass context to the method
-              SizedBox(height: 16),
-              // Added spacing for readability
+              const SizedBox(height: 16),
               _buildExpandableSection(
-                context: context, // Pass context to the method
-                title: "Policy ID: ${policy.id}",
+                context: context,
+                title: "Policy Details",  // Changed title to something generic
                 content: [
                   _buildPolicyDetail(context, "Title", policy.title),
-                  _buildPolicyDetail(
-                      context, "Description", policy.description),
+                  _buildPolicyDetail(context, "Description", policy.description),
                   _buildPolicyDetail(context, "Category", policy.category),
                   _buildPolicyDetail(context, "Tags", policy.tags.join(', ')),
                   _buildPolicyDetail(context, "Status", policy.status),
@@ -354,6 +348,7 @@ class PolicyDates extends StatelessWidget {
     );
   }
 }
+
 class Summary extends StatelessWidget {
   final String title;
   final String description;
@@ -367,14 +362,15 @@ class Summary extends StatelessWidget {
       duration: const Duration(milliseconds: 1000),
       child: Container(
         padding: const EdgeInsets.all(20),
-        child: Column(
+        child: const Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("Title: $title", style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 10),
-            Text("Description: $description", style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: 10),
-            Text("Status: $status", style: Theme.of(context).textTheme.bodySmall),
+            Text("Under Development stage"),
+            // Text("Title: $title", style: Theme.of(context).textTheme.titleLarge),
+            // const SizedBox(height: 10),
+            // Text("Description: $description", style: Theme.of(context).textTheme.bodyMedium),
+            // const SizedBox(height: 10),
+            // Text("Status: $status", style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ),

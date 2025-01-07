@@ -31,18 +31,6 @@ class PoliciesProvider extends ChangeNotifier {
     _filteredPolicies = filterPolicies(query);
     notifyListeners();
   }
-
-  // Filter the list of policies based on the search query
-  // List<Policy> filterPolicies(String query) {
-  //   if (query.isEmpty) {
-  //     return _policies;
-  //   }
-  //   return _policies
-  //       .where((policy) =>
-  //   policy.title.toLowerCase().contains(query.toLowerCase()) ||
-  //       policy.description.toLowerCase().contains(query.toLowerCase()))
-  //       .toList();
-  // }
   List<Policy> filterPolicies(String query) {
     if (query.isEmpty) {
       return _policies;

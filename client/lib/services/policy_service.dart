@@ -9,8 +9,19 @@ class PolicyService {
       QuerySnapshot snapshot = await _fireStore.collection('policies').get();
       List<Policy> policies = snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-        Timestamp? createDateTimestamp = data['createDate'] as Timestamp?;
-        DateTime createDate = createDateTimestamp?.toDate() ?? DateTime.now();
+
+        // Handle createDate and other fields that might be either String or Timestamp
+        dynamic createDateField = data['createDate'];
+        DateTime createDate = _convertToDate(createDateField);
+
+        dynamic effectiveDateField = data['effectiveDate'];
+        DateTime? effectiveDate = effectiveDateField != null ? _convertToDate(effectiveDateField) : null;
+
+        dynamic expiryDateField = data['expiryDate'];
+        DateTime? expiryDate = expiryDateField != null ? _convertToDate(expiryDateField) : null;
+
+        dynamic approvalDateField = data['approvalDate'];
+        DateTime? approvalDate = approvalDateField != null ? _convertToDate(approvalDateField) : null;
 
         return Policy(
           id: doc.id,
@@ -19,7 +30,11 @@ class PolicyService {
           imageUrl: data['imageUrl'],
           creationDate: createDate,
           category: data['category'],
-          createdBy: ''
+          createdBy: '',
+          effectiveDate: effectiveDate,
+          expiryDate: expiryDate,
+          approvalDate: approvalDate,
+          isActive: data['isActive'] ?? true,
         );
       }).toList();
       return policies;
@@ -29,41 +44,14 @@ class PolicyService {
     }
   }
 
-
-  // Create a new policy
-  Future<void> createPolicy(Policy policy) async {
-    try {
-      await _fireStore.collection('policies').add({
-        'title': policy.title,
-        'description': policy.description,
-        'imageUrl': policy.imageUrl,
-        'createDate': policy.createdDate,
-      });
-    } catch (e) {
-      print("Error creating policy: $e");
-    }
-  }
-
-  // Update an existing policy by ID
-  Future<void> updatePolicy(String policyId, Policy updatedPolicy) async {
-    try {
-      await _fireStore.collection('policies').doc(policyId).update({
-        'title': updatedPolicy.title,
-        'description': updatedPolicy.description,
-        'imageUrl': updatedPolicy.imageUrl,
-        'createDate': updatedPolicy.createdDate,
-      });
-    } catch (e) {
-      print("Error updating policy: $e");
-    }
-  }
-
-  // Delete a policy by ID
-  Future<void> deletePolicy(String policyId) async {
-    try {
-      await _fireStore.collection('policies').doc(policyId).delete();
-    } catch (e) {
-      print("Error deleting policy: $e");
+  // Helper function to convert both String and Timestamp to DateTime
+  DateTime _convertToDate(dynamic field) {
+    if (field is Timestamp) {
+      return field.toDate();
+    } else if (field is String) {
+      return DateTime.parse(field); // If it's a String, parse it as DateTime
+    } else {
+      return DateTime.now(); // Default to current date if it's neither
     }
   }
 }

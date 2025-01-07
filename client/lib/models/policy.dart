@@ -1,5 +1,3 @@
-
-
 class Policy {
   final String id;
   String title;
