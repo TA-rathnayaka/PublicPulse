@@ -14,7 +14,7 @@ class PolicyService {
 
         return Policy(
           id: doc.id,
-          title: data['policyName'] ?? '',
+          title: data['title'] ?? '',
           description: data['description'] ?? '',
           imageUrl: data['imageUrl'],
           creationDate: createDate,
