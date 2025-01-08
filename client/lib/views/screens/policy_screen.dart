@@ -4,6 +4,11 @@ import 'package:client/models/policy.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:toggle_switch/toggle_switch.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+const testUrl =
+    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+
 class PolicyScreen extends StatefulWidget {
   static String id = '/policy-screen';
   final Policy policy;
@@ -15,8 +20,7 @@ class PolicyScreen extends StatefulWidget {
 }
 
 class _PolicyScreenState extends State<PolicyScreen> {
-  int _selectedIndex = 0; // Track the selected index for the ToggleSwitch
-
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -27,64 +31,70 @@ class _PolicyScreenState extends State<PolicyScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                // Apply Translate effect to PolicyCarousel
                 PolicyCarousel(
                   images: widget.policy.imageUrl != null
                       ? [widget.policy.imageUrl!]
                       : [],
                 ),
-
-                // Wrap ToggleSwitch and PrimaryButton with Column
                 Transform.translate(
-                  offset: Offset(0, -40),
+                  offset: const Offset(0, -40),
                   child: Container(
                     decoration: BoxDecoration(
-                        color: theme.scaffoldBackgroundColor, // Use theme primary color with opacity
-
-                        borderRadius: BorderRadius.only(topRight: Radius.circular(20), topLeft: Radius.circular(20))
-                    ),
+                        color: theme.scaffoldBackgroundColor,
+                        borderRadius: const BorderRadius.only(
+                            topRight: Radius.circular(20),
+                            topLeft: Radius.circular(20))),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 20),
                       child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           FadeInUp(
                             duration: const Duration(milliseconds: 1000),
-                            child: ToggleSwitch(
-                              minWidth: 90.0,
-                              minHeight: 70.0,
-                              initialLabelIndex: _selectedIndex,
-                              cornerRadius: 20.0,
-                              activeFgColor: Colors.white,
-                              inactiveBgColor: Colors.grey,
-                              inactiveFgColor: Colors.white,
-                              totalSwitches: 4,
-                              // Increase totalSwitches to match the sections
-                              icons: const [
-                                Icons.summarize_outlined,
-                                Icons.info,
-                                Icons.date_range,
-                                Icons.download
-                              ],
-                              iconSize: 30.0,
-                              activeBgColors: const [
-                                [Colors.black45, Colors.black26],
-                                // for Policy Details
-                                [Colors.yellow, Colors.orange],
-                                // for Policy Dates
-                                [Colors.green, Colors.blue],
-                                // for Section 3 (you can define another section)
-                                [Colors.red, Colors.pink]
-                                // for Section 4 (you can define another section)
-                              ],
-                              animate: true,
-                              curve: Curves.bounceInOut,
-                              onToggle: (index) {
-                                setState(() {
-                                  _selectedIndex = index ?? 0;
-                                });
-                                print('switched to: $index');
-                              },
-                            ),
+                            child: Expanded(
+                                child: SingleChildScrollView(
+                              child: Column(
+                                children: [
+                                  ToggleSwitch(
+                                    minWidth: 90.0,
+                                    minHeight: 70.0,
+                                    initialLabelIndex: _selectedIndex,
+                                    cornerRadius: 20.0,
+                                    activeFgColor: Colors.white,
+                                    inactiveBgColor: Colors.grey,
+                                    inactiveFgColor: Colors.white,
+                                    totalSwitches: 4,
+                                    // Increase totalSwitches to match the sections
+                                    icons: const [
+                                      Icons.summarize_outlined,
+                                      Icons.info,
+                                      Icons.date_range,
+                                      Icons.download
+                                    ],
+                                    iconSize: 30.0,
+                                    activeBgColors: const [
+                                      [Colors.black45, Colors.black26],
+                                      // for Policy Details
+                                      [Colors.yellow, Colors.orange],
+                                      // for Policy Dates
+                                      [Colors.green, Colors.blue],
+                                      // for Section 3 (you can define another section)
+                                      [Colors.red, Colors.pink]
+                                      // for Section 4 (you can define another section)
+                                    ],
+                                    animate: true,
+                                    curve: Curves.bounceInOut,
+                                    onToggle: (index) {
+                                      setState(() {
+                                        _selectedIndex = index ?? 0;
+                                      });
+                                      print('switched to: $index');
+                                    },
+                                  ),
+                                ],
+                              ),
+                            )),
                           ),
                           // Add additional Transform.translate effects for the content sections
                           if (_selectedIndex == 0)
@@ -102,7 +112,7 @@ class _PolicyScreenState extends State<PolicyScreen> {
                               policy: widget.policy,
                             ),
                           if (_selectedIndex == 3)
-                            Downloads(documentUrl: widget.policy.documentUrl),
+                            Downloads(documentUrl: widget.policy.pdfUrl),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             child: PrimaryButton(
@@ -125,6 +135,7 @@ class _PolicyScreenState extends State<PolicyScreen> {
     );
   }
 }
+
 class PolicyDetails extends StatelessWidget {
   final Policy policy;
 
@@ -149,10 +160,11 @@ class PolicyDetails extends StatelessWidget {
               const SizedBox(height: 16),
               _buildExpandableSection(
                 context: context,
-                title: "Policy Details",  // Changed title to something generic
+                title: "Policy Details", // Changed title to something generic
                 content: [
                   _buildPolicyDetail(context, "Title", policy.title),
-                  _buildPolicyDetail(context, "Description", policy.description),
+                  _buildPolicyDetail(
+                      context, "Description", policy.description),
                   _buildPolicyDetail(context, "Category", policy.category),
                   _buildPolicyDetail(context, "Tags", policy.tags.join(', ')),
                   _buildPolicyDetail(context, "Status", policy.status),
@@ -235,8 +247,7 @@ class PolicyDetails extends StatelessWidget {
       tilePadding: const EdgeInsets.symmetric(vertical: 10),
       // Improved padding for better touch targets
       expandedAlignment: Alignment.topLeft,
-      iconColor:
-      Theme.of(context).iconTheme.color,
+      iconColor: Theme.of(context).iconTheme.color,
       children: content, // Use context for icon color
     );
   }
@@ -266,14 +277,14 @@ class PolicyDates extends StatelessWidget {
               _buildSectionTitle("Important Dates"),
               _buildExpandableSection(
                 title:
-                "Creation Date: ${policy.createdDate.toLocal().toString().split(' ')[0]}",
+                    "Creation Date: ${policy.createdDate.toLocal().toString().split(' ')[0]}",
                 content: [
                   _buildPolicyDetail(
                       "Effective Date",
                       policy.effectiveDate
-                          ?.toLocal()
-                          .toString()
-                          .split(' ')[0] ??
+                              ?.toLocal()
+                              .toString()
+                              .split(' ')[0] ??
                           'Not Set'),
                   _buildPolicyDetail(
                       "Expiry Date",
@@ -354,7 +365,11 @@ class Summary extends StatelessWidget {
   final String description;
   final String status;
 
-  const Summary({super.key, required this.title, required this.description, required this.status});
+  const Summary(
+      {super.key,
+      required this.title,
+      required this.description,
+      required this.status});
 
   @override
   Widget build(BuildContext context) {
@@ -366,17 +381,13 @@ class Summary extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text("Under Development stage"),
-            // Text("Title: $title", style: Theme.of(context).textTheme.titleLarge),
-            // const SizedBox(height: 10),
-            // Text("Description: $description", style: Theme.of(context).textTheme.bodyMedium),
-            // const SizedBox(height: 10),
-            // Text("Status: $status", style: Theme.of(context).textTheme.bodySmall),
           ],
         ),
       ),
     );
   }
 }
+
 class Downloads extends StatelessWidget {
   final String? documentUrl;
 
@@ -384,7 +395,89 @@ class Downloads extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (documentUrl == null) {
+    if (documentUrl != null && documentUrl!.isNotEmpty) {
+      return FadeInUp(
+        duration: const Duration(milliseconds: 1000),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green, // Set the background color
+                    foregroundColor:
+                        Colors.white, // Set the text and icon color
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
+                  ),
+                  icon: const Icon(
+                    Icons.download,
+                    color: Colors.white,
+                  ),
+                  label: const Text("Download"),
+                  onPressed: () async {
+                    if (documentUrl == null || documentUrl!.isEmpty) {
+                      print('Document URL is null or empty');
+                      return;
+                    }
+                    //
+                    print('Attempting to launch: $documentUrl');
+                    if (await canLaunchUrl(Uri.parse(documentUrl!))) {
+                      await launchUrl(Uri.parse(documentUrl!),
+                          mode: LaunchMode.externalApplication);
+                      print('Launch successful: $documentUrl');
+                    } else {
+                      print('Failed to launch: $documentUrl');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Could not launch download link."),
+                        ),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor:
+                        Colors.grey[300], // Set the background color
+                    foregroundColor:
+                        Colors.black, // Set the text and icon color
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 15, horizontal: 20),
+                  ),
+                  icon: const Icon(
+                    Icons.preview,
+                    color: Colors.black,
+                  ),
+                  label: const Text("Preview"),
+                  onPressed: () async {
+                    if (documentUrl != null && documentUrl!.isNotEmpty) {
+                      // Launch the URL directly in the web browser
+                      if (await canLaunchUrl(Uri.parse(documentUrl!))) {
+                        await launchUrl(Uri.parse(documentUrl!));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Could not open the PDF preview."),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+    } else {
       return FadeInUp(
         duration: const Duration(milliseconds: 1000),
         child: Container(
@@ -393,23 +486,9 @@ class Downloads extends StatelessWidget {
         ),
       );
     }
-
-    return FadeInUp(
-      duration: const Duration(milliseconds: 1000),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        child: ElevatedButton.icon(
-          icon: const Icon(Icons.download),
-          label: const Text("Download Document"),
-          onPressed: () {
-            // Handle download logic here
-            print("Downloading from: $documentUrl");
-          },
-        ),
-      ),
-    );
   }
 }
+
 class PolicyCarousel extends StatelessWidget {
   final List<String> images;
 

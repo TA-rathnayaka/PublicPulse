@@ -26,6 +26,8 @@ class PoliciesProvider extends ChangeNotifier {
     }
   }
 
+
+
   // Set filtered policies based on the search query
   void setFilteredPolicies(String query) {
     _filteredPolicies = filterPolicies(query);

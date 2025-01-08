@@ -35,6 +35,7 @@ class PolicyService {
           expiryDate: expiryDate,
           approvalDate: approvalDate,
           isActive: data['isActive'] ?? true,
+          pdfUrl: data['pdfUrl'], // Fetch pdfUrl
         );
       }).toList();
       return policies;
