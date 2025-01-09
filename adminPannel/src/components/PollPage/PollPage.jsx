@@ -53,61 +53,9 @@ const PollPage = () => {
     }
   };
 
-  const pollStats = [
-    {
-      label: "Recent Polls",
-      count: 346,
-      icon: <MoneyOutlinedIcon />,
-      color: "#f9f1b5",
-      borderColor: "#CDAA00",
-    },
-    {
-      label: "Active Polls",
-      count: 247,
-      icon: <HowToVoteOutlinedIcon />,
-      color: "#cde4f4",
-      borderColor: "#006699",
-    },
-    {
-      label: "Ended Polls",
-      count: 23,
-      icon: <PollOutlinedIcon />,
-      color: "#f5cbc2",
-      borderColor: "#BF2B2B",
-    },
-    {
-      label: "Dormant Polls",
-      count: 65,
-      icon: <CommentOutlinedIcon />,
-      color: "#c0f0e0",
-      borderColor: "#007E7D",
-    },
-  ];
-
   return (
     <div className="poll-page-container">
-      <div className="stats-container">
-        {pollStats.map((stat, index) => (
-          <div
-            key={index}
-            className={`stat-item ${stat.label
-              .replace(" ", "-")
-              .toLowerCase()}`}
-            style={{
-              backgroundColor: stat.color,
-              borderColor: stat.borderColor,
-            }}
-          >
-            {React.cloneElement(stat.icon, {
-              style: { color: stat.borderColor },
-            })}
-            <div className="stat-text" style={{ color: stat.borderColor }}>
-              <span>{stat.label}</span>
-              <h3>{stat.count}</h3>
-            </div>
-          </div>
-        ))}
-      </div>
+      
 
       <div className="recent-polls">
         <h3 style={{ marginBottom: "2rem" }}>Recent Polls</h3>

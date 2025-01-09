@@ -12,7 +12,7 @@ import 'package:client/providers/user_provider.dart';
 import 'package:animate_do/animate_do.dart';
 
 class UserProfileScreen extends StatelessWidget {
-  static const id = '/combinedProfile';
+  static const id = '/Profile';
 
   const UserProfileScreen({super.key});
 
@@ -57,10 +57,9 @@ class UserProfileScreen extends StatelessWidget {
                           }
 
                           profileProvider.initializeProfile(user);
-
                           return Identity(
-                            imagePath: user['profileImage'] ?? "assets/default_profile.jpg",
-                            name: "${user['firstName'] ?? ''} ${user['lastName'] ?? ''}".trim(),
+                            imagePath: user['photoURL'],
+                            name: "${user['displayName']}".trim(),
                             email: user['email'] ?? "No email available",
                             phoneNumber: user['phoneNumber'] ?? "No phone number available",
 
@@ -189,7 +188,7 @@ class UserProfileScreen extends StatelessWidget {
                       label: 'Save',
                       onPressed: () {
                         if (profileProvider.validateProfile()) {
-                          profileProvider.saveProfile(context);
+                          // profileProvider.saveProfile(context);
                         }
                       },
                     ),

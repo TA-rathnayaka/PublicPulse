@@ -38,7 +38,6 @@ const subscribeToVotesChange = (callback) => {
   );
 };
 
-
 const Featured = () => {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
@@ -91,22 +90,21 @@ const Featured = () => {
   }, []);
 
   const calculatePercentageChange = (todayVotes, yesterdayVotes) => {
-    if (yesterdayVotes === 0) return todayVotes > 0 ? 100 : 0;
-    return ((todayVotes - yesterdayVotes) / yesterdayVotes) * 100;
+    if (totalVotes === 0) return 0;
+    return (((todayVotes - yesterdayVotes) / totalVotes) * 100);
   };
 
   const { totalVotes, todayVotes, yesterdayVotes, percentageChange } = data;
 
   return (
     <div className="featured">
-      <div className="top">
-        <h1 className="title">User Engagement</h1>
-        <MoreVertIcon fontSize="small" aria-label="Options" />
-      </div>
       <div className="bottom">
         {loading ? (
           <div className="loadingContainer">
-            <CircularProgress size={40} />
+            <div className="skeletonChart"></div>
+            <div className="skeletonItem skeletonText"></div>
+            <div className="skeletonItem skeletonAmount"></div>
+            <div className="skeletonItem skeletonSummary"></div>
           </div>
         ) : (
           <>
@@ -129,12 +127,12 @@ const Featured = () => {
               <SummaryItem
                 title="Yesterday's Votes"
                 result={yesterdayVotes}
-                isPositive={yesterdayVotes > 0}
+                isPositive={yesterdayVotes - todayVotes > 0}
               />
               <SummaryItem
-                title="Percentage Change"
-                result={`${Math.round(percentageChange)}%`}
-                isPositive={percentageChange >= 0}
+                title="Difference"
+                result={`${todayVotes - yesterdayVotes}`}
+                isPositive={todayVotes - yesterdayVotes >= 0}
               />
             </div>
           </>

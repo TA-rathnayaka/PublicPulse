@@ -27,7 +27,6 @@ class VotesProvider with ChangeNotifier {
       // Indicates success
     } catch (e) {
       print("Error adding vote in provider: $e");
-// Indicates failure (e.g., if an error occurs)
     }
   }
 }

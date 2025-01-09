@@ -1,53 +1,108 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class UserService {
-
   final FirebaseFirestore _fireStore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> storeUserDetails(
-      String? uid, String firstName, String lastName, String email) async {
+      {String? displayName,
+      String? photoUrl,
+      Map<String, dynamic>? customData}) async {
     try {
-      if (uid == null) {
-        throw Exception("User ID (uid) cannot be null.");
+      // Ensure the user is authenticated
+      User? user = _auth.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
       }
 
-      await _fireStore.collection('users').doc(uid).set({
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'createdAt': Timestamp.now(),
-      });
+      String uid = user.uid;
 
-      print("User details stored successfully.");
+      if (displayName != null) {
+        await user.updateDisplayName(displayName);
+      }
+
+      if (photoUrl != null) {
+        await user.updatePhotoURL(photoUrl);
+      }
+
+      if (customData != null) {
+        customData.removeWhere((key, value) => value == null);
+
+        await _fireStore
+            .collection('users')
+            .doc(uid)
+            .set(customData, SetOptions(merge: true));
+      }
+      print("User details stored successfully in Firebase Auth and Firestore.");
     } catch (e) {
       print("Error storing user details: $e");
+      rethrow; // Optionally rethrow to propagate the error
     }
   }
 
-  // Fetch user details
-  Future<Map<String, dynamic>?> getUserDetails(String uid) async {
+  Future<Map<String, dynamic>?> getUserDetails() async {
     try {
-      DocumentSnapshot doc = await _fireStore.collection('users').doc(uid).get();
-      if (doc.exists && doc.data() != null) {
-        return doc.data() as Map<String, dynamic>;
-      } else {
-        print("User document is empty or not found.");
-        return null;
+      User? user = _auth.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
       }
+
+      DocumentSnapshot doc =
+          await _fireStore.collection('users').doc(user.uid).get();
+
+      Map<String, dynamic> firestoreData = {
+        'uid': user.uid,
+        'displayName': user.displayName ?? "No display name",
+        'photoURL': user.photoURL ?? "No photo",
+      };
+
+      if (doc.exists && doc.data() != null) {
+        Map<String, dynamic> docData = doc.data() as Map<String, dynamic>;
+        firestoreData.addAll(docData);
+      } else {
+        print("User document not found in Firestore.");
+      }
+
+      return firestoreData;
     } catch (e) {
-      print("Error fetching user details for UID $uid: $e");
+      print("Error fetching user details: $e");
       return null;
     }
   }
 
-  // Update user details
-  Future<void> updateUserDetails(String uid, Map<String, dynamic> updatedData) async {
+  Future<void> updateUserDetails(String? displayName, String? photoUrl,
+      Map<String, dynamic>? userDetails) async {
     try {
-      await _fireStore.collection('users').doc(uid).update(updatedData);
-      print("User details updated successfully.");
+      // Get the current authenticated user from Firebase Auth
+      User? user = _auth.currentUser;
+      if (user == null) {
+        throw Exception("User is not authenticated.");
+      }
+
+      String uid = user.uid;
+
+      if (displayName != null) {
+        await user.updateDisplayName(displayName);
+      }
+
+      if (photoUrl != null) {
+        await user.updatePhotoURL(photoUrl);
+      }
+
+
+      // Update Firestore with the new user details
+      if (userDetails != null) {
+        await _fireStore.collection('users').doc(uid).update(userDetails);
+      }
+      print("User details updated successfully in both Auth and Firestore.");
     } catch (e) {
-      print("Error updating user details for UID $uid: $e");
+      print("Error updating user details: $e");
       throw Exception("Failed to update user details.");
     }
+  }
+
+  User? getCurrentUser() {
+    return _auth.currentUser;
   }
 }

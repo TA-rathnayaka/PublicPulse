@@ -26,21 +26,20 @@ class PoliciesProvider extends ChangeNotifier {
     }
   }
 
+
+
   // Set filtered policies based on the search query
   void setFilteredPolicies(String query) {
     _filteredPolicies = filterPolicies(query);
     notifyListeners();
   }
-
-  // Filter the list of policies based on the search query
   List<Policy> filterPolicies(String query) {
     if (query.isEmpty) {
       return _policies;
     }
     return _policies
         .where((policy) =>
-    policy.title.toLowerCase().contains(query.toLowerCase()) ||
-        policy.description.toLowerCase().contains(query.toLowerCase()))
-        .toList();
+        policy.title.toLowerCase().contains(query.toLowerCase())
+    ).toList(); // <-- Correct placement of toList()
   }
 }

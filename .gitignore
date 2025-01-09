@@ -1,5 +1,6 @@
 # Node.js modules
 node_modules/
+/backend-v2/policymaker-ee7e9-firebase-adminsdk-mhbqj-3fb1249b9a.json
 
 # dotenv environment variables file
 .env*
@@ -25,8 +26,6 @@ build/
 *.js.deps
 *.js.map
 
-<<<<<<< HEAD
-=======
 .flutter-plugins
 .flutter-plugins-dependencies
 
@@ -54,14 +53,12 @@ migrate_working_dir/
 .pub/
 /build/
 
->>>>>>> a9bff2c8c19f90119c1d161a4bd4f39c2efbd235
 # Symbolication related 
 app.*.symbols
 
 # Obfuscation related
 app.*.map.json
 
-<<<<<<< HEAD
 # Miscellaneous
 *.log
 *.pyc
@@ -91,9 +88,7 @@ ios/Flutter/Flutter.podspec
 
 # Other IDE-specific settings (optional)
 .vscode/
-=======
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
->>>>>>> a9bff2c8c19f90119c1d161a4bd4f39c2efbd235

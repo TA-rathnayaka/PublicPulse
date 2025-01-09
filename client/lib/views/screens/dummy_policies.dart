@@ -9,7 +9,7 @@ List<Policy> dummy_policies = [
     tags: ['privacy', 'data', 'security'],
     createdBy: 'admin',
     imageUrl: 'https://example.com/privacy-image.png',
-    documentUrl: 'https://example.com/privacy-policy.pdf',
+    pdfUrl: 'https://example.com/privacy-policy.pdf',
     creationDate: DateTime.parse('2024-01-01'),
     effectiveDate: DateTime.parse('2024-01-01'), // Adjusted effective date
     expiryDate: DateTime.parse('2025-12-31'),
@@ -22,7 +22,7 @@ List<Policy> dummy_policies = [
     tags: ['terms', 'service', 'agreement'],
     createdBy: 'admin',
     imageUrl: 'https://example.com/terms-image.png',
-    documentUrl: 'https://example.com/terms-of-service.pdf',
+    pdfUrl: 'https://example.com/terms-of-service.pdf',
     creationDate: DateTime.parse('2024-01-01'),
     effectiveDate: DateTime.parse('2024-01-01'), // Adjusted effective date
     expiryDate: DateTime.parse('2026-01-01'),
@@ -35,7 +35,7 @@ List<Policy> dummy_policies = [
     tags: ['cookies', 'tracking', 'website'],
     createdBy: 'admin',
     imageUrl: 'https://example.com/cookie-image.png',
-    documentUrl: 'https://example.com/cookie-policy.pdf',
+    pdfUrl: 'https://example.com/cookie-policy.pdf',
     creationDate: DateTime.parse('2024-01-01'),
     effectiveDate: DateTime.parse('2024-01-01'),
     expiryDate: DateTime.parse('2025-01-01'),
@@ -48,7 +48,7 @@ List<Policy> dummy_policies = [
     tags: ['refund', 'payment', 'service'],
     createdBy: 'admin',
     imageUrl: 'https://example.com/refund-image.png',
-    documentUrl: 'https://example.com/refund-policy.pdf',
+    pdfUrl: 'https://example.com/refund-policy.pdf',
     creationDate: DateTime.parse('2024-02-01'),
     effectiveDate: DateTime.parse('2024-02-01'), // Adjusted effective date
     expiryDate: DateTime.parse('2025-02-01'),
@@ -61,7 +61,7 @@ List<Policy> dummy_policies = [
     tags: ['data', 'storage', 'retention'],
     createdBy: 'admin',
     imageUrl: 'https://example.com/data-retention-image.png',
-    documentUrl: 'https://example.com/data-retention-policy.pdf',
+    pdfUrl: 'https://example.com/data-retention-policy.pdf',
     creationDate: DateTime.parse('2024-03-01'),
     effectiveDate: DateTime.parse('2024-03-01'), // Adjusted effective date
     expiryDate: DateTime.parse('2026-03-01'),

@@ -35,9 +35,19 @@ class Identity extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            // Conditional display for image or icon
             CircleAvatar(
-              backgroundImage: AssetImage(imagePath),
+              backgroundImage: imagePath.isNotEmpty
+                  ? AssetImage(imagePath) as ImageProvider
+                  : null, // Use the image if it's not empty
               radius: 40,
+              child: imagePath.isEmpty
+                  ? Icon(
+                Icons.person,
+                size: 40,
+                color: theme.colorScheme.onSurface,
+              ) // Show an icon if the image path is empty
+                  : null, // No icon if the image is not empty
             ),
             const SizedBox(height: 10),
             Text(

@@ -16,7 +16,7 @@ import Policies from "./pages/policies/PoliciesPage";
 import PolicyDetails from "./pages/policyDetails/PolicyDetails";
 import Notifications from "./pages/notifications/notifications";
 import { NotificationsProvider, useNotifications } from "./context/NotificationsContext";
-import PoliciesPage from './pages/policies/PoliciesPage';
+import ManagePolicies from './pages/managePolicies/managePolicies';
 import PollDetails from "./pages/pollDetails/pollDetails";
 
 
@@ -43,7 +43,7 @@ function App() {
                 element={<New inputs={userInputs} title="Add New User" />}
               />
             </Route>
-            <Route path="/policies" element={<Policies />} />
+            <Route path="/policies" element={<ManagePolicies />} />
             <Route path="/policies/:policyId" element={<PolicyDetails />} />
             <Route path="/products">
               <Route index element={<List />} />

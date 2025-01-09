@@ -42,8 +42,6 @@ const PoliciesPage = () => {
 
   return (
     <div className="policies-page">
-  
-      <UploadPolicy />
       <div className="sort-container">
         <label>Sort by: </label>
         <select onChange={(e) => setSortType(e.target.value)} value={sortType}>
@@ -72,3 +70,5 @@ const PoliciesPage = () => {
 };
 
 export default PoliciesPage;
+
+

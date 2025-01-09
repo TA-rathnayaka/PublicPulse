@@ -1,5 +1,3 @@
-
-
 class Policy {
   final String id;
   String title;
@@ -16,7 +14,7 @@ class Policy {
   String? approvedBy;
   DateTime? approvalDate;
   String? imageUrl;
-  String? documentUrl;
+  String? pdfUrl;
   Map<String, dynamic> metadata;
   String? notes;
 
@@ -36,7 +34,7 @@ class Policy {
     this.approvedBy,
     this.approvalDate,
     this.imageUrl,
-    this.documentUrl,
+    this.pdfUrl,
     this.metadata = const {},
     this.notes,
   }) : createdDate = creationDate ?? DateTime.now() {
@@ -101,9 +99,9 @@ class Policy {
       'approvedBy': approvedBy,
       'approvalDate': approvalDate?.toIso8601String(),
       'imageUrl': imageUrl,
-      'documentUrl': documentUrl,
+      'documentUrl': pdfUrl,
       'metadata': metadata,
-      'notes': notes,
+
     };
   }
 
@@ -125,7 +123,7 @@ class Policy {
       approvedBy: json['approvedBy'],
       approvalDate: json['approvalDate'] != null ? DateTime.parse(json['approvalDate']) : null,
       imageUrl: json['imageUrl'],
-      documentUrl: json['documentUrl'],
+      pdfUrl: json['documentUrl'],
       metadata: Map<String, dynamic>.from(json['metadata'] ?? {}),
       notes: json['notes'],
     );
@@ -149,7 +147,7 @@ Expiry Date: ${expiryDate != null ? expiryDate!.toIso8601String() : 'No Expiry'}
 Approved By: ${approvedBy ?? 'Not Approved'}
 Approval Date: ${approvalDate != null ? approvalDate!.toIso8601String() : 'Not Approved'}
 Image URL: ${imageUrl ?? 'No Image'}
-Document URL: ${documentUrl ?? 'No Document'}
+Document URL: ${pdfUrl ?? 'No Document'}
 Notes: ${notes ?? 'None'}
 Status: ${isActive ? 'Active' : 'Inactive'}
 Currently Effective: ${isCurrentlyEffective() ? 'Yes' : 'No'}

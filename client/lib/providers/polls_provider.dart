@@ -7,8 +7,14 @@ import 'package:client/services/poll_service.dart';
 class PollsProvider extends ChangeNotifier {
   final PollService _storageService = PollService();
   final VoteService _voteService = VoteService();
+
   int? _selectedIndex;
   List<Poll> _polls = [];
+  List<Poll> _filteredPolls = [];
+  String _searchTerm = "";
+
+  UnmodifiableListView<Poll> get polls => UnmodifiableListView(_polls);
+
 
   PollsProvider() {
     fetchPolls();
@@ -20,9 +26,26 @@ class PollsProvider extends ChangeNotifier {
     }
   }
 
-  UnmodifiableListView<Poll> get polls => UnmodifiableListView(_polls);
+  void setSearchTerm(String searchTerm) {
+    _searchTerm = searchTerm;
+    _filterPolls();
+    notifyListeners();
+  }
 
-  // Fetch all polls from Firestore
+  void _filterPolls() {
+    if (_searchTerm.isEmpty) {
+      _filteredPolls = [];
+    } else {
+      _filteredPolls = _polls.where((poll) {
+        return poll.title.toLowerCase().contains(_searchTerm.toLowerCase()) ||
+            poll.description.toLowerCase().contains(_searchTerm.toLowerCase());  // Filter by title or description
+      }).toList();
+    }
+  }
+
+
+
+
   Future<void> fetchPolls() async {
     _polls = await _storageService.getPolls();
     notifyListeners();
