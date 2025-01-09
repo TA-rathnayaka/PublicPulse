@@ -8,6 +8,8 @@ import 'package:provider/provider.dart';
 import 'package:client/providers/screens_providers/poll_screen_provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:client/models/poll.dart';
+import 'dart:io';
+import 'package:flutter/cupertino.dart';
 
 class PollDashboard extends StatelessWidget {
   static String id = '/poll-dashboard';
@@ -42,8 +44,10 @@ class PollDashboard extends StatelessWidget {
               const SizedBox(height: 20),
               Consumer<PollsProvider>(
                 builder: (context, pollsProvider, child) {
-                  if (pollsProvider.polls == null || pollsProvider.polls.isEmpty) {
-                    return Center(child: Text("No polls available."));
+                  if (pollsProvider.polls == null ||
+                      pollsProvider.polls.isEmpty) {
+                    return
+                      Center(child: CircularProgressIndicator());
                   }
 
                   return ListView.builder(
@@ -64,15 +68,17 @@ class PollDashboard extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => MultiProvider(
-                                  providers: [
-                                    ChangeNotifierProvider(
-                                        create: (_) => PollScreenProvider()),
-                                    ChangeNotifierProvider.value(
-                                        value: pollsProvider),
-                                  ],
-                                  child: PollScreen(poll: poll!),
-                                ),
+                                builder: (context) =>
+                                    MultiProvider(
+                                      providers: [
+                                        ChangeNotifierProvider(
+                                            create: (_) =>
+                                                PollScreenProvider()),
+                                        ChangeNotifierProvider.value(
+                                            value: pollsProvider),
+                                      ],
+                                      child: PollScreen(poll: poll!),
+                                    ),
                               ),
                             );
                           },
