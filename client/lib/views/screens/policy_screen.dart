@@ -5,7 +5,6 @@ import 'package:client/views/constants/constants.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:animate_do/animate_do.dart';
-import 'dummy_policies.dart';
 
 class PolicyScreen extends StatelessWidget {
   static String id = '/policy-screen';

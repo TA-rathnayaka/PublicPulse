@@ -13,16 +13,17 @@ class PollsProvider extends ChangeNotifier {
   List<Poll> _filteredPolls = [];
   String _searchTerm = "";
 
-  UnmodifiableListView<Poll> get polls => UnmodifiableListView(_polls);
-
+  UnmodifiableListView<Poll> get polls => UnmodifiableListView(_filteredPolls);
 
   PollsProvider() {
     fetchPolls();
   }
 
   void setSelectedIndex(int index) {
-    if (0 <= index && index < polls.length) {
+    if (0 <= index && index < _filteredPolls.length) {
       _selectedIndex = index;
+    } else {
+      _selectedIndex = null; // Reset to null if the index is out of bounds
     }
   }
 
@@ -34,39 +35,35 @@ class PollsProvider extends ChangeNotifier {
 
   void _filterPolls() {
     if (_searchTerm.isEmpty) {
-      _filteredPolls = [];
+      _filteredPolls = List.from(_polls);
     } else {
       _filteredPolls = _polls.where((poll) {
         return poll.title.toLowerCase().contains(_searchTerm.toLowerCase()) ||
-            poll.description.toLowerCase().contains(_searchTerm.toLowerCase());  // Filter by title or description
+            poll.description.toLowerCase().contains(_searchTerm.toLowerCase());
       }).toList();
     }
   }
 
-
-
-
   Future<void> fetchPolls() async {
     _polls = await _storageService.getPolls();
+    _filterPolls(); // Update the filtered polls based on current search term
     notifyListeners();
   }
 
   Future<Poll?> getPollByIndex() async {
-    if (_selectedIndex != null) {
-      Poll selectedPoll = polls[_selectedIndex!];
-      selectedPoll.hasVoted =
-          await _voteService.hasUserVoted(selectedPoll.id ?? "");
+    if (_selectedIndex != null && _selectedIndex! >= 0 && _selectedIndex! < _filteredPolls.length) {
+      Poll selectedPoll = _filteredPolls[_selectedIndex!];
+      selectedPoll.hasVoted = await _voteService.hasUserVoted(selectedPoll.id ?? "");
       return selectedPoll;
     }
     return null;
   }
 
-
-
   Future<void> addPoll(Poll poll) async {
     try {
       await _storageService.createPoll(poll);
       _polls.add(poll);
+      _filterPolls();  // Update filtered polls list after adding a new poll
       notifyListeners();
     } catch (e) {
       print("Error adding poll: $e");
@@ -78,6 +75,7 @@ class PollsProvider extends ChangeNotifier {
       await _storageService.deletePoll(pollId);
       if (index >= 0 && index < _polls.length) {
         _polls.removeAt(index);
+        _filterPolls();  // Reapply filtering after removal
         notifyListeners();
       }
     } catch (e) {
@@ -90,6 +88,7 @@ class PollsProvider extends ChangeNotifier {
       await _storageService.updatePoll(pollId, updatedPoll);
       if (index >= 0 && index < _polls.length) {
         _polls[index] = updatedPoll;
+        _filterPolls();  // Reapply filtering after update
         notifyListeners();
       }
     } catch (e) {
@@ -97,16 +96,14 @@ class PollsProvider extends ChangeNotifier {
     }
   }
 
-
   Future<void> addVote(String optionId) async {
     try {
-      Poll? selected_poll = await getPollByIndex();
+      Poll? selectedPoll = await getPollByIndex();
 
-      if (selected_poll != null) {
-        await _voteService.addVote(selected_poll.id ?? "", optionId);
-        selected_poll.hasVoted = true; // only access hasVoted if selected_poll is not null
+      if (selectedPoll != null) {
+        await _voteService.addVote(selectedPoll.id ?? "", optionId);
+        selectedPoll.hasVoted = true;
         notifyListeners();
-        // Indicates success
       } else {
         print("Poll not found.");
       }
