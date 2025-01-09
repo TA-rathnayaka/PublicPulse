@@ -6,6 +6,8 @@ import 'package:client/providers/screens_providers/poll_screen_provider.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/models/poll.dart';
 
+const test =70;
+
 class PollScreen extends StatelessWidget {
   static String id = '/poll-screen';
 
@@ -50,11 +52,10 @@ class PollScreen extends StatelessWidget {
     );
   }
 }
-
 class PollDetails extends StatefulWidget {
   final String question;
   final String description;
-  final List<Option> options; // Add options as parameter
+  final List<Option> options;
   final Poll poll;
 
   const PollDetails({
@@ -63,7 +64,6 @@ class PollDetails extends StatefulWidget {
     required this.description,
     required this.options,
     required this.poll,
-
   });
 
   @override
@@ -72,6 +72,7 @@ class PollDetails extends StatefulWidget {
 
 class _PollDetailsState extends State<PollDetails> {
   String? selectedOption;
+  bool showColors = false;
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +100,7 @@ class _PollDetailsState extends State<PollDetails> {
               const SizedBox(height: 20),
               _buildOptions(),
               const SizedBox(height: 20),
-              _buildVoteButton(widget.poll)
+              _buildVoteButton(widget.poll),
             ],
           ),
         ),
@@ -107,7 +108,6 @@ class _PollDetailsState extends State<PollDetails> {
     );
   }
 
-  // Helper function to build text with animations
   Widget _buildText(String text, double fontSize, FontWeight fontWeight,
       Color? color, int duration) {
     return FadeInUp(
@@ -123,12 +123,39 @@ class _PollDetailsState extends State<PollDetails> {
     );
   }
 
-  // Helper function to render poll options
+
+
   Widget _buildOptions() {
+    int totalVotes = _calculateTotalVotes(widget.options);
+
     return FadeInUp(
       duration: const Duration(milliseconds: 1700),
       child: Column(
         children: widget.options.map((option) {
+          double votePercentage = totalVotes > 0
+              ? (option.voteCount / totalVotes) * 100
+              : 0.0;
+
+          Color backgroundColor = Colors.grey.shade300;
+          Color borderColor = Colors.grey.shade600;
+          Color percentageColor = Colors.black;
+
+          if (widget.poll.hasVoted) {
+            // Adjust colors based on vote percentage
+            if (votePercentage < 50) {
+              backgroundColor = Colors.blue.shade100;
+              borderColor = Colors.blue.shade800;
+              percentageColor = Colors.red;
+            } else {
+              backgroundColor = Colors.green.shade100;
+              borderColor = Colors.green.shade800;
+              percentageColor = Colors.green;
+            }
+          } else if (selectedOption == option.text) {
+            backgroundColor = Colors.blue.shade100;
+            borderColor = Colors.blue.shade800;
+          }
+
           return GestureDetector(
             onTap: () {
               setState(() {
@@ -138,23 +165,37 @@ class _PollDetailsState extends State<PollDetails> {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
                 margin: const EdgeInsets.symmetric(vertical: 5),
                 decoration: BoxDecoration(
-                  color: selectedOption == option.text
-                      ? Theme.of(context).primaryColor
-                      : Theme.of(context).unselectedWidgetColor,
+                  color: backgroundColor,
                   borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: borderColor, width: 2),
                 ),
-                child: Text(
-                  "${option.text} - ${option.voteCount} votes",
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: selectedOption == option.text
-                        ? Colors.white
-                        : Colors.black,
-                  ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        option.text,
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                    // Show percentage only if user has already voted
+                    if (widget.poll.hasVoted)
+                      Container(
+                        padding: const EdgeInsets.only(left: 10),
+                        child: Text(
+                          '${votePercentage.toStringAsFixed(1)}%',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: percentageColor,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
@@ -164,7 +205,6 @@ class _PollDetailsState extends State<PollDetails> {
     );
   }
 
-  // Helper function to handle vote button click
   Widget _buildVoteButton(Poll poll) {
     return FadeInUp(
       duration: const Duration(milliseconds: 1700),
@@ -179,6 +219,9 @@ class _PollDetailsState extends State<PollDetails> {
                 if (!poll.hasVoted) {
                   await pollsProvider.addVote(selectedOptionId!);
                   _voteForOption(selectedOptionId);
+                  setState(() {
+                    showColors = true;
+                  });
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('Voted for $selectedOption')),
                   );
@@ -186,7 +229,7 @@ class _PollDetailsState extends State<PollDetails> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                         content:
-                            Text('You have already voted for ${poll.title}')),
+                        Text('You have already voted for ${poll.title}')),
                   );
                 }
               }
@@ -198,18 +241,20 @@ class _PollDetailsState extends State<PollDetails> {
     );
   }
 
-  // Helper function to vote for the selected option
   void _voteForOption(String optionId) {
     setState(() {
       for (var option in widget.options) {
-        if (option.optionId == (optionId)) {
-          option.voteCount = (option.voteCount) + 1; // Increment vote count
+        if (option.optionId == optionId) {
+          option.voteCount = option.voteCount + 1;
         }
       }
     });
   }
-}
 
+  int _calculateTotalVotes(List<Option> options) {
+    return options.fold(0, (sum, option) => sum + option.voteCount);
+  }
+}
 class PollCarousel extends StatelessWidget {
   final List<String> images;
   final int currentIndex;
