@@ -1,26 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:animate_do/animate_do.dart';
 import 'package:client/models/policy.dart';
 import 'package:client/views/components/primary_button.dart';
 import 'package:client/views/constants/constants.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:animate_do/animate_do.dart';
+import 'dummy_policies.dart';
 
-const testUrl =
-    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
-
-class PolicyScreen extends StatefulWidget {
+class PolicyScreen extends StatelessWidget {
   static String id = '/policy-screen';
   final Policy policy;
 
   const PolicyScreen({super.key, required this.policy});
 
-  @override
-  _PolicyScreenState createState() => _PolicyScreenState();
-}
-
-class _PolicyScreenState extends State<PolicyScreen> {
-  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -32,9 +24,7 @@ class _PolicyScreenState extends State<PolicyScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 PolicyCarousel(
-                  images: widget.policy.imageUrl != null
-                      ? [widget.policy.imageUrl!]
-                      : [],
+                  images: policy.imageUrl != null ? [policy.imageUrl!] : [],
                 ),
                 Transform.translate(
                   offset: const Offset(0, -40),
@@ -46,73 +36,122 @@ class _PolicyScreenState extends State<PolicyScreen> {
                             topLeft: Radius.circular(20))),
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 20),
+                          horizontal: 20, vertical: 30),
                       child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          FadeInUp(
-                            duration: const Duration(milliseconds: 1000),
-                            child: Expanded(
-                                child: SingleChildScrollView(
-                              child: Column(
-                                children: [
-                                  ToggleSwitch(
-                                    minWidth: 90.0,
-                                    minHeight: 70.0,
-                                    initialLabelIndex: _selectedIndex,
-                                    cornerRadius: 20.0,
-                                    activeFgColor: Colors.white,
-                                    inactiveBgColor: Colors.grey,
-                                    inactiveFgColor: Colors.white,
-                                    totalSwitches: 4,
-                                    // Increase totalSwitches to match the sections
-                                    icons: const [
-                                      Icons.summarize_outlined,
-                                      Icons.info,
-                                      Icons.date_range,
-                                      Icons.download
-                                    ],
-                                    iconSize: 30.0,
-                                    activeBgColors: const [
-                                      [Colors.black45, Colors.black26],
-                                      // for Policy Details
-                                      [Colors.yellow, Colors.orange],
-                                      // for Policy Dates
-                                      [Colors.green, Colors.blue],
-                                      // for Section 3 (you can define another section)
-                                      [Colors.red, Colors.pink]
-                                      // for Section 4 (you can define another section)
-                                    ],
-                                    animate: true,
-                                    curve: Curves.bounceInOut,
-                                    onToggle: (index) {
-                                      setState(() {
-                                        _selectedIndex = index ?? 0;
-                                      });
-                                      print('switched to: $index');
-                                    },
-                                  ),
-                                ],
-                              ),
-                            )),
+                          Text(
+                            policy.title,
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: theme.primaryColor,
+                            ),
                           ),
-                          // Add additional Transform.translate effects for the content sections
-                          if (_selectedIndex == 0)
-                            Summary(
-                              title: widget.policy.title,
-                              description: widget.policy.description,
-                              status: widget.policy.status,
+                          const SizedBox(height: 8),
+                          Text(
+                            policy.category,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                              color: theme.textTheme.bodyLarge!.color!.withOpacity(0.7),
                             ),
-                          if (_selectedIndex == 1)
-                            PolicyDetails(
-                              policy: widget.policy,
+                          ),
+
+                          const SizedBox(height: 16),
+                          Text(
+                            policy.description,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: theme.textTheme.bodyLarge!.color,
+                              height: 1.5,
                             ),
-                          if (_selectedIndex == 2)
-                            PolicyDates(
-                              policy: widget.policy,
+                          ),
+                          const SizedBox(height: 16),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 4,
+                            children: [
+                              ...policy.tags.take(5).map((tag) {
+                                return Chip(
+                                  label: Text(
+                                    tag,
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: theme.textTheme.bodyLarge!.color,
+                                    ),
+                                  ),
+                                  backgroundColor: theme.primaryColor.withOpacity(0.1),
+                                );
+                              }),
+                              if (policy.tags.length > 5)
+                                Chip(
+                                  label: Text(
+                                    'More',
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                  backgroundColor: theme.primaryColor.withOpacity(0.7),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          ExpansionTile(
+                            title: Text(
+                              'More Details',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: theme.primaryColor,
+                              ),
                             ),
-                          if (_selectedIndex == 3)
-                            Downloads(documentUrl: widget.policy.pdfUrl),
+                            children: [
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(
+                                  'Created on: ${policy.createdDate.toLocal().toString().split(' ')[0]}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: theme.textTheme.bodyLarge!.color,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(
+                                  'Effective from: ${policy.effectiveDate?.toLocal().toString().split(' ')[0] ?? 'Not Set'}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: theme.textTheme.bodyLarge!.color,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(
+                                  'Expiry Date: ${policy.expiryDate?.toLocal().toString().split(' ')[0] ?? 'No Expiry'}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: theme.textTheme.bodyLarge!.color,
+                                  ),
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                child: Text(
+                                  'Approval Date: ${policy.approvalDate?.toLocal().toString().split(' ')[0] ?? 'Not Approved'}',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    color: theme.textTheme.bodyLarge!.color,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          Downloads(documentUrl: policy.pdfUrl),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 20),
                             child: PrimaryButton(
@@ -136,257 +175,6 @@ class _PolicyScreenState extends State<PolicyScreen> {
   }
 }
 
-class PolicyDetails extends StatelessWidget {
-  final Policy policy;
-
-  const PolicyDetails({super.key, required this.policy});
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeInUp(
-      duration: const Duration(milliseconds: 1000),
-      child: ClipRRect(
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            boxShadow: const [],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _buildSectionTitle(context, "General Information"),
-              const SizedBox(height: 16),
-              _buildExpandableSection(
-                context: context,
-                title: "Policy Details", // Changed title to something generic
-                content: [
-                  _buildPolicyDetail(context, "Title", policy.title),
-                  _buildPolicyDetail(
-                      context, "Description", policy.description),
-                  _buildPolicyDetail(context, "Category", policy.category),
-                  _buildPolicyDetail(context, "Tags", policy.tags.join(', ')),
-                  _buildPolicyDetail(context, "Status", policy.status),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(BuildContext context, String title) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 10),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Theme.of(context)
-              .textTheme
-              .bodyMedium
-              ?.color, // Use context to get the text color
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPolicyDetail(BuildContext context, String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: <Widget>[
-          const Icon(Icons.info_outline, color: Colors.blue, size: 18),
-          const SizedBox(width: 10),
-          Text(
-            "$label: ",
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w500,
-              color: Theme.of(context)
-                  .textTheme
-                  .bodyMedium
-                  ?.color
-                  ?.withOpacity(0.7), // Use context for color
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 16,
-                color: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.color, // Use context for color
-                fontWeight: FontWeight.w400,
-              ),
-              overflow: TextOverflow.ellipsis, // Ensure text doesn't overflow
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExpandableSection({
-    required BuildContext context,
-    required String title,
-    required List<Widget> content,
-  }) {
-    return ExpansionTile(
-      title: Text(
-        title,
-        style: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
-      ),
-      initiallyExpanded: false,
-      tilePadding: const EdgeInsets.symmetric(vertical: 10),
-      // Improved padding for better touch targets
-      expandedAlignment: Alignment.topLeft,
-      iconColor: Theme.of(context).iconTheme.color,
-      children: content, // Use context for icon color
-    );
-  }
-}
-
-class PolicyDates extends StatelessWidget {
-  final Policy policy;
-
-  const PolicyDates({super.key, required this.policy});
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeInUp(
-      duration: const Duration(milliseconds: 1000),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-        child: Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          decoration: const BoxDecoration(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              _buildSectionTitle("Important Dates"),
-              _buildExpandableSection(
-                title:
-                    "Creation Date: ${policy.createdDate.toLocal().toString().split(' ')[0]}",
-                content: [
-                  _buildPolicyDetail(
-                      "Effective Date",
-                      policy.effectiveDate
-                              ?.toLocal()
-                              .toString()
-                              .split(' ')[0] ??
-                          'Not Set'),
-                  _buildPolicyDetail(
-                      "Expiry Date",
-                      policy.expiryDate?.toLocal().toString().split(' ')[0] ??
-                          'No Expiry'),
-                  _buildPolicyDetail(
-                      "Approval Date",
-                      policy.approvalDate?.toLocal().toString().split(' ')[0] ??
-                          'Not Approved'),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10, bottom: 10),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.w600,
-          color: Colors.grey[700],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPolicyDetail(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: <Widget>[
-          const Icon(Icons.info_outline, color: kPrimaryColor, size: 18),
-          const SizedBox(width: 10),
-          Text(
-            "$label: ",
-            style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey[600]),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[800],
-                  fontWeight: FontWeight.w400),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildExpandableSection(
-      {required String title, required List<Widget> content}) {
-    return ExpansionTile(
-      title: Text(
-        title,
-        style: const TextStyle(
-            fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
-      ),
-      initiallyExpanded: false,
-      children: content,
-    );
-  }
-}
-
-class Summary extends StatelessWidget {
-  final String title;
-  final String description;
-  final String status;
-
-  const Summary(
-      {super.key,
-      required this.title,
-      required this.description,
-      required this.status});
-
-  @override
-  Widget build(BuildContext context) {
-    return FadeInUp(
-      duration: const Duration(milliseconds: 1000),
-      child: Container(
-        padding: const EdgeInsets.all(20),
-        child: const Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text("Under Development stage"),
-          ],
-        ),
-      ),
-    );
-  }
-}
 
 class Downloads extends StatelessWidget {
   final String? documentUrl;
@@ -395,6 +183,8 @@ class Downloads extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     if (documentUrl != null && documentUrl!.isNotEmpty) {
       return FadeInUp(
         duration: const Duration(milliseconds: 1000),
@@ -403,18 +193,18 @@ class Downloads extends StatelessWidget {
           children: [
             Expanded(
               child: Container(
-                padding: const EdgeInsets.all(20),
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green, // Set the background color
-                    foregroundColor:
-                        Colors.white, // Set the text and icon color
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 20),
+                    backgroundColor: theme.primaryColorLight,
+                    foregroundColor: theme.primaryColorDark,  // Icon and text color
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.download,
-                    color: Colors.white,
+                    color: theme.primaryColorDark,  // White icon for contrast
                   ),
                   label: const Text("Download"),
                   onPressed: () async {
@@ -422,7 +212,6 @@ class Downloads extends StatelessWidget {
                       print('Document URL is null or empty');
                       return;
                     }
-                    //
                     print('Attempting to launch: $documentUrl');
                     if (await canLaunchUrl(Uri.parse(documentUrl!))) {
                       await launchUrl(Uri.parse(documentUrl!),
@@ -440,26 +229,26 @@ class Downloads extends StatelessWidget {
                 ),
               ),
             ),
+            const SizedBox(width: 10), // Spacing between buttons
             Expanded(
               child: Container(
                 padding: const EdgeInsets.all(20),
                 child: ElevatedButton.icon(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Colors.grey[300], // Set the background color
-                    foregroundColor:
-                        Colors.black, // Set the text and icon color
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 15, horizontal: 20),
+                    backgroundColor: theme.primaryColorLight,  // Lighter background color
+                    foregroundColor: theme.primaryColorDark,  // Darker text color to contrast the light background
+                    padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  icon: const Icon(
+                  icon: Icon(
                     Icons.preview,
-                    color: Colors.black,
+                    color: theme.primaryColorDark,  // Darker icon for contrast
                   ),
                   label: const Text("Preview"),
                   onPressed: () async {
                     if (documentUrl != null && documentUrl!.isNotEmpty) {
-                      // Launch the URL directly in the web browser
                       if (await canLaunchUrl(Uri.parse(documentUrl!))) {
                         await launchUrl(Uri.parse(documentUrl!));
                       } else {
@@ -488,7 +277,6 @@ class Downloads extends StatelessWidget {
     }
   }
 }
-
 class PolicyCarousel extends StatelessWidget {
   final List<String> images;
 

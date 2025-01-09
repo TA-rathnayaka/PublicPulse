@@ -7,11 +7,13 @@ class PolicyService {
   Future<List<Policy>> getPolicies() async {
     try {
       QuerySnapshot snapshot = await _fireStore.collection('policies').get();
+      print(snapshot.docs);
+
       List<Policy> policies = snapshot.docs.map((doc) {
         Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
 
-        // Handle createDate and other fields that might be either String or Timestamp
-        dynamic createDateField = data['createDate'];
+        // Convert date fields
+        dynamic createDateField = data['createdDate'];
         DateTime createDate = _convertToDate(createDateField);
 
         dynamic effectiveDateField = data['effectiveDate'];
@@ -23,6 +25,9 @@ class PolicyService {
         dynamic approvalDateField = data['approvalDate'];
         DateTime? approvalDate = approvalDateField != null ? _convertToDate(approvalDateField) : null;
 
+        // Ensure 'tags' is a List<String>
+        List<String> tags = List<String>.from(data['tags'] ?? []);
+
         return Policy(
           id: doc.id,
           title: data['title'] ?? '',
@@ -30,14 +35,16 @@ class PolicyService {
           imageUrl: data['imageUrl'],
           creationDate: createDate,
           category: data['category'],
-          createdBy: '',
+          createdBy: data['createdBy'],
           effectiveDate: effectiveDate,
           expiryDate: expiryDate,
           approvalDate: approvalDate,
           isActive: data['isActive'] ?? true,
-          pdfUrl: data['pdfUrl'], // Fetch pdfUrl
+          pdfUrl: data['pdfUrl'],
+          tags: tags,
         );
       }).toList();
+
       return policies;
     } catch (e) {
       print("Error fetching policies: $e");

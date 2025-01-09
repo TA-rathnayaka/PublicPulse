@@ -101,7 +101,7 @@ class Policy {
       'imageUrl': imageUrl,
       'documentUrl': pdfUrl,
       'metadata': metadata,
-      'notes': notes,
+
     };
   }
 
