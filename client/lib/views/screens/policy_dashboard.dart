@@ -36,7 +36,7 @@ class PolicyDashboard extends StatelessWidget {
                 hintText: "Search policies...", // Updated hint text
                 onChanged: (value) {
                   // Call setFilteredPolicies when the search query changes
-                  context.read<PoliciesProvider>().setFilteredPolicies(value);
+                  Provider.of<PoliciesProvider>(context, listen: false).setFilteredPolicies(value);
                 },
               ),
               const SizedBox(height: 20),

@@ -38,8 +38,7 @@ class PollDashboard extends StatelessWidget {
               SearchButton(
                 hintText: "Search polls...",
                 onChanged: (value) {
-                  // Implement search logic here
-                },
+                  Provider.of<PollsProvider>(context, listen: false).setSearchTerm(value);                },
               ),
               const SizedBox(height: 20),
               Consumer<PollsProvider>(
