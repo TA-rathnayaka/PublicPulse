@@ -37,131 +37,152 @@ class PolicyScreen extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 30),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            policy.title,
-                            style: TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                              color: theme.primaryColor,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            policy.category,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              color: theme.textTheme.bodyLarge!.color!.withOpacity(0.7),
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-                          Text(
-                            policy.description,
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: theme.textTheme.bodyLarge!.color,
-                              height: 1.5,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Wrap(
-                            spacing: 8,
-                            runSpacing: 4,
-                            children: [
-                              ...policy.tags.take(5).map((tag) {
-                                return Chip(
-                                  label: Text(
-                                    tag,
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: theme.textTheme.bodyLarge!.color,
-                                    ),
-                                  ),
-                                  backgroundColor: theme.primaryColor.withOpacity(0.1),
-                                );
-                              }),
-                              if (policy.tags.length > 5)
-                                Chip(
-                                  label: Text(
-                                    'More',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  backgroundColor: theme.primaryColor.withOpacity(0.7),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          ExpansionTile(
-                            title: Text(
-                              'More Details',
+                      child: FadeInUp(
+                        duration: const Duration(milliseconds: 800),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              policy.title,
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: theme.primaryColor,
                               ),
                             ),
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(
-                                  'Created on: ${policy.createdDate.toLocal().toString().split(' ')[0]}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: theme.textTheme.bodyLarge!.color,
-                                  ),
-                                ),
+                            const SizedBox(height: 8),
+                            Text(
+                              policy.category,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                                color: theme.textTheme.bodyLarge!.color!.withOpacity(0.7),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(
-                                  'Effective from: ${policy.effectiveDate?.toLocal().toString().split(' ')[0] ?? 'Not Set'}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: theme.textTheme.bodyLarge!.color,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(
-                                  'Expiry Date: ${policy.expiryDate?.toLocal().toString().split(' ')[0] ?? 'No Expiry'}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: theme.textTheme.bodyLarge!.color,
-                                  ),
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0),
-                                child: Text(
-                                  'Approval Date: ${policy.approvalDate?.toLocal().toString().split(' ')[0] ?? 'Not Approved'}',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    color: theme.textTheme.bodyLarge!.color,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 20),
-                          Downloads(documentUrl: policy.pdfUrl),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            child: PrimaryButton(
-                              label: 'Close',
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
                             ),
-                          ),
-                        ],
+
+                            const SizedBox(height: 16),
+                            Text(
+                              policy.description,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: theme.textTheme.bodyLarge!.color,
+                                height: 1.5,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 4,
+                              children: [
+                                ...policy.tags.take(5).map((tag) {
+                                  return Chip(
+                                    label: Text(
+                                      tag,
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: theme.textTheme.bodyLarge!.color,
+                                      ),
+                                    ),
+                                    backgroundColor: theme.primaryColor.withOpacity(0.1),
+                                  );
+                                }),
+                                if (policy.tags.length > 5)
+                                  Chip(
+                                    label: Text(
+                                      'More',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    backgroundColor: theme.primaryColor.withOpacity(0.7),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            ExpansionTile(
+                              title: Align(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  'More Details',
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.primaryColor,
+                                  ),
+                                ),
+                              ),
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                      'Created on: ${policy.createdDate.toLocal().toString().split(' ')[0]}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: theme.textTheme.bodyLarge!.color,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                      'Effective from: ${policy.effectiveDate?.toLocal().toString().split(' ')[0] ?? 'Not Set'}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: theme.textTheme.bodyLarge!.color,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                      'Expiry Date: ${policy.expiryDate?.toLocal().toString().split(' ')[0] ?? 'No Expiry'}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: theme.textTheme.bodyLarge!.color,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 8.0),
+                                    child: Text(
+                                      'Approval Date: ${policy.approvalDate?.toLocal().toString().split(' ')[0] ?? 'Not Approved'}',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        color: theme.textTheme.bodyLarge!.color,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            Downloads(documentUrl: policy.pdfUrl),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 20),
+                              child: FadeInUp(
+                                duration: const Duration(milliseconds: 1000),
+                                child: PrimaryButton(
+                                  label: 'Close',
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -268,7 +289,7 @@ class Downloads extends StatelessWidget {
       );
     } else {
       return FadeInUp(
-        duration: const Duration(milliseconds: 1000),
+        duration: const Duration(milliseconds: 900),
         child: Container(
           padding: const EdgeInsets.all(20),
           child: const Text("No documents available for download."),
