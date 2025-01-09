@@ -19,26 +19,23 @@
       font-size: 28px; /* Larger text */
       text-align: center; /* Center the text */
       color: black;
-    }  
+    }
 
     .search {
       display: flex;
-  align-items: center;
-  background-color: rgba(186, 210, 222, 0.307);
-  border-radius: 15px;
-  margin-right: 40px;
-  padding: 5px;
-  
-  // Use width to set a specific size
-  width: 100%; 
+      align-items: center;
+      background-color: rgba(186, 210, 222, 0.307);
+      border-radius: 15px;
+      margin-right: 40px;
+      padding: 5px;
 
-    
+      // Use width to set a specific size
+      width: 100%;
 
       input {
         border: none;
         outline: none;
         background: transparent;
-        
 
         &::placeholder {
           font-size: 12px;
@@ -57,7 +54,7 @@
         position: relative;
         background-color: rgba(186, 210, 222, 0.307);
         border-radius: 15px;
-        padding:0.5%;
+        padding: 0.5%;
 
         .icon {
           font-size: 25px;
@@ -67,9 +64,9 @@
           width: 30px;
           height: 30px; /* Maintain a consistent aspect ratio */
           border-radius: 50%;
-          object-fit: cover; 
+          object-fit: cover;
           transition: transform 0.2s ease, box-shadow 0.2s ease;
-      }
+        }
 
         .counter {
           width: 15px;
@@ -88,96 +85,118 @@
         }
         .notification-dropdown {
           position: absolute;
-          top: 50px; /* Adjust to position the dropdown below the navbar */
+          top: 50px; /* Position dropdown below the navbar */
           right: 0;
           width: 300px;
           max-height: 400px;
           overflow-y: auto;
-          background-color: #fff;
+          background-color: #f9f9f9;
           border-radius: 8px;
           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
           z-index: 9999;
           padding: 10px;
           display: flex;
           flex-direction: column;
-        }
-        
-        .notification-item {
-          display: flex;
-          align-items: center;
-          padding: 12px;
-          margin-bottom: 8px;
-          border-radius: 6px;
-          cursor: pointer;
-          transition: background-color 0.2s ease-in-out;
-          &.pending {
-            background-color: #e0e0e0; /* Yellow for pending */
-          }
-        
-          &.read {
-            background-color: transparent; /* Light gray for read */
-          }
-          .notification-text {
-            text-align: left;
-            align-content: center;
-          }
-          border-bottom: 1px solid #ccc; 
-          padding-bottom: 10px; 
-          margin-bottom: 10px; 
-        }
-        
-        .notification-item:hover {
-          background-color: #f0f2f5; /* Subtle hover effect */
-        }
-        
-        .notification-item img {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          object-fit: cover;
-          margin-right: 12px;
-        }
-        
-        .notification-item p {
-          
-          flex-grow: 1;
-          font-size: 14px;
-          color: #333;
-          line-height: 1.4;
-          margin: 0;
+          max-height: 400px; /* Limit the height of the dropdown */
+          overflow-y: auto;
 
-        }
-        
-        .notification-item span {
-          font-size: 12px;
-          color: #888;
-          margin-left: 12px;
-        }
-        
-        .notification-item p,
-        .notification-item span {
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis; /* Truncate text if it's too long */
-        }
-        
-        .notification-dropdown p {
-          text-align: center;
-          color: #888;
-          font-size: 14px;
-        }
-        
-        /* Adjustments for responsive design */
-        @media (max-width: 600px) {
-          .notification-dropdown {
+          /* Message when there are no notifications */
+          p {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin: 0;
+          }
+
+          /* Responsive design adjustments */
+          @media (max-width: 600px) {
             width: 100%;
             left: 0;
             right: 0;
             top: 60px; /* Adjust top position for smaller screens */
           }
         }
+
+        .notification-item {
+          display: flex;
+          flex-direction: row; /* Align image and text horizontally */
+          align-items: center; /* Vertically center the image and text */
+          margin-bottom: 20px;
+          cursor: pointer;
+          transition: background-color 0.2s ease-in-out;
+          padding: 10px; /* Optional, adds padding inside each notification */
+
+        
+          /* Background color variations */
+          &.pending {
+            background-color: #fef8d8; /* Subtle yellow background for pending */
+          }
+        
+          &.read {
+            background-color: #f9f9f9; /* Light gray background for read */
+          }
+        
+          &:hover {
+            background-color: #f0f2f5; /* Subtle hover effect */
+          }
+        
+          /* Centered border between notifications */
+          position: relative;
+        
+          /* Horizontal border at the bottom */
+          &::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 100%; /* Full width of the notification */
+            border-bottom: 1px solid #ccc;
+            transform: translateX(-50%); /* Center the border */
+          }
+        
+          /* Notification text */
+          .notification-text {
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+            margin: 0 10px; /* Add horizontal spacing between text and image */
+            line-height: 1.4;
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden;    /* Hide overflowed content */
+            text-overflow: ellipsis; /* Add the ellipsis if text overflows */
+            width: 100%; /* Ensure the text uses the full width of the container */
+            max-width: 240px; /* Define a max width to make sure it truncates */
+
+          }
+        
+          /* Notification time */
+          .notification-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px; /* Add some spacing above the date */
+            align-self: flex-end; /* Align the date to the right */
+          }
+        
+          /* Avatar styling */
+          img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px; /* Space between image and text */
+            align-self: center; /* Center the image vertically */
+          }
+        }
         
         
+        
+        
+
+        /* Utility styles for subtle improvements */
+        .notification-item:last-child {
+          margin-bottom: 0;
+          border-bottom: none; /* Remove border for the last item */
+        }
       }
     }
   }

@@ -90,7 +90,7 @@ const Navbar = ({ navbarData }) => {
               <div className="notification-dropdown">
               {notifications.length > 0 ? (
                 [...notifications]
-                  .sort((a, b) => 
+                  .sort((a, b) =>
                     b.createdAt.seconds - a.createdAt.seconds || // Compare seconds first
                     b.createdAt.nanoseconds - a.createdAt.nanoseconds // Compare nanoseconds if seconds are equal
                   )
@@ -99,6 +99,10 @@ const Navbar = ({ navbarData }) => {
                     const id = notif.metadata.pollId || notif.metadata.policyId;
                     const photoURL = notif.metadata.photoUrl || logo;
                     const isRead = notif.status === "read";
+            
+                    // Convert Firestore Timestamp to readable date
+                    const date = new Date(notif.createdAt.seconds * 1000).toLocaleDateString();
+                    const time = new Date(notif.createdAt.seconds * 1000).toLocaleTimeString();
             
                     return (
                       <div
@@ -114,8 +118,11 @@ const Navbar = ({ navbarData }) => {
                           alt="Notification Avatar"
                           onError={(e) => (e.target.src = logo)}
                         />
+                        <hr></hr>
                         <p className="notification-text">{notif.message}</p>
-                        <span>{notif.time}</span>
+                        <p className="notification-time">
+                          {`${date}`} 
+                        </p>
                       </div>
                     );
                   })
@@ -123,6 +130,7 @@ const Navbar = ({ navbarData }) => {
                 <p>No new notifications</p>
               )}
             </div>
+            
             
             
             )}
