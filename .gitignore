@@ -1,6 +1,6 @@
 # Node.js modules
 node_modules/
-/policymaker-ee7e9-firebase-adminsdk-mhbqj-3fb1249b9a.json
+/backend-v2/policymaker-ee7e9-firebase-adminsdk-mhbqj-3fb1249b9a.json
 
 # dotenv environment variables file
 .env*

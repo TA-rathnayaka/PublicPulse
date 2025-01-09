@@ -1,4 +1,4 @@
-import { collection, addDoc ,getDocs,query, where,} from "firebase/firestore";
+import { collection, addDoc ,getDocs,query, where,doc,updateDoc} from "firebase/firestore";
 import { firestore } from "./firebase/firebase";
 
 
@@ -101,6 +101,28 @@ export const createNotification = async ({ message, userId, type, metadata }) =>
   } catch (error) {
     console.error("Error creating notification:", error);
     throw new Error(`Failed to create notification: ${error.message}`);
+  }
+};
+
+export const markNotificationAsRead = async (notificationId) => {
+  try {
+    if (!notificationId) {
+      throw new Error("Notification ID is required to update status.");
+    }
+
+    // Reference to the specific notification document
+    const notificationRef = doc(firestore, "notifications", notificationId);
+
+    // Update the status field to 'read'
+    await updateDoc(notificationRef, {
+      status: "read",
+    });
+
+    console.log(`Notification ${notificationId} marked as read.`);
+    return true; // Return success flag
+  } catch (error) {
+    console.error("Error updating notification status:", error);
+    throw new Error(`Failed to update notification status: ${error.message}`);
   }
 };
 

@@ -150,6 +150,7 @@ const PollCreation = () => {
       if (settings.notifyUsers) {
         console.log("notify users");
         try {
+          
           await sendNotifications({
             message: `A new poll was added: ${title}`,
             target: "all",

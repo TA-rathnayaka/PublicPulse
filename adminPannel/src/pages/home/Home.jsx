@@ -15,6 +15,7 @@ const Home = () => {
   
   const [dataLoading, setDataLoading] = useState(true); // Loading state for user data
   const [fetchError, setFetchError] = useState(null); // To handle errors during data fetch
+  console.log("Loading : ",loading);
 
 
 
@@ -39,8 +40,7 @@ const Home = () => {
           <Featured />
           <Chart
             title="User Engagement"
-            aspect={2 / 1}
-            loading={loading || dataLoading} // Pass loading prop to Chart
+            aspect={2 / 1} 
           />
         </div>
        

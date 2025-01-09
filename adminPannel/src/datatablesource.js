@@ -1,4 +1,5 @@
 
+import { alignProperty } from '@mui/material/styles/cssUtils';
 import logo from './Assets/logo.png';
 
 export const userColumns = [
@@ -20,7 +21,7 @@ export const userColumns = [
   {
     field: 'actions',
     headerName: 'Actions',
-    width: 200,
+    width: 400,
     renderCell: (params) => {
       const handleDelete = async() => {
         const confirmed = window.confirm(`Are you sure you want to delete user: ${params.row.email}?`);
@@ -51,7 +52,7 @@ export const userColumns = [
           console.log(`Making user: ${params.row.username} an admin`);
           // Add logic for promoting the user to admin here (e.g., API call)
           try {
-            const response = await fetch(`http://localhost:3001/api/users/${params.row.id}/make-admin`, {
+            const response = await fetch(`http://localhost:3000/api/users/${params.row.id}/make-admin`, {
               method: 'POST',
             });
             if (response.ok) {
@@ -69,11 +70,12 @@ export const userColumns = [
       };
       
       return (
-        <div>
-          <button onClick={handleDelete} style={{ marginRight: '10px' }}>
+        <div className="cellAction">
+          <button onClick={handleDelete} className="actionButton delete" style={{ marginRight: '10px' }}>
             Delete
           </button>
-          <button onClick={handleMakeAdmin}>Make as Admin</button>
+          <button onClick={handleMakeAdmin} className="actionButton edit">Make as Admin</button>
+          <button className="actionButton view">View</button>
         </div>
       );
     },

@@ -32,14 +32,14 @@ const Datatable = () => {
       </div>
 
       <DataGrid
-        rows={userRows}
-        columns={userColumns}
-        pageSize={8}
-        rowsPerPageOptions={[8]}
-        rowHeight={80}
-        disableSelectionOnClick
-        getRowId={(row) => row.id}
-      />
+  rows={userRows}
+  columns={userColumns}
+  pageSize={8}
+  rowsPerPageOptions={[8]}
+  rowHeight={80}
+  disableSelectionOnClick
+  getRowId={(row) => row.id}
+/>
     </div>
   );
 };
