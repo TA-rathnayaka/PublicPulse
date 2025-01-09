@@ -87,14 +87,14 @@ export const userColumns = [
 // src/services/userService.js
 export const fetchUserData = async () => {
   try {
-    console.log('Fetching users...');
-    const response = await fetch('http://localhost:3001/api/users'); // Ensure your backend is running
+    console.log("Fetching users...");
+    const response = await fetch("http://localhost:3000/api/users"); // Ensure your backend is running
     if (!response.ok) {
       console.log("failed to fetch");
-      throw new Error('Failed to fetch users');
+      throw new Error("Failed to fetch users");
     }
     const users = await response.json();
-    console.log('Fetched users:', users); // Log the fetched users data
+    console.log("Fetched users:", users); // Log the fetched users data
     return users;
   } catch (error) {
     console.error('Error fetching users:', error);
