@@ -1,39 +1,50 @@
-// src/pages/PolicyDetailsPage.js
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { firestore } from '../../backend/firebase/firebase';
+import { firestore } from '../../services/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
+import './PolicyDetails.scss';
 
-const PolicyDetailsPage = () => {
+const PolicyDetails = () => {
   const { policyId } = useParams();
   const [policy, setPolicy] = useState(null);
 
   useEffect(() => {
-    const loadPolicy = async () => {
-      try {
-        const policyRef = doc(firestore, 'policies', policyId);
-        const policyDoc = await getDoc(policyRef);
-        if (policyDoc.exists()) {
-          setPolicy({ id: policyDoc.id, ...policyDoc.data() });
-        }
-      } catch (error) {
-        console.error('Error fetching policy details:', error);
+    const fetchPolicy = async () => {
+      const docRef = doc(firestore, 'policies', policyId);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setPolicy(docSnap.data());
+      } else {
+        console.log('No such document!');
       }
     };
-    loadPolicy();
+    fetchPolicy();
   }, [policyId]);
 
-  if (!policy) return <p>Loading policy details...</p>;
+  if (!policy) {
+    return <p>Loading policy details...</p>;
+  }
 
   return (
-    <div>
-      <h2>{policy.title}</h2>
-      <p>{policy.summary}</p>
-      <a href={policy.documentUrl} target="_blank" rel="noopener noreferrer">
-        View Full Document
-      </a>
+    <div className="policy-details">
+      <h1>{policy.title}</h1>
+      {policy.imageUrl && <img src={policy.imageUrl} alt={policy.title} className="policy-image" />}
+      <p><strong>Description:</strong> <hr></hr>{policy.description}</p>
+      <p><strong>Category:</strong> {policy.category}</p>
+      <p><strong>Created Date:</strong> {policy.createdDate}</p>
+      <p><strong>Approval Date:</strong> {policy.approvalDate}</p>
+      <p><strong>Approved By:</strong> {policy.approvedBy}</p>
+      <p><strong>Assigned To:</strong> {policy.assignedTo}</p>
+      <p><strong>Created By:</strong> {policy.createdBy}</p>
+      <p><strong>Effective Date:</strong> {policy.effectiveDate}</p>
+      <p><strong>Expiry Date:</strong> {policy.expiryDate}</p>
+      <p><strong>Notes:</strong> {policy.notes}</p>
+      <p><strong>Status:</strong> {policy.status}</p>
+      <p><strong>Tags:</strong> {policy.tags.join(', ')}</p>
+      <p><strong>Is Active:</strong> {policy.isActive ? 'Yes' : 'No'}</p>
+      <a href={policy.pdfUrl} target="_blank" rel="noopener noreferrer">View PDF</a>
     </div>
   );
 };
 
-export default PolicyDetailsPage;
+export default PolicyDetails;
