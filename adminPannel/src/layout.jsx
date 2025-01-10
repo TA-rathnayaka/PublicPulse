@@ -18,13 +18,13 @@ const Layout = ({ children }) => {
     // Set navbarData based on the current path
     if (matchPath("/polls/:pollId", location.pathname)) {
       setNavbarData("Poll Details");
-    } 
+    }
+    else if (matchPath("/policies/:policyId", location.pathname)) {
+      setNavbarData("Policy Details");
+    }
     else
     {
       switch (location.pathname) {
-      case "/polls/:pollId":
-        setNavbarData("Poll Details");
-        break;
       case "/polls":
         setNavbarData("Polls");
         break;
