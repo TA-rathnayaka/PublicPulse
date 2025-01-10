@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:client/models/policy.dart';
 import 'package:client/views/components/primary_button.dart';
-import 'package:client/views/constants/constants.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:animate_do/animate_do.dart';
 
