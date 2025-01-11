@@ -349,7 +349,7 @@ class Login extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 TextField(
-                  controller: _emailController,
+                  controller: _forgotEmailController,
                   decoration: InputDecoration(
                     hintText: 'Email Address',
                     hintStyle: TextStyle(
