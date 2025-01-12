@@ -22,8 +22,3 @@
 2. Share your opinions and participate in discussions.  
 3. Vote on policies to express your stance.  
 
-## Installation  
-
-1. Clone the repository:  
-   ```bash  
-   git clone https://github.com/your-username/PublicPulse.git  
