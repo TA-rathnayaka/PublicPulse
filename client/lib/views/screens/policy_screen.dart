@@ -282,7 +282,7 @@ class Downloads extends StatelessWidget {
                   ),
                   icon: Icon(
                     Icons.preview,
-                    color: theme.primaryColorDark,  // Darker icon for contrast
+                    color: theme.primaryColorDark,  // Darkwer icon for contrast
                   ),
                   label: const Text("Preview"),
                   onPressed: () async {

@@ -28,8 +28,9 @@ export const userColumns = [
         if (confirmed) {
           console.log(`Deleting user: ${params.row.username}`);
           try {
-            const response = await fetch(`http://localhost:3001/api/users/${params.row.id}`, {
+            const response = await fetch(`${process.env.BASE_URL}/api/users/${params.row.id}`, {
               method: 'DELETE',
+              
             });
             if (response.ok) {
               console.log(`User ${params.row.username} deleted`);
@@ -52,7 +53,7 @@ export const userColumns = [
           console.log(`Making user: ${params.row.username} an admin`);
           // Add logic for promoting the user to admin here (e.g., API call)
           try {
-            const response = await fetch(`http://localhost:3000/api/users/${params.row.id}/make-admin`, {
+            const response = await fetch(`${process.env.BASE_URL}/api/users/${params.row.id}/make-admin`, {
               method: 'POST',
             });
             if (response.ok) {
@@ -89,8 +90,9 @@ export const userColumns = [
 // src/services/userService.js
 export const fetchUserData = async () => {
   try {
-    console.log("Fetching users...");
-    const response = await fetch("http://localhost:3000/api/users"); // Ensure your backend is running
+    const baseUrl = process.env.REACT_APP_BASE_URL;
+console.log(baseUrl); 
+    const response = await fetch(`${process.env.REACT_APP_BASE_URL}/api/users`); // Ensure your backend is running
     if (!response.ok) {
       console.log("failed to fetch");
       throw new Error("Failed to fetch users");
