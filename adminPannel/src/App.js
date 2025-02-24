@@ -13,7 +13,6 @@ import { productInputs, userInputs } from "./formSource";
 import "./style/dark.scss";
 import Settings from "./pages/settins/Settings"; 
 import ManagePolls from "./pages/managePoll/ManagePolls";
-import Policies from "./pages/policies/PoliciesPage";
 import PolicyDetails from "./pages/policyDetails/PolicyDetails";
 import Notifications from "./pages/notifications/notifications";
 import ManagePolicies from './pages/managePolicies/managePolicies';
@@ -27,112 +26,28 @@ function App() {
     <AuthProvider>
       <div className={darkMode ? "app dark" : "app"}>
         <BrowserRouter>
-          <Layout> 
-            <Routes>
-              <Route path="login" element={<Login />} />
-              
+          <Routes>
+            {/* Non-admin routes (without Layout) */}
+            <Route path="login" element={<Login />} />
 
-              <Route 
-                path="/" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <Home />
-                  </ProtectedRoute>
-                } 
-              />
+            {/* Admin Panel Routes (with Layout) */}
+            <Route path="/admin-panel/*" element={<ProtectedRoute adminOnly><Layout><Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/notifications" element={<Notifications />} />
+              <Route path="/polls" element={<ManagePolls />} />
+              <Route path="/polls/:pollId" element={<PollDetails />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/settings" element={<Settings />} />
+              <Route path="/users" element={<List />} />
+              <Route path="/users/:userId" element={<Single />} />
+              <Route path="/users/new" element={<New inputs={userInputs} title="Add New User" />} />
+              <Route path="/policies" element={<ManagePolicies />} />
+              <Route path="/policies/:policyId" element={<PolicyDetails />} />
+            </Routes></Layout></ProtectedRoute>} />
 
-              <Route 
-                path="/notifications" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <Notifications />
-                  </ProtectedRoute>
-                } 
-              />
-
-              <Route 
-                path="/polls" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <ManagePolls />
-                  </ProtectedRoute>
-                } 
-              />
-
-              <Route 
-                path="/polls/:pollId" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <PollDetails />
-                  </ProtectedRoute>
-                } 
-              />
-
-              <Route 
-                path="/profile" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <Profile />
-                  </ProtectedRoute>
-                } 
-              />
-
-              <Route 
-                path="/settings" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <Settings />
-                  </ProtectedRoute>
-                } 
-              />
-
-              {/* Routes accessible to super admins only */}
-              <Route 
-                path="/users" 
-                element={
-                  <ProtectedRoute superAdminOnly>
-                    <List />
-                  </ProtectedRoute>
-                } 
-              />
-
-              <Route 
-                path="/users/:userId" 
-                element={
-                  <ProtectedRoute superAdminOnly>
-                    <Single />
-                  </ProtectedRoute>
-                } 
-              />
-
-              <Route 
-                path="/users/new" 
-                element={
-                  <ProtectedRoute superAdminOnly>
-                    <New inputs={userInputs} title="Add New User" />
-                  </ProtectedRoute>
-                } 
-              />
-
-              <Route 
-                path="/policies" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <ManagePolicies />
-                  </ProtectedRoute>
-                } 
-              />
-
-              <Route 
-                path="/policies/:policyId" 
-                element={
-                  <ProtectedRoute adminOnly>
-                    <PolicyDetails />
-                  </ProtectedRoute>
-                } 
-              />
-            </Routes>
-          </Layout> 
+            {/* More non-admin routes */}
+            <Route path="/some-other-page" element={< div>helooo</div>} />
+          </Routes>
         </BrowserRouter>
       </div>
     </AuthProvider>

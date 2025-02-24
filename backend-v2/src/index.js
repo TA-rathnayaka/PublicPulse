@@ -9,24 +9,17 @@ admin.initializeApp({
 });
 
 const app = express();
-const PORT = process.env.PORT || 3000;
-const cors = require('cors');
-const exportRoutes = require('../routes/exportRoutes');
-
+const PORT = process.env.PORT || 3001;
+const cors = require('cors')
 // Middleware
 app.use(express.json());
 const adminDb = admin.firestore();
 
 app.use(cors({
-  origin: 'http://localhost:3001', // React frontend URL
+  origin: 'http://localhost:3000'||'http://localhost:3001', // React frontend URL
 }));
-
-// Register export routes
-app.use('/api', exportRoutes);
-
 // Fetch all users
 app.get('/api/users', async (req, res) => {
-  console.log(req);
   try {
     const auth = admin.auth();
     const listUsersResult = await auth.listUsers(); // List all users (default max is 1000 users)

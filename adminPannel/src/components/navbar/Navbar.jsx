@@ -67,7 +67,7 @@ const Navbar = ({ navbarData }) => {
     };
   }, []);
 
-  const handleImageClick = () => navigate("/profile");
+  const handleImageClick = () => navigate("/admin-panel/profile");
 
   const handleNotificationsClick = () => setShowNotifications((prev) => !prev);
 
@@ -82,7 +82,7 @@ const Navbar = ({ navbarData }) => {
             <input type="text" placeholder="Search..." />
           </div>
 
-          <NavbarItem icon={<SettingsIcon className="icon" />} onClick={() => navigate("/settings")} />
+          <NavbarItem icon={<SettingsIcon className="icon" />} onClick={() => navigate("/admin-panel/settings")} />
           <div className="item" onClick={handleNotificationsClick} ref={dropdownRef}>
             <NotificationsNoneOutlinedIcon className="icon" />
             {unreadCount > 0 && <div className="counter">{unreadCount}</div>}

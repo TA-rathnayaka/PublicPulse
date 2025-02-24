@@ -38,7 +38,7 @@ const Sidebar = () => {
   // Function to handle link click
   const handleLinkClick = (link) => {
     setActiveLink(link); // Update the active link state
-    navigate(link); // Navigate to the selected link
+    navigate(`/admin-panel${link}`); // Navigate to the selected link with "/admin-panel" prefix
   };
 
   return (
