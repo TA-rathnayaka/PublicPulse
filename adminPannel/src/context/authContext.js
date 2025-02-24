@@ -25,18 +25,19 @@ export const AuthProvider = ({ children }) => {
             const adminData = adminDocSnapshot.data();
             setUserRole(adminData.role); // Set role as admin or super-admin
           } else {
-            setUserRole(null);
+            setUserRole(null); // User does not have an admin role
           }
         } catch (error) {
           console.error("Failed to fetch admin role:", error);
+          setUserRole(null); // In case of error, set role to null
         }
       } else {
-        setUserRole(null);
+        setUserRole(null); // Clear the role if no user is logged in
       }
       setRoleLoading(false);
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // Clean up listener on component unmount
   }, []);
 
   return (

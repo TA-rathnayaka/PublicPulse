@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { DarkModeContext } from "./context/darkModeContext";
-import { AuthProvider } from "./context/authContext"; // Import AuthProvider
+import { AuthProvider } from "./context/authContext";
 import Layout from "./layout"; 
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
@@ -16,9 +16,9 @@ import ManagePolls from "./pages/managePoll/ManagePolls";
 import Policies from "./pages/policies/PoliciesPage";
 import PolicyDetails from "./pages/policyDetails/PolicyDetails";
 import Notifications from "./pages/notifications/notifications";
-import { NotificationsProvider } from "./context/NotificationsContext";
 import ManagePolicies from './pages/managePolicies/managePolicies';
 import PollDetails from "./pages/pollDetails/pollDetails";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -30,30 +30,107 @@ function App() {
           <Layout> 
             <Routes>
               <Route path="login" element={<Login />} />
-              <Route path="/" element={<Home />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/polls" element={<ManagePolls />} />
-              <Route path="/polls/:pollId" element={<PollDetails />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/users">
-                <Route index element={<List />} />
-                <Route path=":userId" element={<Single />} />
-                <Route
-                  path="new"
-                  element={<New inputs={userInputs} title="Add New User" />}
-                />
-              </Route>
-              <Route path="/policies" element={<ManagePolicies />} />
-              <Route path="/policies/:policyId" element={<PolicyDetails />} />
-              <Route path="/products">
-                <Route index element={<List />} />
-                <Route path=":productId" element={<Single />} />
-                <Route
-                  path="new"
-                  element={<New inputs={productInputs} title="Add New Product" />}
-                />
-              </Route>
+              
+
+              <Route 
+                path="/" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <Home />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/notifications" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <Notifications />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/polls" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <ManagePolls />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/polls/:pollId" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <PollDetails />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/profile" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <Profile />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/settings" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <Settings />
+                  </ProtectedRoute>
+                } 
+              />
+
+              {/* Routes accessible to super admins only */}
+              <Route 
+                path="/users" 
+                element={
+                  <ProtectedRoute superAdminOnly>
+                    <List />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/users/:userId" 
+                element={
+                  <ProtectedRoute superAdminOnly>
+                    <Single />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/users/new" 
+                element={
+                  <ProtectedRoute superAdminOnly>
+                    <New inputs={userInputs} title="Add New User" />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/policies" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <ManagePolicies />
+                  </ProtectedRoute>
+                } 
+              />
+
+              <Route 
+                path="/policies/:policyId" 
+                element={
+                  <ProtectedRoute adminOnly>
+                    <PolicyDetails />
+                  </ProtectedRoute>
+                } 
+              />
             </Routes>
           </Layout> 
         </BrowserRouter>
