@@ -31,19 +31,30 @@ function App() {
             <Route path="login" element={<Login />} />
 
             {/* Admin Panel Routes (with Layout) */}
-            <Route path="/admin-panel/*" element={<ProtectedRoute adminOnly><Layout><Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/polls" element={<ManagePolls />} />
-              <Route path="/polls/:pollId" element={<PollDetails />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/users" element={<List />} />
-              <Route path="/users/:userId" element={<Single />} />
-              <Route path="/users/new" element={<New inputs={userInputs} title="Add New User" />} />
-              <Route path="/policies" element={<ManagePolicies />} />
-              <Route path="/policies/:policyId" element={<PolicyDetails />} />
-            </Routes></Layout></ProtectedRoute>} />
+            <Route 
+  path="/admin-panel/*" 
+  element={
+    <ProtectedRoute adminOnly>
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/polls" element={<ManagePolls />} />
+          <Route path="/polls/:pollId" element={<PollDetails />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/users" element={<List />} />
+          <Route path="/users/:userId" element={<Single />} />
+          <Route path="/users/new" element={<New inputs={userInputs} title="Add New User" />} />
+          <Route path="/policies" element={<ManagePolicies />} />
+          <Route path="/policies/:policyId" element={<PolicyDetails />} />
+        </Routes>
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
+
+
 
             {/* More non-admin routes */}
             <Route path="/some-other-page" element={< div>helooo</div>} />
