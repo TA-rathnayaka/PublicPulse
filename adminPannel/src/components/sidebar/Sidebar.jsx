@@ -16,13 +16,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
 import { getAuth, signOut } from "firebase/auth";
+import { useAuth } from "../../context/authContext";
 
 const Sidebar = () => {
   const { dispatch } = useContext(DarkModeContext);
   const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState("/"); // State to track the active link
-
+  const {user, userRole, instituteId, instituteName, loading, roleLoading} = useAuth();
   // Logout handler
+  console.log("instituteName data ", instituteId, instituteName)
   const handleLogout = () => {
     const auth = getAuth();
     signOut(auth)
@@ -45,7 +47,7 @@ const Sidebar = () => {
     <div className="sidebar">
       <div className="top">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="logo">PublicPulse</span>
+          <span className="logo">{instituteName||"PublicPulse"}</span>
         </Link>
       </div>
       <hr />

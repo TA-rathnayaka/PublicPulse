@@ -5,19 +5,18 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import SettingsIcon from "@mui/icons-material/Settings";
 import { useNavigate } from "react-router-dom";
-import { useAuthState } from "react-firebase-hooks/auth";
-import { auth } from "../../backend/firebase/firebase";
+import { useAuth } from "../../context/authContext";
 import logo from "../../Assets/logo.png";
 import { fetchNotifications as fetchNotificationsFromBackend, markNotificationAsRead } from "../../backend/notifications";
 
 const Navbar = ({ navbarData }) => {
-  const [user] = useAuthState(auth);
+  
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [notifications, setNotifications] = useState([]);
   const dropdownRef = useRef(null); // Reference for the dropdown
-
+  const {user} = useAuth();
   const setNotificationRead = async (id) => {
     try {
       await markNotificationAsRead(id);
