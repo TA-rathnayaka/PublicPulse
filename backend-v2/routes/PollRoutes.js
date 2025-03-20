@@ -2,10 +2,9 @@ const {createPoll,deletePollById, getPollById, getPolls} = require('../controlle
 const express = require("express");
 const router = express.Router();
 
-router.get('/:pollId', getPollById);
+router.get('/company/:institudeId', getPolls);
 router.delete('/:pollId', deletePollById);
 router.post('/',createPoll);
 router.get ('/',getPolls);
-
 
 module.exports = router;

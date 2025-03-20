@@ -18,6 +18,7 @@ import Notifications from "./pages/notifications/notifications";
 import ManagePolicies from './pages/managePolicies/managePolicies';
 import PollDetails from "./pages/pollDetails/pollDetails";
 import ProtectedRoute from "./components/ProtectedRoute";
+import StatisticsPage from "./pages/statistics/statistics";
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -37,7 +38,9 @@ function App() {
     <ProtectedRoute adminOnly>
       <Layout>
         <Routes>
+
           <Route path="/" element={<Home />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/polls" element={<ManagePolls />} />
           <Route path="/polls/:pollId" element={<PollDetails />} />

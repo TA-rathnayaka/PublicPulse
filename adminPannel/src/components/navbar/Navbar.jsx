@@ -4,7 +4,7 @@ import "./navbar.scss";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 import SettingsIcon from "@mui/icons-material/Settings";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 import logo from "../../Assets/logo.png";
 import { fetchNotifications as fetchNotificationsFromBackend, markNotificationAsRead } from "../../backend/notifications";
@@ -17,6 +17,7 @@ const Navbar = ({ navbarData }) => {
   const [notifications, setNotifications] = useState([]);
   const dropdownRef = useRef(null); // Reference for the dropdown
   const {user} = useAuth();
+  const location = useLocation();
   const setNotificationRead = async (id) => {
     try {
       await markNotificationAsRead(id);
@@ -108,7 +109,8 @@ const Navbar = ({ navbarData }) => {
                         key={index}
                         className={`notification-item ${isRead ? "read" : "pending"}`}
                         onClick={async () => {
-                          navigate(`/${type}/${id}`);
+                          
+                          navigate(`${type}/${id}`);
                           await setNotificationRead(notif.id);
                         }}
                       >

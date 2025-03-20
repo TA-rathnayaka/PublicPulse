@@ -1,12 +1,6 @@
 const express = require('express');
-const admin = require('firebase-admin');
-
-// Initialize Firebase Admin SDK
-const serviceAccount = require('../policymaker-ee7e9-firebase-adminsdk-mhbqj-3fb1249b9a.json'); // Replace with the correct path
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+const {admin} = require('../config/firebase');
+const pollRoutes = require('../routes/PollRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -55,6 +49,7 @@ app.delete('/api/users/:userId', async (req, res) => {
     res.status(500).send({ message: "Failed to delete user" });
   }
 });
+app.use('/api/polls',pollRoutes)
 
 
 app.post('/api/users/:userId/make-admin', async (req, res) => {

@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children, superAdminOnly = false, adminOnly = false })
   const { user, userRole, loading, roleLoading } = useAuth();
 
   if (loading || roleLoading) {
-    return <div>Loading...</div>; // Show loading while checking auth
+    return <div></div>; // Show loading while checking auth
   }
 
   if (!user) {

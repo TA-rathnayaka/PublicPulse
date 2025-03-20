@@ -29,7 +29,7 @@ const Login = () => {
       console.log("Authenticated user:", userCredential.user);
       
       // Let AuthContext handle role checking
-      navigate("/admin-dashboard");
+      navigate("/admin-panel");
     } catch (error) {
       console.error("Login error:", error);
       setError("Login failed. Please check your credentials.");
