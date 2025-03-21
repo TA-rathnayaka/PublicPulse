@@ -5,6 +5,7 @@ import { AuthProvider } from "./context/authContext";
 import Layout from "./layout"; 
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
+
 import List from "./pages/list/List";
 import Single from "./pages/single/Single";
 import New from "./pages/new/New";
@@ -56,11 +57,7 @@ function App() {
     </ProtectedRoute>
   }
 />
-
-
-
-            {/* More non-admin routes */}
-            <Route path="/some-other-page" element={< div>helooo</div>} />
+            <Route path="/profile" element={< Profile/>} />
           </Routes>
         </BrowserRouter>
       </div>
