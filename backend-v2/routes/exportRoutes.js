@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { exportCollectionToCSV } = require('../controllers/exportController');
+const { downloadPollCSV } = require('../controllers/exportController');
 
 // Route for exporting collection data as CSV
-router.get('/export/:collectionName', exportCollectionToCSV);
+router.get('/:pollId', downloadPollCSV);
 
 module.exports = router;

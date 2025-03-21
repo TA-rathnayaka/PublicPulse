@@ -1,0 +1,203 @@
+.admin-navbar {
+  height: 50px;
+  padding-top: 10px;
+  display: flex;
+  align-items: center;
+  font-size: 24px;
+  color: #55697b66;
+
+  .wrapper {
+    width: 100%;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .navbar-title {
+      font-weight: bold;
+      padding: 10px;
+      font-size: 28px; /* Larger text */
+      text-align: center; /* Center the text */
+      color: black;
+    }
+
+    .search {
+      display: flex;
+      align-items: center;
+      background-color: rgba(186, 210, 222, 0.307);
+      border-radius: 15px;
+      margin-right: 40px;
+      padding: 5px;
+
+      // Use width to set a specific size
+      width: 100%;
+
+      input {
+        border: none;
+        outline: none;
+        background: transparent;
+
+        &::placeholder {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .items {
+      display: flex;
+      align-items: center;
+
+      .item {
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+        position: relative;
+        background-color: rgba(186, 210, 222, 0.307);
+        border-radius: 15px;
+        padding: 0.5%;
+
+        .icon {
+          font-size: 25px;
+        }
+
+        .avatar {
+          width: 30px;
+          height: 30px; /* Maintain a consistent aspect ratio */
+          border-radius: 50%;
+          object-fit: cover;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .counter {
+          width: 15px;
+          height: 15px;
+          background-color: red;
+          border-radius: 50%;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 10px;
+          font-weight: bold;
+          position: absolute;
+          top: -5px;
+          right: -5px;
+        }
+        .notification-dropdown {
+          position: absolute;
+          top: 50px; /* Position dropdown below the navbar */
+          right: 0;
+          width: 300px;
+          max-height: 400px;
+          overflow-y: auto;
+          background-color: #f9f9f9;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          z-index: 9999;
+          padding: 10px;
+          display: flex;
+          flex-direction: column;
+          max-height: 400px; /* Limit the height of the dropdown */
+          overflow-y: auto;
+
+          /* Message when there are no notifications */
+          p {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin: 0;
+          }
+
+          /* Responsive design adjustments */
+          @media (max-width: 600px) {
+            width: 100%;
+            left: 0;
+            right: 0;
+            top: 60px; /* Adjust top position for smaller screens */
+          }
+        }
+
+        .notification-item {
+          display: flex;
+          flex-direction: row; /* Align image and text horizontally */
+          align-items: center; /* Vertically center the image and text */
+          margin-bottom: 20px;
+          cursor: pointer;
+          transition: background-color 0.2s ease-in-out;
+          padding: 10px; /* Optional, adds padding inside each notification */
+
+        
+          /* Background color variations */
+          &.pending {
+            background-color: #fef8d8; /* Subtle yellow background for pending */
+          }
+        
+          &.read {
+            background-color: #f9f9f9; /* Light gray background for read */
+          }
+        
+          &:hover {
+            background-color: #f0f2f5; /* Subtle hover effect */
+          }
+        
+          /* Centered border between notifications */
+          position: relative;
+        
+          /* Horizontal border at the bottom */
+          &::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            width: 100%; /* Full width of the notification */
+            border-bottom: 1px solid #ccc;
+            transform: translateX(-50%); /* Center the border */
+          }
+        
+          /* Notification text */
+          .notification-text {
+            text-align: left;
+            font-size: 14px;
+            color: #333;
+            margin: 0 10px; /* Add horizontal spacing between text and image */
+            line-height: 1.4;
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden;    /* Hide overflowed content */
+            text-overflow: ellipsis; /* Add the ellipsis if text overflows */
+            width: 100%; /* Ensure the text uses the full width of the container */
+            max-width: 240px; /* Define a max width to make sure it truncates */
+
+          }
+        
+          /* Notification time */
+          .notification-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px; /* Add some spacing above the date */
+            align-self: flex-end; /* Align the date to the right */
+          }
+        
+          /* Avatar styling */
+          img {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 15px; /* Space between image and text */
+            align-self: center; /* Center the image vertically */
+          }
+        }
+        
+        
+        
+        
+
+        /* Utility styles for subtle improvements */
+        .notification-item:last-child {
+          margin-bottom: 0;
+          border-bottom: none; /* Remove border for the last item */
+        }
+      }
+    }
+  }
+}

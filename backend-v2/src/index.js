@@ -1,32 +1,19 @@
 const express = require('express');
-const admin = require('firebase-admin');
-
-// Initialize Firebase Admin SDK
-const serviceAccount = require('../policymaker-ee7e9-firebase-adminsdk-mhbqj-3fb1249b9a.json'); // Replace with the correct path
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
-
-const app = express();
-const PORT = process.env.PORT || 3000;
-const cors = require('cors');
+const {admin} = require('../config/firebase');
+const pollRoutes = require('../routes/PollRoutes');
 const exportRoutes = require('../routes/exportRoutes');
-
+const app = express();
+const PORT = process.env.PORT || 3001;
+const cors = require('cors')
 // Middleware
 app.use(express.json());
 const adminDb = admin.firestore();
 
 app.use(cors({
-  origin: 'http://localhost:3001', // React frontend URL
+  origin: 'http://localhost:3000'||'http://localhost:3001', // React frontend URL
 }));
-
-// Register export routes
-app.use('/api', exportRoutes);
-
 // Fetch all users
 app.get('/api/users', async (req, res) => {
-  console.log(req);
   try {
     const auth = admin.auth();
     const listUsersResult = await auth.listUsers(); // List all users (default max is 1000 users)
@@ -62,7 +49,8 @@ app.delete('/api/users/:userId', async (req, res) => {
     res.status(500).send({ message: "Failed to delete user" });
   }
 });
-
+app.use('/api/polls',pollRoutes)
+app.use('/api/export',exportRoutes)
 
 app.post('/api/users/:userId/make-admin', async (req, res) => {
   const { userId } = req.params; // Get the userId from the route parameters

@@ -591,45 +591,25 @@ class Downloads extends StatelessWidget {
                     color: theme.primaryColorDark, // White icon for contrast
                   ),
                   label: const Text("Download"),
-                    onPressed: () async {
-                      if (documentUrl == null || documentUrl!.isEmpty) {
-                        print('Document URL is null or empty');
-                        return;
-                      }
-
-                      Uri documentUri = Uri.parse(documentUrl!);
-                      print('Attempting to launch: $documentUri');
-
-                      try {
-                        bool canLaunch = await canLaunchUrl(documentUri);
-                        if (canLaunch) {
-                          bool didLaunch = await launchUrl(
-                            documentUri,
-                            mode: LaunchMode.externalApplication,
-                          );
-                          if (didLaunch) {
-                            print('Launch successful: $documentUrl');
-                          } else {
-                            print('Failed to launch externally: $documentUrl');
-                          }
-                        } else {
-                          print('Could not launch: $documentUrl');
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Could not launch download link."),
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        print('Error launching URL: $e');
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("An error occurred while launching the link."),
-                          ),
-                        );
-                      }
+                  onPressed: () async {
+                    if (documentUrl == null || documentUrl!.isEmpty) {
+                      print('Document URL is null or empty');
+                      return;
                     }
-
+                    print('Attempting to launch: $documentUrl');
+                    if (await canLaunchUrl(Uri.parse(documentUrl!))) {
+                      await launchUrl(Uri.parse(documentUrl!),
+                          mode: LaunchMode.externalApplication);
+                      print('Launch successful: $documentUrl');
+                    } else {
+                      print('Failed to launch: $documentUrl');
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text("Could not launch download link."),
+                        ),
+                      );
+                    }
+                  },
                 ),
               ),
             ),

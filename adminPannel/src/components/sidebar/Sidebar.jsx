@@ -16,13 +16,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../../context/darkModeContext";
 import { useContext } from "react";
 import { getAuth, signOut } from "firebase/auth";
+import { useAuth } from "../../context/authContext";
 
 const Sidebar = () => {
   const { dispatch } = useContext(DarkModeContext);
   const navigate = useNavigate();
   const [activeLink, setActiveLink] = useState("/"); // State to track the active link
-
+  const {user, userRole, instituteId, instituteName, loading, roleLoading} = useAuth();
   // Logout handler
+  console.log("instituteName data ", instituteId, instituteName)
   const handleLogout = () => {
     const auth = getAuth();
     signOut(auth)
@@ -38,14 +40,14 @@ const Sidebar = () => {
   // Function to handle link click
   const handleLinkClick = (link) => {
     setActiveLink(link); // Update the active link state
-    navigate(link); // Navigate to the selected link
+    navigate(`/admin-panel${link}`); // Navigate to the selected link with "/admin-panel" prefix
   };
 
   return (
     <div className="sidebar">
       <div className="top">
         <Link to="/" style={{ textDecoration: "none" }}>
-          <span className="logo">PublicPulse</span>
+          <span className="logo">{instituteName||"PublicPulse"}</span>
         </Link>
       </div>
       <hr />
@@ -65,7 +67,7 @@ const Sidebar = () => {
           </li>
           <p className="title">MANAGE</p>
           <li onClick={() => handleLinkClick("/users")}>
-            <Tooltip title="Users" placement="right">
+            <Tooltip title="Employees" placement="right">
               <PersonOutlineIcon
                 className="icon"
                 style={{
@@ -76,7 +78,7 @@ const Sidebar = () => {
             <span
               style={{ color: activeLink === "/users" ? "#6439ff" : undefined }}
             >
-              Users
+              Employees
             </span>
           </li>
           <li onClick={() => handleLinkClick("/policies")}>

@@ -6,14 +6,13 @@ import "./login.scss";
 import { useAuth } from "../../context/authContext";
 
 const Login = () => {
-  const { loading } = useAuth(); // Get loading state from context
   const navigate = useNavigate();
-
+  const { user, userRole, loading, roleLoading } = useAuth();
   // Local state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-
+  
   // Close login popup
   const handleClose = () => {
     navigate("/"); // Redirect to home page
@@ -30,12 +29,15 @@ const Login = () => {
       console.log("Authenticated user:", userCredential.user);
       
       // Let AuthContext handle role checking
-      navigate("/admin-dashboard");
+      navigate("/admin-panel");
     } catch (error) {
       console.error("Login error:", error);
       setError("Login failed. Please check your credentials.");
     }
   };
+  if(user){
+    navigate('/');
+  }
 
   return (
     <div className="login">
@@ -78,6 +80,3 @@ const Login = () => {
 };
 
 export default Login;
-
-// Now AuthContext will automatically pick up the logged-in user
-// and handle checking if they’re an admin or not. 🚀
