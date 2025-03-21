@@ -36,11 +36,12 @@ function Footer() {
     <FooterContainer>
       <FooterSubscription>
         <FooterSubHeading>
-          Join our exclusive membership to receive the latest news and trends
+          Join our exclusive community to stay updated with the latest
+          elections, trends, and voting insights!
         </FooterSubHeading>
         <FooterSubText>You can unsubscribe at any time.</FooterSubText>
         <Form>
-          <FormInput name='email' type='email' placeholder='Your Email' />
+          <FormInput name="email" type="email" placeholder="Your Email" />
           <Button fontBig>Subscribe</Button>
         </Form>
       </FooterSubscription>
@@ -48,58 +49,58 @@ function Footer() {
         <FooterLinksWrapper>
           <FooterLinkItems>
             <FooterLinkTitle>About Us</FooterLinkTitle>
-            <FooterLink to='/sign-up'>How it works</FooterLink>
-            <FooterLink to='/'>Testimonials</FooterLink>
-            <FooterLink to='/'>Careers</FooterLink>
-            <FooterLink to='/'>Investors</FooterLink>
-            <FooterLink to='/'>Terms of Service</FooterLink>
+            <FooterLink to="/sign-up">How it works</FooterLink>
+            <FooterLink to="/">Testimonials</FooterLink>
+            <FooterLink to="/">Careers</FooterLink>
+            <FooterLink to="/">Investors</FooterLink>
+            <FooterLink to="/">Terms of Service</FooterLink>
           </FooterLinkItems>
           <FooterLinkItems>
             <FooterLinkTitle>Contact Us</FooterLinkTitle>
-            <FooterLink to='/'>Contact</FooterLink>
-            <FooterLink to='/'>Support</FooterLink>
-            <FooterLink to='/'>Destinations</FooterLink>
-            <FooterLink to='/'>Sponsorships</FooterLink>
+            <FooterLink to="/">Contact</FooterLink>
+            <FooterLink to="/">Support</FooterLink>
+            <FooterLink to="/">Destinations</FooterLink>
+            <FooterLink to="/">Sponsorships</FooterLink>
           </FooterLinkItems>
         </FooterLinksWrapper>
         <FooterLinksWrapper>
           <FooterLinkItems>
             <FooterLinkTitle>Videos</FooterLinkTitle>
-            <FooterLink to='/'>Submit Video</FooterLink>
-            <FooterLink to='/'>Ambassadors</FooterLink>
-            <FooterLink to='/'>Agency</FooterLink>
-            <FooterLink to='/'>Influencer</FooterLink>
+            <FooterLink to="/">Submit Video</FooterLink>
+            <FooterLink to="/">Ambassadors</FooterLink>
+            <FooterLink to="/">Agency</FooterLink>
+            <FooterLink to="/">Influencer</FooterLink>
           </FooterLinkItems>
           <FooterLinkItems>
             <FooterLinkTitle>Social Media</FooterLinkTitle>
-            <FooterLink to='/'>Instagram</FooterLink>
-            <FooterLink to='/'>Facebook</FooterLink>
-            <FooterLink to='/'>Youtube</FooterLink>
-            <FooterLink to='/'>Twitter</FooterLink>
+            <FooterLink to="/">Instagram</FooterLink>
+            <FooterLink to="/">Facebook</FooterLink>
+            <FooterLink to="/">Youtube</FooterLink>
+            <FooterLink to="/">Twitter</FooterLink>
           </FooterLinkItems>
         </FooterLinksWrapper>
       </FooterLinksContainer>
       <SocialMedia>
         <SocialMediaWrap>
-          <SocialLogo to='/'>
+          <SocialLogo to="/">
             <SocialIcon />
-            ULTRA
+            PUBLIC PULSE
           </SocialLogo>
-          <WebsiteRights>ULTRA © {date.getFullYear()} </WebsiteRights>
+          <WebsiteRights>PUBLICPULSE © {date.getFullYear()} </WebsiteRights>
           <SocialIcons>
-            <SocialIconLink href='/' target='_blank' aria-label='Facebook'>
+            <SocialIconLink href="/" target="_blank" aria-label="Facebook">
               <FaFacebook />
             </SocialIconLink>
-            <SocialIconLink href='/' target='_blank' aria-label='Instagram'>
+            <SocialIconLink href="/" target="_blank" aria-label="Instagram">
               <FaInstagram />
             </SocialIconLink>
-            <SocialIconLink href='/' target='_blank' aria-label='YouTube' >
+            <SocialIconLink href="/" target="_blank" aria-label="YouTube">
               <FaYoutube />
             </SocialIconLink>
-            <SocialIconLink href='/' target='_blank' aria-label='Twitter'>
+            <SocialIconLink href="/" target="_blank" aria-label="Twitter">
               <FaTwitter />
             </SocialIconLink>
-            <SocialIconLink href='/' target='_blank' aria-label='LinkedIn'>
+            <SocialIconLink href="/" target="_blank" aria-label="LinkedIn">
               <FaLinkedin />
             </SocialIconLink>
           </SocialIcons>

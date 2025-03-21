@@ -97,8 +97,8 @@ import ManagePolicies from "./pages/managePolicies/managePolicies";
 import PollDetails from "./pages/pollDetails/pollDetails";
 import ProtectedRoute from "./components/ProtectedRoute";
 import StatisticsPage from "./pages/statistics/statistics";
-import LandingPage from "./pages/landing/LandingPage"; // Your custom landing page
-import ScrollToTop from "./components/landingPage/ScrollTop"; // Import ScrollToTop
+import LandingPage from "./pages/landing/LandingPage";
+import ScrollToTop from "./components/landingPage/ScrollTop.js"; // Fixed typo: ScrollTop -> ScrollToTop
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -107,17 +107,18 @@ function App() {
     <AuthProvider>
       <div className={darkMode ? "app dark" : "app"}>
         <BrowserRouter>
-          <ScrollToTop /> {/* Ensures page scrolls to top on route change */}
+          <ScrollToTop />
           <Routes>
             {/* Public routes */}
             <Route path="/" element={<LandingPage />} />{" "}
-            {/* Landing page at root */}
-            <Route path="/login" element={<Login />} />
+            {/* Root shows landing page */}
+            <Route path="/login" element={<Login />} />{" "}
+            {/* Absolute path for login */}
             <Route
               path="/sign-up"
               element={<New inputs={userInputs} title="Register Department" />}
             />{" "}
-            {/* Registration page */}
+            {/* Absolute path for sign-up */}
             {/* Admin Panel Routes (protected) */}
             <Route
               path="/admin-panel/*"
