@@ -1,60 +1,43 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth"; // Firebase Auth import
-import { doc, getDoc } from "firebase/firestore"; // Firestore imports
-import { auth, firestore } from '../../backend/firebase/firebase'; // Your firebase config file
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from '../../backend/firebase/firebase'; 
 import "./login.scss";
+import { useAuth } from "../../context/authContext";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { user, userRole, loading, roleLoading } = useAuth();
+  // Local state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null); // To display error messages
-  const navigate = useNavigate();
-
+  const [error, setError] = useState(null);
+  
   // Close login popup
   const handleClose = () => {
-    navigate("/"); // Redirect to home page when closing
+    navigate("/"); // Redirect to home page
   };
 
   // Submit login form
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
+    setError(null); // Reset error before starting
+
     try {
-      // Debugging: Log the email and password before sending the request
-      
-      
       // Firebase Authentication: Sign in with email and password
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      console.log("user:", user);
-     
-      // Check if the user is in the admins collection using the document ID (user.uid)
-      const adminDocRef = doc(firestore, "admins", user.uid);
-      const adminDocSnapshot = await getDoc(adminDocRef);
-  
-      if (!adminDocSnapshot.exists()) {
-        setError("You are not authorized to access this page.");
-        console.log(error);
-        auth.signOut(); // Sign out the user if they are not an admin
-      } else {
-        // Fetch user details from the users collection if admin
-        const userRef = doc(firestore, "users", user.uid);
-        const userDoc = await getDoc(userRef);
-  
-        if (userDoc.exists()) {
-          const userData = userDoc.data();
-          navigate("/", { state: { user: userData } }); // Navigate to home and pass user data
-        } else {
-          setError("User data not found.");
-        }
-      }
+      console.log("Authenticated user:", userCredential.user);
+      
+      // Let AuthContext handle role checking
+      navigate("/admin-panel");
     } catch (error) {
       console.error("Login error:", error);
       setError("Login failed. Please check your credentials.");
     }
   };
-  
+  if(user){
+    navigate('/');
+  }
 
   return (
     <div className="login">
@@ -62,15 +45,15 @@ const Login = () => {
         <button className="closeButton" onClick={handleClose}>
           &times;
         </button>
-        <h1 className="title">Login Here</h1>
-        {error && <p className="errorMessage">{error}</p>} {/* Display error if any */}
+        <h1 className="title">Admin Login</h1>
+        {error && <p className="errorMessage">{error}</p>}
         <form className="loginForm" onSubmit={handleSubmit}>
           <div className="formGroup">
             <label htmlFor="email">Email:</label>
             <input
               type="email"
               id="email"
-              placeholder="Enter your email"
+              placeholder="Enter your admin email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -87,8 +70,8 @@ const Login = () => {
               required
             />
           </div>
-          <button type="submit" className="loginButton">
-            Login
+          <button type="submit" className="loginButton" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
       </div>

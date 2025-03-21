@@ -38,8 +38,8 @@ class Identity extends StatelessWidget {
             // Conditional display for image or icon
             CircleAvatar(
               backgroundImage: imagePath.isNotEmpty
-                  ? AssetImage(imagePath) as ImageProvider
-                  : null, // Use the image if it's not empty
+                  ? NetworkImage(imagePath) // Use NetworkImage for URL
+                  : null, // Use no image if path is empty
               radius: 40,
               child: imagePath.isEmpty
                   ? Icon(
@@ -49,6 +49,13 @@ class Identity extends StatelessWidget {
               ) // Show an icon if the image path is empty
                   : null, // No icon if the image is not empty
             ),
+
+
+
+
+
+
+
             const SizedBox(height: 10),
             Text(
               name,

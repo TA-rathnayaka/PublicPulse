@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { listenToOptionVoteCounts, fetchPollById } from "../../backend/pollController";
+import {
+  listenToOptionVoteCounts,
+  fetchPollById,
+} from "../../backend/pollController";
 import "./polldetails.scss";
 const PollDetails = () => {
   const { pollId } = useParams();
@@ -30,21 +33,30 @@ const PollDetails = () => {
   }, [pollId]);
 
   const getDateDisplay = (timestamp) => {
+    console.log("time :",timestamp)
     return timestamp?.seconds
       ? new Date(timestamp.seconds * 1000).toLocaleDateString()
       : "Not Available";
   };
 
   const getTotalVotes = () => {
-    return Object.values(optionCounts).reduce((sum, { voteCount = 0 }) => sum + voteCount, 0);
+    return Object.values(optionCounts).reduce(
+      (sum, { voteCount = 0 }) => sum + voteCount,
+      0
+    );
   };
-
-  const getProgressBarClass = (optionText) => {
-    if (optionText.toLowerCase().includes("yes")) return "yes";
-    if (optionText.toLowerCase().includes("no")) return "no";
-    if (optionText.toLowerCase().includes("undecided")) return "undecided";
-    return ""; // Default
+  const getProgressBarClass = (votePercentage) => {
+    console.log('Vote Percentage:', votePercentage);
+    // This function can be customized to return different classes based on the option text or other logic.
+    if (votePercentage >=75) {
+      return "progress-bar-option1";
+    }
+    if (votePercentage >=30) {
+      return "progress-bar-option2";
+    }
+    return "progress-bar-default";  // Default class for other options
   };
+  
 
   const totalVotes = getTotalVotes();
 
@@ -58,37 +70,51 @@ const PollDetails = () => {
             <p>No image available for this poll.</p>
           )}
           <h2>{pollData.title || "No title Available"}</h2>
-          <p><strong>Description:</strong> {pollData.description || "No Description Available"}</p>
-          <p><strong>Created on:</strong> {getDateDisplay(pollData.createdDate)}</p>
-          <p><strong>Ends on:</strong> {getDateDisplay(pollData.endDate)}</p>
+          <p>
+            <strong>Description:</strong>{" "}
+            {pollData.description || "No Description Available"}
+          </p>
+          <p>
+            <strong>Created on:</strong> {getDateDisplay(pollData.createdAt)}
+          </p>
+          <p>
+            <strong>Ends on:</strong> {getDateDisplay(pollData.endDate)}
+          </p>
         </div>
       ) : (
         <p>Loading poll details...</p>
       )}
       <div className="option-votes">
-  <h2 className="section-title">Option Votes:</h2>
-  <ul>
-    {Object.entries(optionCounts).map(([optionId, { voteCount = 0, optionText = "Unknown Option" }]) => {
-      const votePercentage = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
-      const progressBarClass = getProgressBarClass(optionText);
+        <h2 className="section-title">Current Results</h2>
+        <ul>
+          {Object.entries(optionCounts).map(
+            ([optionId, { voteCount = 0, optionText = "Unknown Option" }]) => {
+              const votePercentage =
+  totalVotes > 0 ? parseFloat(((voteCount / totalVotes) * 100).toFixed(4)) : 0;
 
-      return (
-        <li key={optionId}>
-          <div className="option-header">
-            <strong>{optionText}</strong>
-            <span>{voteCount} votes</span>
-          </div>
-          <div className="progress-bar-container">
-            <div
-              className={`progress-bar ${progressBarClass}`}
-              style={{ width: `${votePercentage}%` }}
-            />
-          </div>
-        </li>
-      );
-    })}
-  </ul>
-</div>
+              const progressBarClass = getProgressBarClass(votePercentage);
+              console.log('Class Assigned:', progressBarClass);
+
+              return (
+                <li key={optionId}>
+                  <div className="option-header">
+                    <strong>{optionText}</strong>
+                    <span>{voteCount} votes</span>
+                  </div>
+                  <div className="progress-bar-container">
+                    <div
+                      className={`progress-bar ${progressBarClass}`}
+                      style={{ width: `${votePercentage}%` }}
+                    >
+                      <span className="progress-bar-text">{votePercentage} %</span>
+                    </div>
+                  </div>
+                </li>
+              );
+            }
+          )}
+        </ul>
+      </div>
     </div>
   );
 };

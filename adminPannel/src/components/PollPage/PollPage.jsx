@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PollOutlinedIcon from "@mui/icons-material/PollOutlined";
-import HowToVoteOutlinedIcon from "@mui/icons-material/HowToVoteOutlined";
-import CommentOutlinedIcon from "@mui/icons-material/CommentOutlined";
-import MoneyOutlinedIcon from "@mui/icons-material/MoneyOutlined";
-import { collection, getDocs, doc, deleteDoc } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 import { firestore } from "../../backend/firebase/firebase";
-import { storage } from "../../backend/firebase/firebase";
-import { ref, deleteObject } from "firebase/storage";
 import "./pollPage.scss";
 import { useNavigate } from "react-router-dom";
 import { deletePoll } from "../../backend/pollController";
@@ -14,6 +9,7 @@ import { deletePoll } from "../../backend/pollController";
 const PollPage = () => {
   const [recentPolls, setRecentPolls] = useState([]);
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   // Fetch data from Firebase
   useEffect(() => {
@@ -26,7 +22,7 @@ const PollPage = () => {
           ...doc.data(),
         }));
         setRecentPolls(pollsData);
-        console.log(pollsData);
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching polls: ", error);
       }
@@ -35,12 +31,17 @@ const PollPage = () => {
     fetchPolls();
   }, []);
 
+  // Function to truncate description
+  const truncateText = (text, maxLength = 80) => {
+    return text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
+  };
+
   // Delete poll function
   const handleDelete = async (pollId, imageUrl) => {
     try {
       await deletePoll(pollId, imageUrl);
 
-      // Re-fetch polls after deletion to update the UI
+      // Re-fetch polls after deletion
       const pollsCollection = collection(firestore, "polls");
       const pollsSnapshot = await getDocs(pollsCollection);
       const pollsData = pollsSnapshot.docs.map((doc) => ({
@@ -53,10 +54,38 @@ const PollPage = () => {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="poll-page-container">
+        <div className="recent-polls">
+          <h3 style={{ marginBottom: "2rem" }}>Recent Polls</h3>
+          <div className="poll-list">
+            {Array(1) // Generate loading placeholder
+              .fill()
+              .map((_, index) => (
+                <div key={index} className="poll-item-loading">
+                  <div className="poll-info-loading">
+                    <div className="poll-image-loading"></div>
+                    <div>
+                      <div className="poll-title-loading"></div>
+                      <div className="poll-description-loading"></div>
+                    </div>
+                  </div>
+                  <div className="poll-details-list-loading">
+                    <div className="poll-details-item-loading"></div>
+                    <div className="poll-details-item-loading"></div>
+                    <div className="poll-details-item-loading"></div>
+                  </div>
+                </div>
+              ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="poll-page-container">
-      
-
       <div className="recent-polls">
         <h3 style={{ marginBottom: "2rem" }}>Recent Polls</h3>
         <div className="poll-list">
@@ -65,17 +94,13 @@ const PollPage = () => {
               <div key={poll.id} className="poll-item">
                 <div className="poll-info">
                   {poll.imageUrl ? (
-                    <img
-                      src={poll.imageUrl}
-                      alt={poll.title}
-                      className="poll-image"
-                    />
+                    <img src={poll.imageUrl} alt={poll.title} className="poll-image" />
                   ) : (
                     <PollOutlinedIcon className="poll-icon" />
                   )}
                   <div>
                     <h4>{poll.title}</h4>
-                    <p>{poll.description}</p>
+                    <p>{truncateText(poll.description)}</p>
                   </div>
                 </div>
 
@@ -84,22 +109,16 @@ const PollPage = () => {
                   <span>Comments: {poll.comments || "Empty"}</span>
                   <span>Status: {poll.status}</span>
                 </div>
-                <button
-                  className="view-details-button"
-                  onClick={() => navigate(`${poll.id}`, { relative: "path" })}
-                >
+                <button className="view-details-button" onClick={() => navigate(`${poll.id}`)}>
                   View Details
                 </button>
-                <button
-                  className="delete-button"
-                  onClick={() => handleDelete(poll.id, poll.imageUrl)}
-                >
+                <button className="delete-button" onClick={() => handleDelete(poll.id, poll.imageUrl)}>
                   Delete
                 </button>
               </div>
             ))
           ) : (
-            <p>No recent polls available.</p>
+            <p className="no-polls">No recent polls available.</p>
           )}
         </div>
       </div>

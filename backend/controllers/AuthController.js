@@ -79,7 +79,9 @@ const registerUser = async (req, res) => {
     console.log('User registered successfully:', savedUser);
 
     // Generate JWT
-    const token = createToken(savedUser._id);
+    const token = jwt.sign({ savedUser. }, process.env.JWT_SECRET, {
+      expiresIn: maxAge,
+    });;
     res.cookie('jwt', token, { 
       httpOnly: true, 
       maxAge: maxAge * 1000,

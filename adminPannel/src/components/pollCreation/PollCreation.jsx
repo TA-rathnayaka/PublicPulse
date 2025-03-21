@@ -35,17 +35,31 @@ const PollCreation = () => {
   const [loading,setLoading]=useState(false);
   const user= getAuth().currentUser;
   const storage = getStorage();
+  const isValidFileUploaded=(file)=>{
+    const validExtensions = ['png','jpeg','jpg']
+    const fileExtension = file.type.split('/')[1]
+    return validExtensions.includes(fileExtension)
+  }
 
   const handleAddImageClick = () => {
     setShowImageUpload((prev) => !prev);
   };
 
   const handleImageChange = (event) => {
+    if(event.target.files.length < 1){
+      return;
+    }
     const file = event.target.files[0];
-    if (file) {
+    if(isValidFileUploaded(file)){
       setImage(URL.createObjectURL(file));
       setImageFile(file);
+      alert("png allowed")
+      //file is valid
+    }else{
+      alert("Invalid file type");
+      //file is invalid
     }
+
   };
 
   const handleAddOption = () => {

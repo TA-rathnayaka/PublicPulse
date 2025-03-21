@@ -3,13 +3,15 @@ import { storage, firestore } from '../../services/firebaseConfig'; // Import Fi
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { collection, addDoc } from 'firebase/firestore';
 import './UploadPolicy.scss';
+import { sendNotifications } from '../../backend/notifications';
+import { useAuthState } from 'react-firebase-hooks/auth';
 
 const UploadCustomPolicy = () => {
   const [elements, setElements] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isUploading, setIsUploading] = useState(false); // Loading state
   const [uploadSuccess, setUploadSuccess] = useState(false); // Success state
-
+  const user = useAuthState.user;
   // Add new element
   const addElement = (type) => {
     const newElement = { type, value: '', id: Date.now() }; // Create unique ID
@@ -39,6 +41,8 @@ const UploadCustomPolicy = () => {
           const fileRef = ref(storage, `${element.type}/${file.name}_${Date.now()}`);
           await uploadBytes(fileRef, file); // Upload file to Firebase
           const url = await getDownloadURL(fileRef); // Get file's public URL
+          
+
           return { type: element.type, value: url }; // Return URL and type
         } else {
           return { type: element.type, value: element.value }; // For text or date fields
@@ -50,8 +54,16 @@ const UploadCustomPolicy = () => {
 
       // Save data to Firestore
       const policyRef = collection(firestore, 'policies');
-      await addDoc(policyRef, { policyFields: resolvedUploads, createdAt: new Date() });
-
+      const policyDoc = await addDoc(policyRef, { policyFields: resolvedUploads, createdAt: new Date() });
+      await sendNotifications({
+        message: `new policy is added ${policyDoc.title}`,
+        target: "all",
+        type: "policies",
+        metadata: {
+          policieId: policyDoc.id,
+          photoUrl: user.photoUrl
+        }
+      });
       setUploadSuccess(true);
       alert('Policy uploaded successfully!');
 
