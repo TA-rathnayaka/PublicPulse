@@ -92,3 +92,5 @@ ios/Flutter/Flutter.podspec
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+echo ".DS_Store" >> .gitignore
