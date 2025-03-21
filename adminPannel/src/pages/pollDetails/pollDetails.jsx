@@ -1,39 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import {
-  listenToOptionVoteCounts,
-  fetchPollById,
-} from "../../backend/pollController";
+import { listenToOptionVoteCounts, fetchPollById } from "../../backend/pollController";
 import "./polldetails.scss";
+
 const PollDetails = () => {
   const { pollId } = useParams();
   const [optionCounts, setOptionCounts] = useState({});
   const [pollData, setPollData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!pollId) return;
 
     const fetchPollData = async () => {
       try {
+        setLoading(true);
         const fetchedPoll = await fetchPollById(pollId);
         setPollData(fetchedPoll);
       } catch (error) {
         console.error("Error fetching poll details:", error);
+      } finally {
+        setLoading(false);
       }
     };
+    
     fetchPollData();
 
     const unsubscribe = listenToOptionVoteCounts(pollId, (updatedCounts) => {
       setOptionCounts(updatedCounts);
     });
 
-    return () => {
-      unsubscribe();
-    };
+    return () => unsubscribe();
   }, [pollId]);
 
   const getDateDisplay = (timestamp) => {
-    console.log("time :",timestamp)
     return timestamp?.seconds
       ? new Date(timestamp.seconds * 1000).toLocaleDateString()
       : "Not Available";
@@ -45,75 +45,117 @@ const PollDetails = () => {
       0
     );
   };
+
   const getProgressBarClass = (votePercentage) => {
-    console.log('Vote Percentage:', votePercentage);
-    // This function can be customized to return different classes based on the option text or other logic.
-    if (votePercentage >=75) {
-      return "progress-bar-option1";
-    }
-    if (votePercentage >=30) {
-      return "progress-bar-option2";
-    }
-    return "progress-bar-default";  // Default class for other options
+    if (votePercentage >= 75) return "progress-bar-high";
+    if (votePercentage >= 30) return "progress-bar-medium";
+    return "progress-bar-low";
   };
-  
 
   const totalVotes = getTotalVotes();
 
-  return (
-    <div className="poll-details">
-      {pollData ? (
-        <div className="poll-info">
-          {pollData.imageUrl ? (
-            <img src={pollData.imageUrl} alt="Poll Illustration" />
-          ) : (
-            <p>No image available for this poll.</p>
-          )}
-          <h2>{pollData.title || "No title Available"}</h2>
-          <p>
-            <strong>Description:</strong>{" "}
-            {pollData.description || "No Description Available"}
-          </p>
-          <p>
-            <strong>Created on:</strong> {getDateDisplay(pollData.createdAt)}
-          </p>
-          <p>
-            <strong>Ends on:</strong> {getDateDisplay(pollData.endDate)}
-          </p>
+  if (loading) {
+    return (
+      <div className="poll-details-container">
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Loading poll details...</p>
         </div>
-      ) : (
-        <p>Loading poll details...</p>
-      )}
-      <div className="option-votes">
-        <h2 className="section-title">Current Results</h2>
-        <ul>
-          {Object.entries(optionCounts).map(
-            ([optionId, { voteCount = 0, optionText = "Unknown Option" }]) => {
-              const votePercentage =
-  totalVotes > 0 ? parseFloat(((voteCount / totalVotes) * 100).toFixed(4)) : 0;
+      </div>
+    );
+  }
 
-              const progressBarClass = getProgressBarClass(votePercentage);
-              console.log('Class Assigned:', progressBarClass);
+  return (
+    <div className="poll-details-container">
+      <div className="poll-card">
+        {pollData ? (
+          <>
+            <div className="poll-header">
+              {pollData.imageUrl ? (
+                <div className="poll-image-container">
+                  <img 
+                    src={pollData.imageUrl} 
+                    alt={pollData.title || "Poll"} 
+                    className="poll-image" 
+                  />
+                </div>
+              ) : (
+                <div className="no-image-placeholder">
+                  <span className="material-icons">poll</span>
+                  <p>No image available</p>
+                </div>
+              )}
+              <h1 className="poll-title">{pollData.title || "No title Available"}</h1>
+            </div>
 
-              return (
-                <li key={optionId}>
-                  <div className="option-header">
-                    <strong>{optionText}</strong>
-                    <span>{voteCount} votes</span>
-                  </div>
-                  <div className="progress-bar-container">
-                    <div
-                      className={`progress-bar ${progressBarClass}`}
-                      style={{ width: `${votePercentage}%` }}
-                    >
-                      <span className="progress-bar-text">{votePercentage} %</span>
-                    </div>
-                  </div>
-                </li>
-              );
-            }
-          )}
-        </ul>
+            <div className="poll-metadata">
+              <div className="metadata-item">
+                <span className="material-icons">description</span>
+                <p>{pollData.description || "No Description Available"}</p>
+              </div>
+              
+              <div className="poll-dates">
+                <div className="metadata-item">
+                  <span className="material-icons">today</span>
+                  <p>Created: <span className="date-value">{getDateDisplay(pollData.createdAt)}</span></p>
+                </div>
+                
+                <div className="metadata-item">
+                  <span className="material-icons">event</span>
+                  <p>Ends: <span className="date-value">{getDateDisplay(pollData.endDate)}</span></p>
+                </div>
+              </div>
+            </div>
+
+            <div className="poll-results-section">
+              <h2 className="results-title">
+                <span className="material-icons">bar_chart</span>
+                Current Results
+                <span className="total-votes-badge">{totalVotes} votes</span>
+              </h2>
+
+              <div className="options-list">
+                {Object.entries(optionCounts).map(
+                  ([optionId, { voteCount = 0, optionText = "Unknown Option" }]) => {
+                    const votePercentage = totalVotes > 0 
+                      ? parseFloat(((voteCount / totalVotes) * 100).toFixed(1)) 
+                      : 0;
+                    
+                    const progressBarClass = getProgressBarClass(votePercentage);
+
+                    return (
+                      <div className="option-item" key={optionId}>
+                        <div className="option-header">
+                          <span className="option-text">{optionText}</span>
+                          <span className="vote-count">{voteCount} votes</span>
+                        </div>
+                        
+                        <div className="progress-container">
+                          <div 
+                            className={`progress-bar ${progressBarClass}`}
+                            style={{ width: `${votePercentage}%` }}
+                          >
+                            {votePercentage > 5 && (
+                              <span className="percentage-label">{votePercentage}%</span>
+                            )}
+                          </div>
+                          {votePercentage <= 5 && (
+                            <span className="percentage-label-outside">{votePercentage}%</span>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  }
+                )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="error-message">
+            <span className="material-icons">error_outline</span>
+            <p>Unable to load poll data</p>
+          </div>
+        )}
       </div>
     </div>
   );
