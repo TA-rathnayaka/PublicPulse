@@ -12,12 +12,10 @@ import { doc, getDoc } from "firebase/firestore"; // Firestore methods
 
 const Home = () => {
   const [user, loading, authError] = useAuthState(auth); // Firebase Auth state hook
-  
+
   const [dataLoading, setDataLoading] = useState(true); // Loading state for user data
   const [fetchError, setFetchError] = useState(null); // To handle errors during data fetch
-  console.log("Loading : ",loading);
-
-
+  console.log("Loading : ", loading);
 
   // Show authentication error if any
   if (authError) {
@@ -25,7 +23,6 @@ const Home = () => {
   }
 
   // If the user is not authenticated, show an error or redirect
-
 
   // Show dashboard while loading only necessary components
   return (
@@ -38,12 +35,8 @@ const Home = () => {
         </div>
         <div className="charts">
           <Featured />
-          <Chart
-            title="User Engagement"
-            aspect={2 / 1} 
-          />
+          <Chart title="User Engagement" aspect={2 / 1} />
         </div>
-       
       </div>
     </div>
   );
