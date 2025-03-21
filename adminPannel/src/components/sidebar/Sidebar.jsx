@@ -67,7 +67,7 @@ const Sidebar = () => {
           </li>
           <p className="title">MANAGE</p>
           <li onClick={() => handleLinkClick("/users")}>
-            <Tooltip title="Users" placement="right">
+            <Tooltip title="Employees" placement="right">
               <PersonOutlineIcon
                 className="icon"
                 style={{
@@ -78,7 +78,7 @@ const Sidebar = () => {
             <span
               style={{ color: activeLink === "/users" ? "#6439ff" : undefined }}
             >
-              Users
+              Employees
             </span>
           </li>
           <li onClick={() => handleLinkClick("/policies")}>

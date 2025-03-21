@@ -83,6 +83,7 @@ import { AuthProvider } from "./context/authContext";
 import Layout from "./layout";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
+
 import List from "./pages/list/List";
 import Single from "./pages/single/Single";
 import New from "./pages/new/New";
@@ -109,52 +110,35 @@ function App() {
         <BrowserRouter>
           <ScrollToTop /> {/* Ensures page scrolls to top on route change */}
           <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<LandingPage />} />{" "}
-            {/* Landing page at root */}
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/sign-up"
-              element={<New inputs={userInputs} title="Register Department" />}
-            />{" "}
-            {/* Registration page */}
-            {/* Admin Panel Routes (protected) */}
-            <Route
-              path="/admin-panel/*"
-              element={
-                <ProtectedRoute adminOnly>
-                  <Layout>
-                    <Routes>
-                      <Route path="/" element={<Home />} />
-                      <Route path="/statistics" element={<StatisticsPage />} />
-                      <Route
-                        path="/notifications"
-                        element={<Notifications />}
-                      />
-                      <Route path="/polls" element={<ManagePolls />} />
-                      <Route path="/polls/:pollId" element={<PollDetails />} />
-                      <Route path="/profile" element={<Profile />} />
-                      <Route path="/settings" element={<Settings />} />
-                      <Route path="/users" element={<List />} />
-                      <Route path="/users/:userId" element={<Single />} />
-                      <Route
-                        path="/users/new"
-                        element={
-                          <New inputs={userInputs} title="Add New User" />
-                        }
-                      />
-                      <Route path="/policies" element={<ManagePolicies />} />
-                      <Route
-                        path="/policies/:policyId"
-                        element={<PolicyDetails />}
-                      />
-                    </Routes>
-                  </Layout>
-                </ProtectedRoute>
-              }
-            />
-            {/* Other public routes */}
-            <Route path="/some-other-page" element={<div>helooo</div>} />
+            {/* Non-admin routes (without Layout) */}
+            <Route path="login" element={<Login />} />
+
+            {/* Admin Panel Routes (with Layout) */}
+            <Route 
+  path="/admin-panel/*" 
+  element={
+    <ProtectedRoute adminOnly>
+      <Layout>
+        <Routes>
+
+          <Route path="/" element={<Home />} />
+          <Route path="/statistics" element={<StatisticsPage />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/polls" element={<ManagePolls />} />
+          <Route path="/polls/:pollId" element={<PollDetails />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/users" element={<List />} />
+          <Route path="/users/:userId" element={<Single />} />
+          <Route path="/users/new" element={<New inputs={userInputs} title="Add New User" />} />
+          <Route path="/policies" element={<ManagePolicies />} />
+          <Route path="/policies/:policyId" element={<PolicyDetails />} />
+        </Routes>
+      </Layout>
+    </ProtectedRoute>
+  }
+/>
+            <Route path="/profile" element={< Profile/>} />
           </Routes>
         </BrowserRouter>
       </div>

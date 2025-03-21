@@ -1,7 +1,7 @@
 const express = require('express');
 const {admin} = require('../config/firebase');
 const pollRoutes = require('../routes/PollRoutes');
-
+const exportRoutes = require('../routes/exportRoutes');
 const app = express();
 const PORT = process.env.PORT || 3001;
 const cors = require('cors')
@@ -50,7 +50,7 @@ app.delete('/api/users/:userId', async (req, res) => {
   }
 });
 app.use('/api/polls',pollRoutes)
-
+app.use('/api/export',exportRoutes)
 
 app.post('/api/users/:userId/make-admin', async (req, res) => {
   const { userId } = req.params; // Get the userId from the route parameters
