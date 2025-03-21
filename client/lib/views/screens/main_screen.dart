@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:client/Providers/polls_provider.dart';
 import 'package:client/providers/screens_providers/poll_creation_validation_provider.dart';
 import 'package:client/providers/policy_provider.dart';
+import 'package:client/providers/comment_provider.dart';
 
 enum PageIndex { poll_dashboard, pollCreation, policy_dashbord, userProfile }
 
@@ -35,6 +36,8 @@ class MainScreen extends StatelessWidget {
             create: (context) => PollsProvider()),
         ChangeNotifierProvider<PoliciesProvider>(
             create: (context) => PoliciesProvider()),
+        ChangeNotifierProvider<CommentProvider>(
+            create: (context) => CommentProvider())
       ],
       child: Consumer<NavigatorProvider>(
         builder: (context, navigatorProvider, child) {
