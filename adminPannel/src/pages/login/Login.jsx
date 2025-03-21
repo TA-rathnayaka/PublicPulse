@@ -96,7 +96,7 @@ const Login = () => {
 
   // Redirect to admin panel if already logged in
   if (user) {
-    navigate("/admin-panel"); // Changed from "/" to "/admin-panel"
+    navigate("/dashboard"); // Changed from "/" to "/admin-panel"
   }
 
   const handleClose = () => {
@@ -114,7 +114,7 @@ const Login = () => {
         password
       );
       console.log("Authenticated user:", userCredential.user);
-      navigate("/admin-panel");
+      navigate("/dashboard");
     } catch (error) {
       console.error("Login error:", error);
       setError("Login failed. Please check your credentials.");

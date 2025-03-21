@@ -1,0 +1,101 @@
+// UserDashboard.scss
+
+.user-dashboard {
+    padding: 20px;
+    background-color: #f9f9f9;
+  
+    h2 {
+      font-size: 24px;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 20px;
+    }
+  
+    .institute-card {
+      margin-bottom: 20px;
+    }
+  
+    .admin-section {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-top: 30px;
+  
+      h3 {
+        font-size: 20px;
+        font-weight: bold;
+        color: #444;
+        margin-bottom: 15px;
+      }
+  
+      ul {
+        list-style-type: none;
+        padding: 0;
+        margin-bottom: 20px;
+  
+        li {
+          font-size: 16px;
+          color: #555;
+          padding: 10px 0;
+          border-bottom: 1px solid #ddd;
+  
+          &:last-child {
+            border-bottom: none;
+          }
+        }
+      }
+  
+      button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-size: 16px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+  
+        &:hover {
+          background-color: #0056b3;
+        }
+      }
+    }
+    
+    // For when there are no institutes to show
+    .no-institute-message {
+      font-size: 16px;
+      color: #888;
+      text-align: center;
+      margin-top: 20px;
+    }
+  
+    // Responsive Design for mobile
+    @media (max-width: 768px) {
+      .user-dashboard {
+        padding: 10px;
+      }
+  
+      h2 {
+        font-size: 20px;
+      }
+  
+      .admin-section {
+        padding: 15px;
+      }
+  
+      h3 {
+        font-size: 18px;
+      }
+  
+      ul li {
+        font-size: 14px;
+      }
+  
+      button {
+        width: 100%;
+        padding: 12px;
+      }
+    }
+  }
+  

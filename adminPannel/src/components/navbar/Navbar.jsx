@@ -14,7 +14,7 @@ import { useAuth } from "../../context/authContext";
 import placeholder from "../../Assets/logo.png";
 import { fetchNotifications as fetchNotificationsFromBackend, markNotificationAsRead } from "../../backend/notifications";
 
-const Navbar = ({ navbarData }) => {
+const Navbar = ({ navbarData , showName}) => {
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -111,7 +111,7 @@ const Navbar = ({ navbarData }) => {
         {/* Logo on the left */}
         <div className="logo-container" onClick={handleLogoClick}>
           <img src={logo} alt="PublicPulse" className="navbar-logo" />
-          <span className="institute-name">{instituteName}</span>
+          {showName && <span className="institute-name">{instituteName}</span>}
           {navbarData && <span  className="admin-navbar-title">{navbarData}</span >}
           
         </div>

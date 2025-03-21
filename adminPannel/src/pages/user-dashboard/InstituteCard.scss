@@ -1,0 +1,138 @@
+// InstituteCard.scss
+
+// Base variables
+$card-bg-light: #ffffff;
+$text-primary: #1f2937;
+$text-secondary: #6b7280;
+$border-radius: 0.5rem;
+$transition-standard: 0.3s ease;
+
+.institute-card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  
+  // CSS Custom Properties (Variables) set inline from component props
+  // --primary-color
+  // --secondary-color
+}
+
+.institute-card {
+  position: relative;
+  width: 100%;
+  max-width: 24rem; // 384px
+  height: 13rem; // 208px
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: $border-radius;
+  overflow: hidden;
+  cursor: pointer;
+  padding: 1.5rem;
+  border: 1px solid rgba(var(--primary-color), 0.2);
+  background: linear-gradient(
+    135deg, 
+    rgba(var(--primary-color), 0.06), 
+    rgba(var(--secondary-color), 0.06)
+  );
+  transition: box-shadow $transition-standard, transform $transition-standard;
+  
+  &:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 
+                0 4px 6px -4px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+  }
+  
+  &__border {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: $border-radius;
+    border: 2px solid transparent;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  
+  &__icon-wrapper {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  }
+  
+  &__content {
+    text-align: center;
+  }
+  
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: $text-primary;
+    margin-bottom: 0.25rem;
+  }
+  
+  &__institute-name {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    margin-bottom: 0.5rem;
+  }
+  
+  &__subtitle {
+    font-size: 0.875rem;
+    color: $text-secondary;
+    margin-top: 0.5rem;
+  }
+}
+
+// Dashboard section styles
+.dashboard-section {
+  background-color: $card-bg-light;
+  padding: 2rem;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.dashboard-title {
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: $text-primary;
+}
+
+.demo-toggle-button {
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  background-color: #f3f4f6;
+  border-radius: 0.375rem;
+  border: none;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: #e5e7eb;
+  }
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+  
+  @media (min-width: 768px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

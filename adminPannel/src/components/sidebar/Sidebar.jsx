@@ -67,12 +67,12 @@ const Sidebar = () => {
               <PersonOutlineIcon
                 className="icon"
                 style={{
-                  color: activeLink === "/users" ? "#6439ff" : undefined,
+                  color: activeLink === "/employees" ? "#6439ff" : undefined,
                 }}
               />
             </Tooltip>
             <span
-              style={{ color: activeLink === "/users" ? "#6439ff" : undefined }}
+              style={{ color: activeLink === "/employees" ? "#6439ff" : undefined }}
             >
               Employees
             </span>

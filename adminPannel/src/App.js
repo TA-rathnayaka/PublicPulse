@@ -100,6 +100,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import StatisticsPage from "./pages/statistics/statistics";
 import LandingPage from "./pages/landing/LandingPage";
 import ScrollToTop from "./components/landingPage/ScrollTop.js"; // Fixed typo: ScrollTop -> ScrollToTop
+import UserDashboard from "./pages/user-dashboard/UserDashboard.jsx";
+import Navbar from "./components/Navbar/Navbar.jsx";
 
 function App() {
   const { darkMode } = useContext(DarkModeContext);
@@ -119,6 +121,17 @@ function App() {
               path="/sign-up"
               element={<New inputs={userInputs} title="Register Department" />}
             />{" "}
+
+            {/* User dashboard - accessible only when logged in */}
+            <Route 
+              path="/dashboard" 
+              element={
+                <ProtectedRoute>
+                  <Navbar showName={false}/>
+                  <UserDashboard/>
+                </ProtectedRoute>
+              } 
+            />
             {/* Absolute path for sign-up */}
             {/* Admin Panel Routes (protected) */}
             <Route
@@ -156,7 +169,7 @@ function App() {
               }
             />
             {/* Other public routes */}
-            <Route path="/some-other-page" element={<div>helooo</div>} />
+            <Route path="/" element={<div>helooo</div>} />
           </Routes>
         </BrowserRouter>
       </div>

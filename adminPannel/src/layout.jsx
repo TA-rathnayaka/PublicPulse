@@ -31,7 +31,7 @@ const Layout = ({ children }) => {
     <div className="layout">
       {/* Top Navbar receives navbarData when AdminNavbar is hidden */}
       <div className="top-navbar">
-        <Navbar navbarData={isScrolled ? navbarData : ""} />
+        <Navbar navbarData={isScrolled ? navbarData : ""} showName={true} />
       </div>
       
       {/* Main content area with sidebar and content */}
@@ -40,7 +40,7 @@ const Layout = ({ children }) => {
           <Sidebar />
         </div>
         <div className="layoutContainer">
-          {!isScrolled && <AdminNavbar navbarData={navbarData} />}
+          {!isScrolled && <AdminNavbar navbarData={navbarData} showName={true}/>}
           <div className="children">{children}</div>
         </div>
       </div>
