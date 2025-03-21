@@ -1,7 +1,9 @@
 const { firestore } = require('../config/firebase'); // Import Firestore
 const { collection, addDoc, getDocs, doc, getDoc, deleteDoc } = require('firebase/firestore');
 
+
 const createPoll = async (req, res) => {
+
     const { question, description, options } = req.body;
 
     if (!question || !options || options.length === 0) {
