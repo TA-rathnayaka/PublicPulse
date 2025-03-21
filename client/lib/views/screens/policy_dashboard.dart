@@ -7,6 +7,7 @@ import 'package:client/views/components/search_button.dart';
 import 'package:client/views/components/dashboard_list_tile.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:client/views/screens/policy_screen.dart';
+import 'package:client/providers/comment_provider.dart';
 
 class PolicyDashboard extends StatelessWidget {
   static String id = '/policy-dashboard'; // Fixed ID name
@@ -40,8 +41,8 @@ class PolicyDashboard extends StatelessWidget {
                 },
               ),
               const SizedBox(height: 20),
-              Consumer<PoliciesProvider>(
-                builder: (context, policiesProvider, child) {
+              Consumer2<PoliciesProvider, CommentProvider>(
+                builder: (context, policiesProvider,commentProvider, child) {
                   return ListView.builder(
                     physics: const NeverScrollableScrollPhysics(),
                     shrinkWrap: true,
@@ -67,6 +68,9 @@ class PolicyDashboard extends StatelessWidget {
                                     ChangeNotifierProvider.value(
                                       value: policiesProvider,
                                     ),
+                                    ChangeNotifierProvider.value(
+                                      value: commentProvider,
+                                    )
                                   ],
                                   child: PolicyScreen(policy: policy),
                                 ),

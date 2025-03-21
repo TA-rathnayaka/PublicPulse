@@ -37,9 +37,21 @@ class PollsProvider extends ChangeNotifier {
     if (_searchTerm.isEmpty) {
       _filteredPolls = List.from(_polls);
     } else {
+      final searchLower = _searchTerm.toLowerCase();
+
       _filteredPolls = _polls.where((poll) {
-        return poll.title.toLowerCase().contains(_searchTerm.toLowerCase()) ||
-            poll.description.toLowerCase().contains(_searchTerm.toLowerCase());
+        // Basic title and description matching
+        final titleMatch = poll.title.toLowerCase().contains(searchLower);
+        final descMatch = poll.description.toLowerCase().contains(searchLower);
+
+        final optionsMatch = poll.options?.any((option) =>
+            option.text.toLowerCase().contains(searchLower)) ?? false;
+
+
+        // Return true if any relevant field matches
+        return titleMatch ||
+            descMatch ||
+            optionsMatch;
       }).toList();
     }
   }
