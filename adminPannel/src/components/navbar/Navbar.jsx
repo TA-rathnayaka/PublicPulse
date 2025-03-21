@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
+import logo from "../../Assets/1.png";
 import "./navbar.scss";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
@@ -10,10 +11,10 @@ import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
-import logo from "../../Assets/logo.png";
+import placeholder from "../../Assets/logo.png";
 import { fetchNotifications as fetchNotificationsFromBackend, markNotificationAsRead } from "../../backend/notifications";
 
-const Navbar = () => {
+const Navbar = ({ navbarData }) => {
   const navigate = useNavigate();
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -23,7 +24,7 @@ const Navbar = () => {
   const notificationsDropdownRef = useRef(null);
   const userDropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
-  const {user, logout} = useAuth();
+  const {user, instituteName, logout} = useAuth();
   
   const setNotificationRead = async (id) => {
     try {
@@ -109,16 +110,14 @@ const Navbar = () => {
 
         {/* Logo on the left */}
         <div className="logo-container" onClick={handleLogoClick}>
-          <img src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQV3vLE7N86m5TSnXrcWKW672mcn6mOMBlWhA&s' alt="PublicPulse" className="navbar-logo" />
+          <img src={logo} alt="PublicPulse" className="navbar-logo" />
+          <span className="institute-name">{instituteName}</span>
+          {navbarData && <span  className="admin-navbar-title">{navbarData}</span >}
           
         </div>
 
         {/* Desktop menu */}
-        <div className="items desktop-menu">
-          <div className="search">
-            <SearchOutlinedIcon className="icon" />
-            <input type="text" placeholder="Search..." />
-          </div>
+        <div className="items desktop-menu"> 
 
           <NavbarItem 
             icon={<SettingsIcon className="icon" />} 

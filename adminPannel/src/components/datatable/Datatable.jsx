@@ -26,11 +26,6 @@ const Datatable = () => {
 
   return (
     <div className="datatable">
-      <div className="datatableTitle">
-        Users
-        <a href="/add-user" className="link">Add New User</a>
-      </div>
-
       <DataGrid
   rows={userRows}
   columns={userColumns}
