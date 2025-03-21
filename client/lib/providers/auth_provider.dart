@@ -25,8 +25,8 @@ class MyAuthProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> registerUserAndPassword(String email, String password) async {
-    _user = await _authService.registerUserAndPassword(email, password);
+  Future<void> registerUserAndPassword(String displayName, String email, String password) async {
+    _user = await _authService.registerUserAndPassword(displayName, email, password);
     notifyListeners();
   }
 

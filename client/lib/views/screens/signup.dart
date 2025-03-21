@@ -226,11 +226,10 @@ class Signup extends StatelessWidget {
           if (context.read<SignupValidationProvider>().canProceed()) {
             String email = context.read<SignupValidationProvider>().emailController.text;
             String password = context.read<SignupValidationProvider>().passwordController.text;
-            await context.read<MyAuthProvider>().registerUserAndPassword(email, password);
+
             String firstName = context.read<SignupValidationProvider>().firstNameController.text;
             String lastName = context.read<SignupValidationProvider>().lastNameController.text;
-
-            await context.read<MyAuthProvider>().registerUserAndPassword(email, password);
+            await context.read<MyAuthProvider>().registerUserAndPassword(firstName + " " +lastName, email, password);
             await context.read<MyAuthProvider>().signInEmailAndPassword(email, password);
             await context.read<UserProvider>().storeUserDetails(displayName: "$firstName $lastName");
             await context.read<UserProvider>().getCurrentUserDetails();

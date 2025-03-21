@@ -2,7 +2,25 @@ pipeline {
     agent any
 
     stages {
-        stage('build') {
+        stage('build-client') {
+            agent {
+                docker {
+                    image 'cirrusci/flutter:stable'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('client') {
+                    sh '''
+                    flutter --version
+                    flutter pub get
+                    flutter build apk --release
+                    ls -la build/app/outputs/flutter-apk/
+                    '''
+                }
+            }
+        }
+        stage('build-adminPannel') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -10,17 +28,34 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                ls -la
-                node --version
-                npm --version
-                npm ci
-                npm run build
-                ls -la
-                '''
+                dir('adminPannel') {
+                    sh '''
+                    ls -la
+                    node --version
+                    npm --version
+                    npm ci
+                    npm run build
+                    ls -la build
+                    '''
+                }
             }
         }
-        stage('test') {
+        stage('test-client') {
+            agent {
+                docker {
+                    image 'cirrusci/flutter:stable'
+                    reuseNode true
+                }
+            }
+            steps {
+                dir('client') { 
+                    sh '''
+                    flutter test
+                    '''
+                }
+            }
+        }
+        stage('test-adminPannel') {
             agent {
                 docker {
                     image 'node:18-alpine'
@@ -28,12 +63,12 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                test -f build/index.html
-                npm test
-                '''
+                dir('adminPannel') {
+                    sh '''
+                    npm test
+                    '''
+                }
             }
         }
-        
     }
 }

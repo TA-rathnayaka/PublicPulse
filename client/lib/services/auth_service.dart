@@ -10,6 +10,11 @@ class AuthService {
     return _auth.authStateChanges();
   }
 
+  String? getCurrentUserDisplayName() {
+    return _auth.currentUser?.displayName;
+
+  }
+
   Future<User?> signInWithFacebook() async {
     try {
       // Trigger the Facebook login flow.
@@ -99,14 +104,23 @@ class AuthService {
     }
   }
 
-  Future<User?> registerUserAndPassword(String email, String password) async {
+  Future<User?> registerUserAndPassword(String displayName, String email, String password) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
+      UserCredential result = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      print(result.user);
-      return result.user;
+      User? user = result.user;
+
+      if (user != null) {
+        // Set the displayName for the newly created user
+        await user.updateDisplayName(displayName);
+        await user.reload(); // Refresh the user data to ensure the update is reflected
+        user = FirebaseAuth.instance.currentUser; // Get the updated user
+        print('User registered: ${user?.uid}, DisplayName: ${user?.displayName}');
+      }
+
+      return user;
     } catch (e) {
       if (e is FirebaseAuthException) {
         switch (e.code) {
