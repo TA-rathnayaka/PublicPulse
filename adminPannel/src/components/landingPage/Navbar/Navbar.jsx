@@ -9,7 +9,7 @@ import { Nav,
     NavLinks,
     NavItemBtn,
     NavBtnLink
- } from './Navbar.elements'
+ } from './Navbar.elements.js'
 import { FaTimes, FaBars } from 'react-icons/fa';
 import { IconContext } from 'react-icons/lib'
 import { Button } from '../../../globalStyles.js';

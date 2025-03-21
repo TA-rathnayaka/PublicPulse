@@ -1,5 +1,5 @@
 import React from 'react'
-import {InfoSec, InfoRow, InfoColumn, TextWrapper, TopLine, Heading, Subtitle, ImgWrapper, Img} from './InfoSection.elements'
+import {InfoSec, InfoRow, InfoColumn, TextWrapper, TopLine, Heading, Subtitle, ImgWrapper, Img} from './InfoSection.elements.js'
 import { Container, Button } from '../../../globalStyles.js'
 import { Link } from 'react-router-dom'
 

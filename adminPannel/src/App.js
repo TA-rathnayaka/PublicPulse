@@ -111,6 +111,11 @@ function App() {
           <ScrollToTop /> {/* Ensures page scrolls to top on route change */}
           <Routes>
             {/* Non-admin routes (without Layout) */}
+            <Route path="/" element={< >heloo</>} />
+            <Route
+              path="/sign-up"
+              element={<New inputs={userInputs} title="Register Department" />}
+            />
             <Route path="login" element={<Login />} />
 
             {/* Admin Panel Routes (with Layout) */}
