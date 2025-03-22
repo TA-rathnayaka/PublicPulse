@@ -22,17 +22,11 @@ class User {
     try {
       Map<String, dynamic>? userDetails =
       await _storageService.getUserDetails();
-      if (userDetails != null) {
-        _displayName = userDetails['displayName'] ?? 'Unknown User';
-        _email = userDetails['email'] ?? 'No Email';
-        _imageUrl = userDetails['imageUrl'];
-        _phoneNumber = userDetails['phoneNumber'];
-      } else {
-        // Fallback values
-        _displayName = 'Unknown User';
-        _email = 'No Email';
-      }
-    } catch (e) {
+      _displayName = userDetails['displayName'] ?? 'Unknown User';
+      _email = userDetails['email'] ?? 'No Email';
+      _imageUrl = userDetails['imageUrl'];
+      _phoneNumber = userDetails['phoneNumber'];
+        } catch (e) {
       // Handle errors while fetching user details
       _displayName = 'Unknown User';
       _email = 'No Email';
