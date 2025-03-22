@@ -4,7 +4,7 @@ import Sidebar from "./components/sidebar/Sidebar";
 import AdminNavbar from "./components/AdminNavbar/AdminNavbar";
 import "./layout.scss";
 import { useAuth } from "./context/authContext";
-import Navbar from "./components/Navbar/Navbar";
+import Navbar from "./components/navbar/Navbar";
 
 const Layout = ({ children }) => {
   const [navbarData, setNavbarData] = useState("Dashboard");
