@@ -6,6 +6,7 @@ node_modules/
 .env*
 
 # Flutter/Dart/Pub related
+.policymaker-ee7e9-firebase-adminsdk-mhbqj-3fb1249b9a.json
 .dart_tool/
 .packages
 build/
