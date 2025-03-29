@@ -69,5 +69,31 @@ const deletePollById = async (req, res) => {
         res.status(500).json({ message: "Error deleting poll", error });
     }
 };
+const getLatestPolls = async (req, res) => {
+    try {
+    const pollsRef = firestore.collection("polls").orderBy("createdAt", "desc").limit(7);
+    const snapshot = await pollsRef.get();
 
-module.exports = { createPoll, deletePollById, getPollById, getPolls };
+    if (snapshot.empty) {
+      return res.status(404).json({ message: "No polls found." });
+    }
+
+    const polls = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        title: data.title.length > 30 ? data.title.substring(0, 30) + "..." : data.title, // Trim title
+        createdAt: data.createdAt.toDate().toLocaleString(),
+        pollType: data.settings?.requireNames ? "Named" : "Anonymous", // Poll type
+        status: data.endDate ? "Closed" : "Active",
+      };
+    });
+
+    res.status(200).json(polls);
+  } catch (error) {
+    console.error("Error fetching polls:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+module.exports = { createPoll, deletePollById, getPollById, getPolls , getLatestPolls};
