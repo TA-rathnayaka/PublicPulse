@@ -34,12 +34,7 @@ const UserDashboard = () => {
           <h3>Registered Institutes</h3>
           {/* Here you can render a list of registered institutes */}
           {/* For now, it could be a static list or a placeholder */}
-          <ul>
-            <li>Institute 1</li>
-            <li>Institute 2</li>
-            <li>Institute 3</li>
-          </ul>
-          
+
           <h3>Manage Users</h3>
           {/* Add logic to manage users, like displaying a list of users with options */}
           <button>Manage Users</button>
