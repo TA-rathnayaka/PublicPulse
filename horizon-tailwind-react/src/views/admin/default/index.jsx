@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import MiniCalendar from "components/calendar/MiniCalendar";
-import WeeklyRevenue from "views/admin/default/components/WeeklyRevenue";
 
 import PieChartCard from "views/admin/default/components/PieChartCard";
 import { IoMdHome } from "react-icons/io";
@@ -17,6 +16,7 @@ import tableDataCheck from "./variables/tableDataCheck.json";
 import tableDataComplex from "./variables/tableDataComplex.json";
 import { useInstituteData } from "context/InstituteContext";
 import UserEngagement from "./components/TotalSpent";
+import WeeklyEngagement from "./components/WeeklyEngagement";
 
 const Dashboard = () => {
   const { instituteData, instituteId } = useInstituteData();
@@ -93,7 +93,8 @@ const Dashboard = () => {
       <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
         
         <UserEngagement instituteId={instituteId} /> {/* Replace TotalSpent with UserEngagement */}
-        <WeeklyRevenue />
+        <WeeklyEngagement instituteId={instituteId} /> 
+        
       </div>
 
       {/* Tables & Charts */}

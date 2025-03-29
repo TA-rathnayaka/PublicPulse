@@ -72,29 +72,6 @@ app.post('/api/users/:userId/make-admin', async (req, res) => {
   }
 });
 
-app.put("/update-institution-id", async (req, res) => {
-  try {
-    const analyticsRef = adminDb.collection("analytics_events");
-    const snapshot = await analyticsRef.get();
-
-    if (snapshot.empty) {
-      return res.status(404).json({ message: "No documents found." });
-    }
-
-    const batch = adminDb.batch(); // Use adminDb instead of db
-
-    snapshot.forEach((doc) => {
-      const docRef = analyticsRef.doc(doc.id);
-      batch.update(docRef, { instituteId: "3r2wMpS1x9q5XhGTtdBK" });
-    });
-
-    await batch.commit();
-    res.status(200).json({ message: "Institution ID added to all documents." });
-  } catch (error) {
-    console.error("Error updating documents:", error);
-    res.status(500).json({ message: "Internal Server Error", error: error.message });
-  }
-});
 
 
 
