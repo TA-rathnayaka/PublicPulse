@@ -11,11 +11,14 @@ import {
   IoMdInformationCircleOutline,
 } from "react-icons/io";
 import avatar from "assets/img/avatars/avatar4.png";
+import { auth } from "services/firebaseConfig";
+import { useAuth } from "context/authContext";
+import { useAuthState } from "react-firebase-hooks/auth";
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText } = props;
   const [darkmode, setDarkmode] = React.useState(false);
-
+  const [user, loading, error] = useAuthState(auth);
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
       <div className="ml-[6px]">
@@ -178,11 +181,19 @@ const Navbar = (props) => {
         {/* Profile & Dropdown */}
         <Dropdown
           button={
+            user?(
+              <img
+              className="h-10 w-10 rounded-full"
+              src={user?.photoURL ||avatar}
+              alt="Profile Picture"
+            />
+            ):
             <img
               className="h-10 w-10 rounded-full"
               src={avatar}
-              alt="Elon Musk"
+              alt="Profile Picture"
             />
+            
           }
           children={
             <div className="flex w-56 flex-col justify-start rounded-[20px] bg-white bg-cover bg-no-repeat shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none">
