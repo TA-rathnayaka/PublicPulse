@@ -1,5 +1,5 @@
 const express = require('express');
-const {admin} = require('../config/firebase');
+const {admin, firestore} = require('../config/firebase');
 const pollRoutes = require('../routes/PollRoutes');
 const exportRoutes = require('../routes/exportRoutes');
 const app = express();
@@ -8,6 +8,7 @@ const cors = require('cors')
 // Middleware
 app.use(express.json());
 const adminDb = admin.firestore();
+const statRoutes = require('../routes/statsRoutes');
 
 app.use(cors({
   origin: 'http://localhost:3000'||'http://localhost:3001', // React frontend URL
@@ -51,6 +52,7 @@ app.delete('/api/users/:userId', async (req, res) => {
 });
 app.use('/api/polls',pollRoutes)
 app.use('/api/export',exportRoutes)
+app.use('/api/dashboard',statRoutes)
 
 app.post('/api/users/:userId/make-admin', async (req, res) => {
   const { userId } = req.params; // Get the userId from the route parameters
@@ -69,6 +71,9 @@ app.post('/api/users/:userId/make-admin', async (req, res) => {
     res.status(500).send({ message: "Failed to make user an admin" });
   }
 });
+
+
+
 
 
 // Start server
