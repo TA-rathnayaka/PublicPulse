@@ -2,7 +2,7 @@ import React from "react";
 
 // Admin Imports
 import MainDashboard from "views/admin/default";
-import NFTMarketplace from "views/admin/marketplace";
+import Policies from "views/admin/policies";
 import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
 
@@ -17,6 +17,9 @@ import {
   MdBarChart,
   MdPerson,
   MdLock,
+  MdPages,
+  MdHowToVote,
+  MdPolicy,
 } from "react-icons/md";
 
 const routes = [
@@ -28,11 +31,19 @@ const routes = [
     component: <MainDashboard />,
   },
   {
-    name: "NFT Marketplace",
+    name: "Policies",
     layout: "/admin",
-    path: "nft-marketplace",
-    icon: <MdOutlineShoppingCart className="h-6 w-6" />,
-    component: <NFTMarketplace />,
+    path: "policies",
+    icon: <MdPolicy className="h-6 w-6" />,
+    component: <Policies />,
+    secondary: true,
+  },
+  {
+    name: "Polls",
+    layout: "/admin",
+    path: "polls",
+    icon: <MdHowToVote className="h-6 w-6" />,
+    component: <Policies />,
     secondary: true,
   },
   {
