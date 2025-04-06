@@ -5,6 +5,7 @@ import MainDashboard from "views/admin/default";
 import Policies from "views/admin/policies";
 import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
+import Detail from "views/admin/policies/components/Detail";
 
 
 // Auth Imports
@@ -43,7 +44,7 @@ const routes = [
     layout: "/admin",
     path: "polls",
     icon: <MdHowToVote className="h-6 w-6" />,
-    component: <Policies />,
+    component: <Detail />,
     secondary: true,
   },
   {
