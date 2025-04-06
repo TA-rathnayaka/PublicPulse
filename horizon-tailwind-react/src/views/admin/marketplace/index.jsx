@@ -9,6 +9,8 @@ import tableDataTopCreators from "views/admin/marketplace/variables/tableDataTop
 import { tableColumnsTopCreators } from "views/admin/marketplace/variables/tableColumnsTopCreators";
 import { firestore } from "../../../backend/firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
+import ManageUsers from "views/admin/users";
+import ManageInstitutes from "views/admin/institutes";
 
 const Marketplace = () => {
   const navigate = useNavigate();
@@ -47,6 +49,44 @@ const Marketplace = () => {
     }
   };
 
+  const renderAdminSection = () => {
+    if (userRole === "super-admin") {
+      return (
+        <div className="mb-8">
+          <h4 className="mb-4 text-xl font-bold text-navy-700 dark:text-white">
+            Administrative Controls
+          </h4>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div 
+              onClick={() => navigate('manage-users')}
+              className="cursor-pointer rounded-xl bg-white p-4 shadow-md transition-all hover:shadow-lg dark:bg-navy-800"
+            >
+              <h5 className="mb-2 text-lg font-semibold text-navy-700 dark:text-white">
+                Manage Users
+              </h5>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Add, remove, or modify user accounts and permissions
+              </p>
+            </div>
+            
+            <div 
+              onClick={() => navigate('manage-institutes')}
+              className="cursor-pointer rounded-xl bg-white p-4 shadow-md transition-all hover:shadow-lg dark:bg-navy-800"
+            >
+              <h5 className="mb-2 text-lg font-semibold text-navy-700 dark:text-white">
+                Manage Institutes
+              </h5>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Add, edit, or remove institute information
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
   if (!user) {
     return null; // Prevent rendering while redirecting
   }
@@ -55,6 +95,9 @@ const Marketplace = () => {
     <div className="mt-3 grid h-full grid-cols-1 gap-5 xl:grid-cols-2 2xl:grid-cols-3">
       <div className="col-span-1 h-fit w-full xl:col-span-1 2xl:col-span-2">
         <Banner />
+        
+        {/* Admin Section */}
+        {renderAdminSection()}
 
         <div className="mb-4 mt-5 flex flex-col justify-between px-4 md:flex-row md:items-center">
           <h4 className="ml-1 text-2xl font-bold text-navy-700 dark:text-white">

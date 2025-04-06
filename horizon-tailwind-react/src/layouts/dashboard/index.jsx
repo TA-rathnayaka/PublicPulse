@@ -1,18 +1,34 @@
 import React from "react";
+import { Routes, Route, useLocation } from "react-router-dom";
 import Navbar from "components/navbar";
 import Footer from "components/footer/Footer";
 import Marketplace from "views/admin/marketplace";
+import ManageUsers from "views/admin/users";
+import ManageInstitutes from "views/admin/institutes";
 
 export default function Dashboard(props) {
   const { ...rest } = props;
   const [open, setOpen] = React.useState(true);
-
+  const location = useLocation();
 
   React.useEffect(() => {
     window.addEventListener("resize", () =>
       window.innerWidth < 1200 ? setOpen(false) : setOpen(true)
     );
   }, []);
+
+  const getBrandText = () => {
+    switch (location.pathname) {
+      case "/dashboard":
+        return "Dashboard";
+      case "/dashboard/manage-users":
+        return "Manage Users";
+      case "/dashboard/manage-institutes":
+        return "Manage Institutes";
+      default:
+        return "Dashboard";
+    }
+  };
 
   document.documentElement.dir = "ltr";
   return (
@@ -45,12 +61,25 @@ export default function Dashboard(props) {
             <Navbar
               onOpenSidenav={() => setOpen(true)}
               logoText={"PublicPulse"}
-              brandText={"Dashboard"}
+              brandText={getBrandText()}
               secondary={""}
               {...rest}
             />
             <div className="pt-5s mx-auto mb-auto h-full min-h-[84vh] p-2 md:pr-2">
-              <Marketplace/>
+              <Routes>
+                <Route
+                  path="/"
+                  element={<Marketplace/>}
+                />
+                <Route
+                  path="/manage-users"
+                  element={<ManageUsers/>}
+                />
+                <Route
+                  path="/manage-institutes"
+                  element={<ManageInstitutes/>}
+                />
+              </Routes>
             </div>
             <div className="p-3">
               <Footer />
