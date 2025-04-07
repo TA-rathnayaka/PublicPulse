@@ -1,4 +1,4 @@
-const { getDashboardStats, getUserEngagement } = require('../controllers/statsController');
+const { getDashboardStats, getUserEngagement,  getLast7DaysComments } = require('../controllers/statsController');
 
 const express = require("express");
 const router = express.Router(); 
@@ -7,6 +7,7 @@ const router = express.Router();
 router.get("/stats", getDashboardStats);
 
 router.get('/engagement',getUserEngagement );
+router.get('/comments',getLast7DaysComments);
 
 
 module.exports = router;

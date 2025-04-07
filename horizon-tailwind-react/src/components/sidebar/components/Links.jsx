@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import DashIcon from "components/icons/DashIcon";
 import { useInstituteData } from "../../../context/InstituteContext"; // Import useInstituteData
 
-export function SidebarLinks(props) {
+export function  SidebarLinks(props) {
   let location = useLocation();
   const { routes } = props;
 
