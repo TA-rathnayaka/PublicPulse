@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 const HistoryCard = ({ HistoryData = [] }) => {
   const navigate = useNavigate();
 
+
   const handleCardClick = (policyId) => {
     navigate(`/admin/policy/${policyId}`);
   };
@@ -29,7 +30,7 @@ const HistoryCard = ({ HistoryData = [] }) => {
       </div>
 
       {/* History CardData */}
-      {HistoryData.map((data, index) => (
+      {HistoryData.slice(0,10).map((data, index) => (
         <div 
           key={index}
           onClick={() => handleCardClick(data.id)}

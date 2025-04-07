@@ -9,6 +9,7 @@ import HistoryCard from "./components/HistoryCard";
 import { firestore } from "services/firebaseConfig";
 import { useInstituteData } from "context/InstituteContext";
 
+
 const PolicyMarketplace = () => {
   const [policies, setPolicies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -189,7 +190,7 @@ const PolicyMarketplace = () => {
       </div>
 
       <div className="col-span-1 h-full w-full rounded-xl 2xl:col-span-1">
-      <HistoryCard HistoryData={historyData.slice(0, 10)} />
+      <HistoryCard HistoryData={historyData} />
       </div>
     </div>
   );
