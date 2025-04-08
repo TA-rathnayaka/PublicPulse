@@ -2,14 +2,11 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import { firestore } from "../backend/firebase/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
-// Create the context
 const InstituteContext = createContext();
 
-// Create the provider component
 export const InstituteProvider = ({ instituteId, children }) => {
   const [instituteData, setInstituteData] = useState(null);
   console.log("im on use Institute. instituteId: ", instituteId);
-  // Fetch the institute data based on the instituteId
   useEffect(() => {
     const fetchInstituteData = async () => {
       try {
@@ -31,7 +28,7 @@ export const InstituteProvider = ({ instituteId, children }) => {
     if (instituteId) {
       fetchInstituteData();
     }
-  }, [instituteId]); // Re-run the effect when instituteId changes
+  }, [instituteId]); 
 
   return (
     <InstituteContext.Provider value={{instituteData,instituteId}}>
@@ -40,7 +37,7 @@ export const InstituteProvider = ({ instituteId, children }) => {
   );
 };
 
-// Custom hook to use the institute data
+
 export const useInstituteData = () => {
   return useContext(InstituteContext);
 };

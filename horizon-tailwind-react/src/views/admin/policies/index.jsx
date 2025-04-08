@@ -1,68 +1,31 @@
 import { useState, useEffect } from "react";
-import { collection, getDocs, deleteDoc, doc } from "firebase/firestore";
 import Banner from "./components/Banner";
 import avatar1 from "assets/img/avatars/avatar1.png";
 import avatar2 from "assets/img/avatars/avatar2.png";
 import avatar3 from "assets/img/avatars/avatar3.png";
 import PolicyCard from "components/card/PolicyCard";
 import HistoryCard from "./components/HistoryCard";
-import { firestore } from "services/firebaseConfig";
 import { useInstituteData } from "context/InstituteContext";
+import { usePolicyContext } from "context/PolicyContext";
 
-
-const PolicyMarketplace = () => {
-  const [policies, setPolicies] = useState([]);
-  const [loading, setLoading] = useState(true);
+const Policies = () => {
   const [policyType, setPolicyType] = useState("All");
-  const { instituteId } = useInstituteData();
+  const { policies, loading, handleDelete } = usePolicyContext();
   
-  const fetchPolicies = async () => {
-    try {
-      const policiesCollection = collection(firestore, "policies");
-      const policiesSnapshot = await getDocs(policiesCollection);
-      const policiesData = policiesSnapshot.docs
-      .map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }))
-      .filter((policy) => policy.instituteId === instituteId); 
-      setPolicies(policiesData);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching policies: ", error);
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async (policyId) => {
-    try {
-      await deleteDoc(doc(firestore, "policies", policyId));
-      setPolicies((prev) => prev.filter((policy) => policy.id !== policyId));
-    } catch (error) {
-      console.error("Error deleting policy:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchPolicies();
-  }, []);
-
   const historyData = policies
-  .sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate)) 
-  .map((policy) => ({
-    id: policy.id,
-    image: policy.imageUrl || "defaultImage", 
-    title: policy.title,
-    owner: policy.createdBy,
-    time: new Date(policy.createdDate).toDateString(), 
-  }));
+    .sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate)) 
+    .map((policy) => ({
+      id: policy.id,
+      image: policy.imageUrl || "defaultImage", 
+      title: policy.title,
+      owner: policy.createdBy,
+      time: new Date(policy.createdDate).toDateString(), 
+    }));
 
-  // Filter policies based on selected type
   const filteredPolicies = policyType === "All" 
     ? policies 
     : policies.filter(policy => policy.type === policyType);
 
-  // Split policies into two groups for display
   const trendingPolicies = filteredPolicies.slice(0, 3);
   const recentPolicies = filteredPolicies.slice(3, 6);
 
@@ -190,10 +153,10 @@ const PolicyMarketplace = () => {
       </div>
 
       <div className="col-span-1 h-full w-full rounded-xl 2xl:col-span-1">
-      <HistoryCard HistoryData={historyData} />
+        <HistoryCard HistoryData={historyData} />
       </div>
     </div>
   );
 };
 
-export default PolicyMarketplace;
+export default Policies;
