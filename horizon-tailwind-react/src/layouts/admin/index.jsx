@@ -7,6 +7,7 @@ import Footer from "components/footer/Footer";
 import routes from "../../routes";
 import { useAuth } from "../../context/authContext";
 import { PolicyProvider } from "context/PolicyContext";
+import { PollProvider } from "context/PollContext";
 
 
 export default function Admin(props) {
@@ -95,6 +96,7 @@ export default function Admin(props) {
   return (
     <InstituteProvider instituteId={instituteId}>
      <PolicyProvider instituteId={instituteId}>
+      <PollProvider instituteId={instituteId}>
       <div className="flex h-full w-full">
         <Sidebar open={open} onClose={() => setOpen(false)} />
         <div className="h-full w-full bg-lightPrimary dark:!bg-navy-900">
@@ -123,6 +125,7 @@ export default function Admin(props) {
           </main>
         </div>
       </div>
+      </PollProvider>
       </PolicyProvider>
     </InstituteProvider>
   );

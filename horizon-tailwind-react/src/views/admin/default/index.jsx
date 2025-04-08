@@ -10,13 +10,14 @@ import { columnsDataCheck, columnsDataComplex } from "./variables/columnsData";
 import Widget from "components/widget/Widget";
 import CheckTable from "views/admin/default/components/CheckTable";
 import ComplexTable from "views/admin/default/components/ComplexTable";
-import DailyTraffic from "views/admin/default/components/DailyTraffic";
+
 import TaskCard from "views/admin/default/components/TaskCard";
 import tableDataCheck from "./variables/tableDataCheck.json";
 import tableDataComplex from "./variables/tableDataComplex.json";
 import { useInstituteData } from "context/InstituteContext";
 import UserEngagement from "./components/TotalSpent";
 import WeeklyEngagement from "./components/WeeklyEngagement";
+import ActiveDiscussions from "./components/ActiveDiscussions";
 
 const Dashboard = () => {
   const { instituteData, instituteId } = useInstituteData();
@@ -105,8 +106,9 @@ const Dashboard = () => {
         />
 
         <div className="grid grid-cols-1 gap-5 rounded-[20px] md:grid-cols-2">
-          <DailyTraffic />
-          <PieChartCard />
+          <ActiveDiscussions />
+          <PieChartCard pieChartData={stats} />
+
         </div>
       </div>
     </div>
