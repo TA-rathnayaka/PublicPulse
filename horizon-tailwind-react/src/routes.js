@@ -18,6 +18,7 @@ import {
   MdPages,
   MdHowToVote,
   MdPolicy,
+  MdExitToApp,
 } from "react-icons/md";
 
 
@@ -29,6 +30,7 @@ const routes = [
     path: "default",
     icon: <MdHome className="h-6 w-6" />,
     component: <MainDashboard />,
+    isDefault: true
   },
   {
     name: "Policies",
@@ -50,6 +52,7 @@ const routes = [
     path: "sign-in",
     icon: <MdLock className="h-6 w-6" />,
     component: <SignIn />,
+    hidden: true
   },
 
   {
@@ -70,7 +73,7 @@ const routes = [
     name: "Go back",
     layout: "/dashboard",
     path: "",
-    icon: <MdLock className="h-6 w-6" />,
+    icon: <MdExitToApp className="h-6 w-6" />,
     
   },
   {

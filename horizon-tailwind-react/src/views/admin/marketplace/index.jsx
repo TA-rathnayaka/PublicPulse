@@ -61,7 +61,7 @@ const Marketplace = () => {
           <div className="z-20 grid grid-cols-1 gap-5 md:grid-cols-3">
             {institute && institute.name ? (
               <NftCard
-                onClick={() => navigate(`/admin/${instituteId}`)}
+                onClick={() => navigate(`/admin/${instituteId}/default`)}
                 key={institute.id}
                 name={institute.name}
                 author={institute.location || "Location not specified"}

@@ -7,12 +7,12 @@ import { useNavigate } from "react-router-dom";
 
 // inside component
 
-export function  SidebarLinks(props) {
+export function SidebarLinks(props) {
   let location = useLocation();
   const { routes } = props;
   const navigate = useNavigate();
   // Get instituteData and instituteId from context
-  const { instituteId } = useInstituteData(); 
+  const { instituteId } = useInstituteData();
 
   // verifies if routeName is the one active (in browser input)
   const activeRoute = (routeName) => {
@@ -21,6 +21,11 @@ export function  SidebarLinks(props) {
 
   const createLinks = (routes) => {
     return routes.map((route, index) => {
+      // Skip routes that are hidden
+      if (route.hidden) {
+        return null;
+      }
+      
       if (route.name === "Go back") {
         return (
           <div key={index} onClick={() => navigate("/dashboard")}>
