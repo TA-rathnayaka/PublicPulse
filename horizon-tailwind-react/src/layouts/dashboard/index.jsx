@@ -5,8 +5,9 @@ import Footer from "components/footer/Footer";
 import Marketplace from "views/admin/marketplace";
 import ManageUsers from "views/admin/users";
 import ManageInstitutes from "views/admin/institutes";
-import { MdHome, MdPerson, MdBusiness } from "react-icons/md";
+import { MdHome, MdPerson, MdBusiness, MdMan } from "react-icons/md";
 import { useAuth } from "../../context/authContext";
+import Profile from "views/admin/profile";
 
 export default function Dashboard(props) {
   const { ...rest } = props;
@@ -29,8 +30,10 @@ export default function Dashboard(props) {
         return "Dashboard";
       case "/dashboard/manage-users":
         return "Manage Users";
-      case "/dashboard/manage-institutes":
-        return "Manage Institutes";
+        case "/dashboard/manage-institutes":
+          return "Manage Institutes";
+      case "/dashboard/Profile":
+        return "Profile";
       default:
         return "Dashboard";
     }
@@ -58,6 +61,12 @@ export default function Dashboard(props) {
       icon: <MdBusiness className="h-6 w-6" />,
       path: "/dashboard/manage-institutes",
       showForRole: "super-admin",
+    },
+    {
+      title: "Profile",
+      icon: <MdMan className="h-6 w-6" />,
+      path: "/dashboard/Profile",
+      showAlways: true,
     },
   ];
 
@@ -135,6 +144,7 @@ export default function Dashboard(props) {
                 <Route path="/" element={<Marketplace />} />
                 <Route path="manage-users" element={<ManageUsers />} />
                 <Route path="manage-institutes" element={<ManageInstitutes />} />
+                <Route path="Profile" element={<Profile />} />
               </Routes>
             </div>
             <div className="p-3">
