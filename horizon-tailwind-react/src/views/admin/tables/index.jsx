@@ -7,11 +7,13 @@ import {
 import Card from "components/card";
 import PoliciesTable from "./components/PoliciesTable";
 import PollsTable from "./components/PollsTable";
+import { usePoll } from "context/PollContext";
 
 const Tables = () => {
   const [activeTab, setActiveTab] = useState("policies");
+  const { polls, loading: pollsLoading } = usePoll();
 
-  // Sample data - replace with your actual data fetching logic
+  // Sample data for policies - replace with your actual data fetching logic
   const policiesData = [
     {
       id: 1,
@@ -27,50 +29,33 @@ const Tables = () => {
     }
   ];
 
-  const pollsData = [
-    {
-      id: 1,
-      title: "Employee Satisfaction Survey",
-      startDate: "2024-03-01",
-      endDate: "2024-03-31",
-      status: "active"
-    },
-    {
-      id: 2,
-      title: "Work Environment Feedback",
-      startDate: "2024-04-01",
-      endDate: "2024-04-30",
-      status: "pending"
-    }
-  ];
-
-  const exportToCSV = (data, filename) => {
-    const csvContent = convertToCSV(data);
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', filename);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  const convertToCSV = (data) => {
-    const headers = Object.keys(data[0]);
-    const csvRows = [];
-    csvRows.push(headers.join(','));
-    
-    for (const row of data) {
-      const values = headers.map(header => {
-        const value = row[header];
-        return `"${value}"`;
+  const handleDownloadAll = async (type) => {
+    try {
+      const endpoint = type === 'policies' ? '/api/policies/download' : '/api/polls/download';
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-      csvRows.push(values.join(','));
+      
+      if (!response.ok) {
+        throw new Error('Download failed');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${type}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (error) {
+      console.error(`Error downloading ${type}:`, error);
+      // You might want to show a toast notification here
     }
-    
-    return csvRows.join('\n');
   };
 
   return (
@@ -102,11 +87,11 @@ const Tables = () => {
             </button>
           </div>
           <button
-            onClick={() => exportToCSV(activeTab === "policies" ? policiesData : pollsData, `${activeTab}.csv`)}
+            onClick={() => handleDownloadAll(activeTab)}
             className="flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm text-white hover:bg-brand-600"
           >
             <MdFileDownload className="mr-2" />
-            Export CSV
+            Export All {activeTab === "policies" ? "Policies" : "Polls"}
           </button>
         </div>
 
@@ -114,7 +99,7 @@ const Tables = () => {
           {activeTab === "policies" ? (
             <PoliciesTable data={policiesData} />
           ) : (
-            <PollsTable data={pollsData} />
+            <PollsTable />
           )}
         </div>
       </Card>
