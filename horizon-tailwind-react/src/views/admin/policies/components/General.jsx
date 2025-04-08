@@ -1,63 +1,79 @@
 import Card from "components/card";
 import React from "react";
+import { usePolicy } from "context/PolicyContext";
+import { useParams } from "react-router-dom";
 
 const General = () => {
+  const { policyId } = useParams();
+  const { policyCache } = usePolicy();
+  
+  // Get the current policy from cache
+  const policy = policyCache[policyId] || {};
+  
+  // Format the creation date if available
+  const formatDate = (timestamp) => {
+    if (!timestamp) return "Not available";
+    const date = new Date(timestamp?.toDate?.() || timestamp);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
+
   return (
     <Card extra={"w-full h-full p-3"}>
       {/* Header */}
       <div className="mt-2 mb-8 w-full">
         <h4 className="px-2 text-xl font-bold text-navy-700 dark:text-white">
-          General Information
+          Policy Details
         </h4>
-        <p className="mt-2 px-2 text-base text-gray-600">
-          As we live, our hearts turn colder. Cause pain is what we go through
-          as we become older. We get insulted by others, lose trust for those
-          others. We get back stabbed by friends. It becomes harder for us to
-          give others a hand. We get our heart broken by people we love, even
-          that we give them all...
+        <p className="mt-2 px-2 text-base text-gray-600 dark:text-gray-300">
+          {policy.summary || 
+           "This section contains additional details about the policy. Please review all information carefully to ensure compliance with organizational guidelines."}
         </p>
       </div>
       {/* Cards */}
       <div className="grid grid-cols-2 gap-4 px-2">
         <div className="flex flex-col items-start justify-center rounded-2xl bg-white bg-clip-border px-3 py-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
-          <p className="text-sm text-gray-600">Education</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Policy Type</p>
           <p className="text-base font-medium text-navy-700 dark:text-white">
-            Stanford University
+            {policy.type || "General"}
           </p>
         </div>
 
         <div className="flex flex-col justify-center rounded-2xl bg-white bg-clip-border px-3 py-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
-          <p className="text-sm text-gray-600">Languages</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Status</p>
           <p className="text-base font-medium text-navy-700 dark:text-white">
-            English, Spanish, Italian
+            {policy.status || "Active"}
           </p>
         </div>
 
         <div className="flex flex-col items-start justify-center rounded-2xl bg-white bg-clip-border px-3 py-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
-          <p className="text-sm text-gray-600">Department</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Department</p>
           <p className="text-base font-medium text-navy-700 dark:text-white">
-            Product Design
+            {policy.department || "All Departments"}
           </p>
         </div>
 
         <div className="flex flex-col justify-center rounded-2xl bg-white bg-clip-border px-3 py-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
-          <p className="text-sm text-gray-600">Work History</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Version</p>
           <p className="text-base font-medium text-navy-700 dark:text-white">
-            English, Spanish, Italian
+            {policy.version || "1.0"}
           </p>
         </div>
 
         <div className="flex flex-col items-start justify-center rounded-2xl bg-white bg-clip-border px-3 py-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
-          <p className="text-sm text-gray-600">Organization</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Created On</p>
           <p className="text-base font-medium text-navy-700 dark:text-white">
-            Simmmple Web LLC
+            {formatDate(policy.createdAt)}
           </p>
         </div>
 
         <div className="flex flex-col justify-center rounded-2xl bg-white bg-clip-border px-3 py-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
-          <p className="text-sm text-gray-600">Birthday</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400">Effective Date</p>
           <p className="text-base font-medium text-navy-700 dark:text-white">
-            20 July 1986
+            {formatDate(policy.effectiveDate)}
           </p>
         </div>
       </div>
