@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { firestore } from "../../../backend/firebase/firebase";
 import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
 import Card from "components/card";
-
+import axios from "axios";
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,16 +13,11 @@ const ManageUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const usersCollection = collection(firestore, "users");
-      const userSnapshot = await getDocs(usersCollection);
-      const usersList = userSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-      }));
-      setUsers(usersList);
-      setLoading(false);
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/users`); // Make sure your backend exposes this route
+      setUsers(response.data); // Assuming the response is an array of users
     } catch (error) {
       console.error("Error fetching users:", error);
+    } finally {
       setLoading(false);
     }
   };
@@ -86,10 +81,10 @@ const ManageUsers = () => {
               {users.map((user) => (
                 <tr key={user.id} className="border-b border-gray-200">
                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-                    {user.name}
+                    {user.username || "N/A"}
                   </td>
                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-                    {user.email}
+                    {user.email || "N/A"}
                   </td>
                   <td className="px-6 py-4">
                     <select

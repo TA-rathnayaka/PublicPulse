@@ -45,6 +45,14 @@ const routes = [
     component: <Policies />,
   },
   {
+    name: "Sign In",
+    layout: "/auth",
+    path: "sign-in",
+    icon: <MdLock className="h-6 w-6" />,
+    component: <SignIn />,
+  },
+
+  {
     name: "Data Tables",
     layout: "/admin",
     icon: <MdBarChart className="h-6 w-6" />,
@@ -59,11 +67,11 @@ const routes = [
     component: <Profile />,
   },
   {
-    name: "Sign In",
-    layout: "/auth",
-    path: "sign-in",
+    name: "Go back",
+    layout: "/dashboard",
+    path: "",
     icon: <MdLock className="h-6 w-6" />,
-    component: <SignIn />,
+    
   },
   {
     name: "Policy Details",

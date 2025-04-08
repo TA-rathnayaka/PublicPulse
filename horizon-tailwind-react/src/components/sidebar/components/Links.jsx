@@ -3,11 +3,14 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import DashIcon from "components/icons/DashIcon";
 import { useInstituteData } from "../../../context/InstituteContext"; // Import useInstituteData
+import { useNavigate } from "react-router-dom";
+
+// inside component
 
 export function  SidebarLinks(props) {
   let location = useLocation();
   const { routes } = props;
-
+  const navigate = useNavigate();
   // Get instituteData and instituteId from context
   const { instituteId } = useInstituteData(); 
 
@@ -18,6 +21,20 @@ export function  SidebarLinks(props) {
 
   const createLinks = (routes) => {
     return routes.map((route, index) => {
+      if (route.name === "Go back") {
+        return (
+          <div key={index} onClick={() => navigate("/dashboard")}>
+            <div className="relative mb-3 flex hover:cursor-pointer">
+              <li className="my-[3px] flex cursor-pointer items-center px-8">
+                <span className="font-medium text-gray-600">{route.icon}</span>
+                <p className="leading-1 ml-4 flex font-medium text-gray-600">
+                  {route.name}
+                </p>
+              </li>
+            </div>
+          </div>
+        );
+      }
       if (
         route.layout === "/admin" ||
         route.layout === "/auth" ||
