@@ -8,6 +8,7 @@ import Dashboard from "layouts/dashboard";
 import { AuthProvider } from "context/authContext";
 import Landing from "layouts/landing/index";
 import InstitutionRegistration from "layouts/register/index"
+
 const App = () => {
   return (
     <AuthProvider>

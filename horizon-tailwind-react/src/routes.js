@@ -1,20 +1,17 @@
 import React from "react";
-
-// Admin Imports
 import MainDashboard from "views/admin/default";
 import Policies from "views/admin/policies";
 import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
-import Detail from "views/admin/policies/components/Detail";
-
-
-// Auth Imports
 import SignIn from "views/auth/SignIn";
+import Details from 'views/admin/policies/components/Details';
+import PolicyHistory from 'views/admin/policies/components/PolicyHistory';
+
 
 // Icon Imports
 import {
   MdHome,
-  MdOutlineShoppingCart,
+  MdHistory,
   MdBarChart,
   MdPerson,
   MdLock,
@@ -22,6 +19,8 @@ import {
   MdHowToVote,
   MdPolicy,
 } from "react-icons/md";
+
+
 
 const routes = [
   {
@@ -36,16 +35,14 @@ const routes = [
     layout: "/admin",
     path: "policies",
     icon: <MdPolicy className="h-6 w-6" />,
-    component: <Policies />,
-    secondary: true,
+    component: <Policies />, 
   },
   {
     name: "Polls",
     layout: "/admin",
     path: "polls",
     icon: <MdHowToVote className="h-6 w-6" />,
-    component: <Detail />,
-    secondary: true,
+    component: <Policies />,
   },
   {
     name: "Data Tables",
@@ -67,6 +64,24 @@ const routes = [
     path: "sign-in",
     icon: <MdLock className="h-6 w-6" />,
     component: <SignIn />,
-  }
+  },
+  {
+    name: "Policy Details",
+    layout: "/admin",
+    path: "policy/:policyId",
+    icon: <MdPolicy className="h-6 w-6" />,
+    component: <Details />, 
+    hidden: true
+  },
+  {
+    name: "Policy History",
+    layout: "/admin",
+    path: "policies/all",
+    icon: <MdHistory className="h-6 w-6" />,
+    component: <PolicyHistory/>,
+    hidden: true
+    
+  },
 ];
+
 export default routes;
