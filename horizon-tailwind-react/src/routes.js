@@ -1,11 +1,16 @@
 import React from "react";
 import MainDashboard from "views/admin/default";
 import Policies from "views/admin/policies";
+import Polls from "views/admin/polls";
+
 import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
 import SignIn from "views/auth/SignIn";
 import Details from 'views/admin/policies/components/Details';
 import PolicyHistory from 'views/admin/policies/components/PolicyHistory';
+import PollHistory from 'views/admin/polls/components/PollHistory';
+import PollDetails from 'views/admin/polls/components/PollDetails';
+
 
 
 // Icon Imports
@@ -42,7 +47,7 @@ const routes = [
     layout: "/admin",
     path: "polls",
     icon: <MdHowToVote className="h-6 w-6" />,
-    component: <Policies />,
+    component: <Polls />,
   },
   {
     name: "Data Tables",
@@ -80,6 +85,23 @@ const routes = [
     icon: <MdHistory className="h-6 w-6" />,
     component: <PolicyHistory/>,
     hidden: true
+    
+  },
+  {
+    name: "Poll Details",
+    layout: "/admin",
+    path: "poll/:PollId",
+    icon: <MdPolicy className="h-6 w-6" />,
+    component: <PollDetails />, 
+    hidden: true
+  },
+  {
+    name: "Polls History",
+    layout: "/admin",
+    path: "polls/all",
+    icon: <MdHistory className="h-6 w-6" />,
+    component: <PollHistory/>,
+    hidden: false
     
   },
 ];

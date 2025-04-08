@@ -134,12 +134,7 @@ const Policies = () => {
                   <PolicyCard
                     key={policy.id}
                     id={policy.id}
-                    reviewers={[avatar1, avatar2, avatar3]}
-                    title={policy.title || "Untitled Policy"}
-                    author={policy.author || "Unknown Author"}
-                    lastUpdated={policy.updatedAt?.toDate?.().toLocaleDateString() || "N/A"}
-                    type={policy.type || "General"}
-                    onDelete={() => handleDelete(policy.id)}
+              
                   />
                 ))
               ) : (
