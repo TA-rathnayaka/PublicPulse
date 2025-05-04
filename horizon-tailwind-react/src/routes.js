@@ -2,7 +2,8 @@ import React from "react";
 import MainDashboard from "views/admin/default";
 import Policies from "views/admin/policies";
 import Polls from "views/admin/polls";
-
+import PollCreate from "views/admin/polls/components/PollCreate";
+import PolicyCreate from "views/admin/policies/components/PolicyCreate";
 import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
 import SignIn from "views/auth/SignIn";
@@ -101,7 +102,25 @@ const routes = [
     path: "polls/all",
     icon: <MdHistory className="h-6 w-6" />,
     component: <PollHistory/>,
-    hidden: false
+    hidden: true
+    
+  },
+  {
+    name: "Poll",
+    layout: "/admin",
+    path: "polls/create",
+    icon: <MdHistory className="h-6 w-6" />,
+    component: <PollCreate/>,
+    hidden: true
+    
+  },
+  {
+    name: "Policy",
+    layout: "/admin",
+    path: "policies/create",
+    icon: <MdHistory className="h-6 w-6" />,
+    component: <PolicyCreate/>,
+    hidden: true
     
   },
 ];

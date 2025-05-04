@@ -44,8 +44,8 @@ const PollHistory = () => {
 
         {/* Loading state */}
         {loading && (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {[...Array(6)].map((_, index) => (
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {[...Array(8)].map((_, index) => (
               <Card
                 key={`loading-${index}`}
                 extra="flex flex-col w-full h-full !p-4 3xl:p-![18px] bg-white"
@@ -90,13 +90,12 @@ const PollHistory = () => {
 
         {/* Poll Grid */}
         {!loading && !error && polls && polls.length > 0 && (
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {polls.map((poll) => (
               <div key={poll.id} className="poll-card-wrapper">
                 <PollCard
                   key={poll.id}
                   id={poll.id}
-                  
                 />
               </div>
             ))}
