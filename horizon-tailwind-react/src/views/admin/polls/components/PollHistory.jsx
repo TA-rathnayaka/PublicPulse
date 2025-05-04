@@ -1,40 +1,41 @@
-import PolicyCard from "components/card/PolicyCard";
 import React, { useEffect } from "react";
-import { MdHistory } from "react-icons/md";
+import PollCard from "components/card/PollCard";
 import Card from "components/card";
-import { usePolicy } from "context/PolicyContext";
+import { usePoll } from "context/PollContext";
 import { useAuth } from "context/authContext";
 
-const PolicyHistory = () => {
-  const { policies, loading, error, refreshPolicies, policyCache } = usePolicy();
+const PollHistory = () => {
+  const { polls, loading, error, getAllPolls } = usePoll();
   const { instituteId } = useAuth();
 
-  // This dependency array might cause refreshPolicies to be called too often
-  // Let's fix the dependency issue by using useCallback in a real implementation
   useEffect(() => {
-    // Use a simple boolean to prevent multiple refreshes
     let isMounted = true;
     
-    if (isMounted) {
-      refreshPolicies();
+    if (isMounted && instituteId) {
+      getAllPolls();
     }
     
     return () => {
       isMounted = false;
     };
-  }, []); // Empty dependency array, only run once on mount
+  }, [instituteId]); // Only run when instituteId changes
 
-  console.log("Current policies in state:", policies?.length);
-  console.log("Policy cache size:", Object.keys(policyCache || {}).length);
+  const refreshPolls = () => {
+    if (instituteId) {
+      getAllPolls();
+    }
+  };
 
   return (
     <div className="mt-3 grid h-full grid-cols-1 gap-5 md:mt-5">
       <div className="col-span-1 h-fit w-full xl:col-span-1">
         {/* Header */}
         <div className="mb-4 flex items-center justify-between">
-          
+          <h4 className="text-2xl font-bold text-navy-700 dark:text-white">
+            Poll History
+          </h4>
           <button
-            onClick={() => refreshPolicies()}
+            onClick={refreshPolls}
             className="linear rounded-[10px] bg-brand-900 px-4 py-2 text-sm font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700"
           >
             Refresh
@@ -68,7 +69,7 @@ const PolicyHistory = () => {
               <div className="text-xl font-bold text-red-500 mb-2">Error</div>
               <p className="text-gray-600">{error}</p>
               <button
-                onClick={() => refreshPolicies()}
+                onClick={refreshPolls}
                 className="mt-4 linear rounded-[20px] bg-brand-900 px-4 py-2 text-base font-medium text-white transition duration-200 hover:bg-brand-800 active:bg-brand-700 dark:bg-brand-400 dark:hover:bg-brand-300 dark:active:opacity-90"
               >
                 Try Again
@@ -78,23 +79,23 @@ const PolicyHistory = () => {
         )}
 
         {/* Empty state */}
-        {!loading && !error && (!policies || policies.length === 0) && (
+        {!loading && !error && (!polls || polls.length === 0) && (
           <Card extra="flex items-center justify-center p-6 w-full">
             <div className="text-center">
-              <div className="text-xl font-bold text-gray-700 dark:text-white mb-2">No Policy History</div>
-              <p className="text-gray-600">There are no policies in the history yet.</p>
+              <div className="text-xl font-bold text-gray-700 dark:text-white mb-2">No Polls Found</div>
+              <p className="text-gray-600">There are no polls available yet.</p>
             </div>
           </Card>
         )}
 
-        {/* Policy Grid */}
-        {!loading && !error && policies && policies.length > 0 && (
+        {/* Poll Grid */}
+        {!loading && !error && polls && polls.length > 0 && (
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {policies.map((policy) => (
-              <div key={policy.id} className="policy-card-wrapper">
-                <PolicyCard 
-                  id={policy.id} 
-                
+            {polls.map((poll) => (
+              <div key={poll.id} className="poll-card-wrapper">
+                <PollCard
+                  key={poll.id}
+                  id={poll.id}
                 />
               </div>
             ))}
@@ -105,4 +106,4 @@ const PolicyHistory = () => {
   );
 };
 
-export default PolicyHistory;
+export default PollHistory;
