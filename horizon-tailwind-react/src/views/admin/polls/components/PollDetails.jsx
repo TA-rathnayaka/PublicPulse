@@ -2,14 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import General from "./General";
 import { usePoll } from "context/PollContext";
+import { AiOutlineConsoleSql } from "react-icons/ai";
 
 const PollDetails = () => {
-  const { pollId } = useParams();
-  const location = useLocation();
-  const { getPollById } = usePoll();
   
-  // Poll data state
-  const [poll, setPoll] = useState(location.state?.poll || null);
+  const { getPollById } = usePoll();
+  const {pollId} = useParams();
+  console.log("pollId from useParams:", pollId);
+  
+
+const [poll, setPoll] = useState(null);
+
   const [loading, setLoading] = useState(false);
   
   // Last updated calculation
@@ -22,7 +25,7 @@ const PollDetails = () => {
   // Fetch poll data if not passed via location state
   useEffect(() => {
     const fetchPoll = async () => {
-      if (!poll && pollId) {
+      if ( pollId) {
         setLoading(true);
         try {
           const fetchedPoll = await getPollById(pollId);
@@ -33,10 +36,13 @@ const PollDetails = () => {
           setLoading(false);
         }
       }
+      else{
+        console.log("pollId error")
+      }
     };
     
     fetchPoll();
-  }, [pollId, poll, getPollById]);
+  }, [pollId]);
   
   // Calculate last updated time
   useEffect(() => {

@@ -102,7 +102,7 @@ const routes = [
   {
     name: "Poll Details",
     layout: "/admin",
-    path: "poll/:PollId",
+    path: "polls/:pollId",
     icon: <MdPolicy className="h-6 w-6" />,
     component: <PollDetails />, 
     hidden: true
