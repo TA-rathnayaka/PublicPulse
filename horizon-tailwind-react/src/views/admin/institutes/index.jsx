@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { firestore } from "../../../backend/firebase/firebase";
-import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from "firebase/firestore";
+import { getDoc, setDoc,collection, getDocs, addDoc, updateDoc, doc, deleteDoc, arrayUnion } from "firebase/firestore";
 import Card from "components/card";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { getAuth } from "firebase/auth";
 
 const ManageInstitutes = () => {
   const [institutes, setInstitutes] = useState([]);
@@ -11,6 +13,8 @@ const ManageInstitutes = () => {
     location: "",
     logo: "",
   });
+  const auth = getAuth();
+  const user = auth.currentUser;
 
   useEffect(() => {
     fetchInstitutes();
@@ -36,13 +40,34 @@ const ManageInstitutes = () => {
     e.preventDefault();
     try {
       const institutesCollection = collection(firestore, "institutes");
-      await addDoc(institutesCollection, newInstitute);
-      setNewInstitute({ name: "", location: "", logo: "" });
+      const docRef = await addDoc(institutesCollection, newInstitute);
+      const newInstituteId = docRef.id;
+  
+      const adminId = user.uid;
+      const adminRef = doc(firestore, "admins", adminId);
+  
+      const adminDoc = await getDoc(adminRef);
+  
+      if (adminDoc.exists()) {
+        // Update existing document
+        await updateDoc(adminRef, {
+          institutes: arrayUnion(newInstituteId),
+        });
+      } else {
+        // Create new document with role and initial institute
+        await setDoc(adminRef, {
+          role: "admin",
+          institutes: [newInstituteId],
+        });
+      }
+  
       fetchInstitutes();
+      setNewInstitute({ name: "", location: "", logo: "" }); // reset form
     } catch (error) {
-      console.error("Error adding institute:", error);
+      console.error("Error adding institute or updating admin:", error);
     }
   };
+  
 
   const handleUpdateInstitute = async (instituteId, updatedData) => {
     try {
