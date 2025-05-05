@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import clsx from "clsx";
 import Dropdown from "components/dropdown";
 
+
 const NotificationDropdown = () => {
   const { notifications, markAsRead } = useNotifications();
   const navigate = useNavigate();
@@ -50,32 +51,62 @@ const NotificationDropdown = () => {
             </p>
           ) : (
             notifications.map((notif) => (
-              <button
+                <button
                 key={notif.id}
                 onClick={() => handleNotificationClick(notif)}
                 className={clsx(
-                  "flex w-full items-center rounded-lg transition-colors duration-200",
+                  "flex w-full items-start gap-3 rounded-md p-3 transition-colors duration-200",
                   notif.status === "pending"
-                    ? "bg-gray-100 dark:bg-navy-600"
-                    : "hover:bg-gray-50 dark:hover:bg-navy-800"
+                    ? "bg-blue-100 dark:bg-navy-700"
+                    : "hover:bg-gray-100 dark:hover:bg-navy-800"
                 )}
               >
-                <div className="flex h-full w-[85px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 py-4 text-2xl text-white">
-                  <img
-                    src={notif.photoUrl}
-                    alt="icon"
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                </div>
-                <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm text-left">
-                  <p className="mb-1 text-base font-bold text-gray-900 dark:text-white">
+                {notif.photoURL ? (
+  <img
+    src={notif.photoURL}
+    alt="icon"
+    className="h-10 w-10 rounded-full object-cover"
+  />
+) : (
+  <div className="h-10 w-10 flex items-center justify-center rounded-full bg-gray-300 dark:bg-gray-600">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-6 w-6 text-white"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5.121 17.804A9 9 0 1119.879 6.196 9 9 0 015.12 17.804z"
+      />
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+    </svg>
+  </div>
+)}
+
+                <div className="flex flex-col text-left">
+                  <span className="text-sm font-medium text-gray-900 dark:text-white">
                     {notif.title}
-                  </p>
-                  <p className="text-xs text-gray-600 dark:text-gray-300">
+                  </span>
+                  <span className="text-xs text-gray-600 dark:text-gray-400">
                     {notif.message}
-                  </p>
+                  </span>
+                  {notif.createdAt && (
+                    <span className="text-[10px] text-gray-400 mt-1">
+                      {notif.createdAt.toLocaleString()}
+                    </span>
+                  )}
                 </div>
               </button>
+              
             ))
           )}
         </div>

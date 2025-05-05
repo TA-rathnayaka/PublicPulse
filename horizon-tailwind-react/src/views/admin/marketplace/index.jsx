@@ -10,13 +10,14 @@ import tableDataTopCreators from "views/admin/marketplace/variables/tableDataTop
 import { tableColumnsTopCreators } from "views/admin/marketplace/variables/tableColumnsTopCreators";
 import { firestore } from "../../../backend/firebase/firebase";
 import { collection, getDocs } from "firebase/firestore";
-
+import axios from 'axios';
 const Marketplace = () => {
   const navigate = useNavigate();
   const { user, userRole, instituteIds = [] } = useAuth();
   const { setInstituteId } = useInstituteData();
   const [institutes, setInstitutes] = useState([]);
-  
+  const [count,setCount]=useState(0);
+  const [instituteCount,setInstituteCount]=useState(0);
   const [loadingInstitutes, setLoadingInstitutes] = useState(true);
 
   useEffect(() => {
@@ -24,7 +25,18 @@ const Marketplace = () => {
 
     fetchInstitutes();
   }, [user,instituteIds]);
+  useEffect(() => {
+    const fetchUserCount = async () => {
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/dashboard/user-count`); // adjust base URL if needed
+        setCount(response.data.userCount);
+      } catch (error) {
+        console.error('Failed to fetch user count:', error);
+      }
+    };
 
+    fetchUserCount();
+  }, []);
   const fetchInstitutes = async () => {
     try {
       const colRef = collection(firestore, "institutes");
@@ -33,7 +45,7 @@ const Marketplace = () => {
         id: doc.id,
         ...doc.data(),
       }));
-
+      setInstituteCount(allInstitutes.length)
       
         // Filter only institutes user has access to
         const filtered = allInstitutes.filter((inst) =>
@@ -65,7 +77,7 @@ const Marketplace = () => {
         <div className="mt-5">
           <div className="mb-4 flex flex-col justify-between px-4 md:flex-row md:items-center">
             <h4 className="ml-1 text-2xl font-bold text-navy-700 dark:text-white">
-              {userRole === "super-admin" ? "All Institutes" : "Your Institute"}
+              Your Institutes
             </h4>
           </div>
 
@@ -108,14 +120,14 @@ const Marketplace = () => {
                 <h5 className="mb-2 text-lg font-semibold text-navy-700 dark:text-white">
                   Total Users
                 </h5>
-                {/* Add dynamic user count here */}
+                {count}
               </div>
               <div className="rounded-xl bg-white p-4 dark:bg-navy-800">
                 <h5 className="mb-2 text-lg font-semibold text-navy-700 dark:text-white">
                   Total Institutes
                 </h5>
                 <p className="text-md text-navy-600 dark:text-white">
-                  {institutes.length}
+                  {instituteCount}
                 </p>
               </div>
             </div>

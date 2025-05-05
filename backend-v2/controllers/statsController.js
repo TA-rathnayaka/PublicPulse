@@ -1,4 +1,4 @@
-const { firestore } = require("../config/firebase");
+const { firestore, admin } = require("../config/firebase");
 const { Timestamp } = require("firebase-admin/firestore");
 /**
  * Counts documents in a Firestore collection with an optional condition.
@@ -262,5 +262,24 @@ const getLast7DaysComments = async (req, res) => {
   }
 };
 
+const getUserCount = async (req, res) => {
+  try {
+    let count = 0;
+    let nextPageToken;
 
-module.exports = { getDashboardStats, getUserEngagement, getLast7DaysComments };
+    do {
+      const result = await admin.auth().listUsers(1000, nextPageToken);
+      count += result.users.length;
+      nextPageToken = result.pageToken;
+    } while (nextPageToken);
+
+    console.log("Total users:", count);
+    res.status(200).json({ userCount: count });
+  } catch (error) {
+    console.error("Error fetching user count:", error);
+    res.status(500).json({ error: "Failed to retrieve user count" });
+  }
+};
+
+
+module.exports = { getDashboardStats, getUserEngagement, getLast7DaysComments, getUserCount };

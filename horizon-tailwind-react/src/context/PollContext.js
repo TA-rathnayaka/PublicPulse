@@ -144,7 +144,7 @@ export const PollProvider = ({ children, instituteId }) => {
             target: "all",
             type: "polls",
             instituteId: instituteId,
-            photoURL: pollData.photoURL,
+            photoURL: pollData.imageUrl,
             pollId: pollRef.id,
             metadata: { 
               title: pollData.title.trim(),
