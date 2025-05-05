@@ -1,39 +1,47 @@
-import React, { createContext, useState, useContext } from "react";
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { onSnapshot, collection, query, where, updateDoc, doc } from "firebase/firestore";
+import { firestore, auth } from "../backend/firebase/firebase"; // adjust path as needed
 
-// Create the Notifications Context
+import { useAuthState } from "react-firebase-hooks/auth";
+
 const NotificationsContext = createContext();
 
-// Provider component
 export const NotificationsProvider = ({ children }) => {
   const [notifications, setNotifications] = useState([]);
+  const { user } = useAuthState(auth); // Must return user.id or user.uid
 
-  const addNotification = (message) => {
-    setNotifications((prevNotifications) => [
-      ...prevNotifications,
-      { message, id: Date.now() },
-    ]);
-  };
+  useEffect(() => {
+    if (!user) return;
 
-  const removeNotification = (id) => {
-    setNotifications((prevNotifications) =>
-      prevNotifications.filter((notification) => notification.id !== id)
+    const q = query(
+      collection(firestore, "notifications"),
+      where("userId", "==", user.uid)
     );
+
+    const unsub = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setNotifications(data);
+    });
+
+    return () => unsub();
+  }, [user]);
+
+  const markAsRead = async (id) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, status: "read" } : n))
+    );
+    const ref = doc(firestore, "notifications", id);
+    await updateDoc(ref, { status: "read" });
   };
 
   return (
-    <NotificationsContext.Provider
-      value={{
-        notifications,
-        addNotification,
-        removeNotification,
-      }}
-    >
+    <NotificationsContext.Provider value={{ notifications, markAsRead }}>
       {children}
     </NotificationsContext.Provider>
   );
 };
 
-// Custom hook to use notifications
-export const useNotifications = () => {
-  return useContext(NotificationsContext);
-};
+export const useNotifications = () => useContext(NotificationsContext);
