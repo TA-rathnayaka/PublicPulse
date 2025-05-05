@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/authContext";
-import { useInstituteData } from "context/InstituteContext"; // Import the context
+import { useInstituteData } from "context/InstituteContext";
 import Banner from "./components/Banner";
 import NftCard from "../../../components/card/NftCard";
 import TopCreatorTable from "./components/TableTopCreators";
@@ -9,43 +9,23 @@ import HistoryCard from "./components/HistoryCard";
 import tableDataTopCreators from "views/admin/marketplace/variables/tableDataTopCreators.json";
 import { tableColumnsTopCreators } from "views/admin/marketplace/variables/tableColumnsTopCreators";
 import { firestore } from "../../../backend/firebase/firebase";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import { collection, getDocs } from "firebase/firestore";
 
 const Marketplace = () => {
   const navigate = useNavigate();
-  const { user, userRole, instituteId } = useAuth();
-  const { setInstituteId } = useInstituteData(); // Get the setter from context
+  const { user, userRole, instituteIds = [] } = useAuth();
+  const { setInstituteId } = useInstituteData();
   const [institutes, setInstitutes] = useState([]);
+  
   const [loadingInstitutes, setLoadingInstitutes] = useState(true);
 
   useEffect(() => {
     if (!user) return;
 
-    if (userRole === "super-admin") {
-      fetchAllInstitutes();
-    } else if (instituteId) {
-      fetchSingleInstitute(instituteId);
-    }
-  }, [user, userRole, instituteId]);
+    fetchInstitutes();
+  }, [user,instituteIds]);
 
-  const fetchSingleInstitute = async (id) => {
-    try {
-      const ref = doc(firestore, "institutes", id);
-      const snapshot = await getDoc(ref);
-      if (snapshot.exists()) {
-        setInstitutes([{ id: snapshot.id, ...snapshot.data() }]);
-      } else {
-        setInstitutes([]);
-      }
-    } catch (err) {
-      console.error("Error fetching institute:", err);
-      setInstitutes([]);
-    } finally {
-      setLoadingInstitutes(false);
-    }
-  };
-
-  const fetchAllInstitutes = async () => {
+  const fetchInstitutes = async () => {
     try {
       const colRef = collection(firestore, "institutes");
       const snapshot = await getDocs(colRef);
@@ -53,20 +33,24 @@ const Marketplace = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      setInstitutes(allInstitutes);
+
+      
+        // Filter only institutes user has access to
+        const filtered = allInstitutes.filter((inst) =>
+          instituteIds.includes(inst.id))
+        setInstitutes(filtered);
+        console.log("filtered ids :",filtered);
+        
     } catch (err) {
-      console.error("Error fetching all institutes:", err);
+      console.error("Error fetching institutes:", err);
       setInstitutes([]);
     } finally {
       setLoadingInstitutes(false);
     }
   };
 
-  // Handle card click - update context and navigate
   const handleInstituteClick = (id) => {
-    // Update the InstituteContext with the selected instituteId
-    setInstituteId(id);
-    // Navigate to the institute page
+    setInstituteId(id); // this persists via context + localStorage
     navigate(`/admin/${id}/default`);
   };
 
@@ -124,19 +108,22 @@ const Marketplace = () => {
                 <h5 className="mb-2 text-lg font-semibold text-navy-700 dark:text-white">
                   Total Users
                 </h5>
-                {/* Add user stats here */}
+                {/* Add dynamic user count here */}
               </div>
               <div className="rounded-xl bg-white p-4 dark:bg-navy-800">
                 <h5 className="mb-2 text-lg font-semibold text-navy-700 dark:text-white">
                   Total Institutes
                 </h5>
-                <p className="text-md text-navy-600 dark:text-white">{institutes.length}</p>
+                <p className="text-md text-navy-600 dark:text-white">
+                  {institutes.length}
+                </p>
               </div>
             </div>
           </div>
         )}
       </div>
 
+      {/* Right Column: Super Admin Tables */}
       <div className="col-span-1 h-full w-full rounded-xl 2xl:col-span-1">
         {userRole === "super-admin" && (
           <>

@@ -35,6 +35,7 @@ export const AuthProvider = ({ children }) => {
 
         const ids = adminData.institutes || []; // Array of institute IDs
         setInstituteIds(ids);
+        console.log("institutes: ",ids)
 
         if (ids.length > 0) {
           await fetchInstituteNames(ids);
