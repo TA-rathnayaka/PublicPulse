@@ -1,16 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import General from "./General";
 import { usePolicy } from "context/PolicyContext";
 
-const Details = () => {
+const PolicyDetails = () => {
   const { policyId } = useParams();
-  console.log(policyId);
-  const location = useLocation();
   const { getPolicyById } = usePolicy();
   
   // Policy data state
-  const [policy, setPolicy] = useState(location.state?.policy || null);
+  const [policy, setPolicy] = useState(null);
   const [loading, setLoading] = useState(false);
   
   // Last updated calculation
@@ -20,10 +18,10 @@ const Details = () => {
     minutes: 0
   });
   
-  // Fetch policy data if not passed via location state
+  // Fetch policy data
   useEffect(() => {
     const fetchPolicy = async () => {
-      if (!policy && policyId) {
+      if (policyId) {
         setLoading(true);
         try {
           const fetchedPolicy = await getPolicyById(policyId);
@@ -37,7 +35,7 @@ const Details = () => {
     };
     
     fetchPolicy();
-  }, [policyId, policy, getPolicyById]);
+  }, [policyId, getPolicyById]);
   
   // Calculate last updated time
   useEffect(() => {
@@ -53,6 +51,22 @@ const Details = () => {
       setLastUpdated({ days, hours, minutes });
     }
   }, [policy]);
+  
+  const handleDownloadPDF = () => {
+    if (policy && policy.pdfUrl) {
+      // Create an anchor element and set its attributes
+      const link = document.createElement('a');
+      link.href = policy.pdfUrl;
+      link.download = policy.pdfName || `${policy.title}.pdf`;
+      
+      // Append to the document, click it, and then remove it
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } else {
+      alert("No PDF available for download");
+    }
+  };
   
   if (loading) {
     return (
@@ -93,13 +107,13 @@ const Details = () => {
                 className="w-full h-full object-cover rounded-xl flex items-center justify-center"
                 style={{
                   background: `linear-gradient(to right, 
-                    ${policy.type === 'HR' ? '#4ade80' : policy.type === 'Finance' ? '#a78bfa' : '#ec4899'}, 
-                    ${policy.type === 'HR' ? '#22c55e' : policy.type === 'Finance' ? '#8b5cf6' : '#be185d'})`,
+                    ${policy.category === 'HR' ? '#4ade80' : policy.category === 'Finance' ? '#a78bfa' : '#ec4899'}, 
+                    ${policy.category === 'HR' ? '#22c55e' : policy.category === 'Finance' ? '#8b5cf6' : '#be185d'})`,
                   minHeight: '400px'
                 }}
               >
                 <h2 className="text-4xl font-bold text-white">
-                  {policy.type || 'Policy'}
+                  {policy.category || 'Policy'}
                 </h2>
               </div>
             )}
@@ -132,33 +146,33 @@ const Details = () => {
                 </div>
               </div>
               
-              {/* Policy Type */}
+              {/* Policy Category */}
               <div className="flex items-center gap-3">
                 <div className={`
-                  ${policy.type === 'HR' ? 'bg-green-100 dark:bg-green-900/30' : 
-                    policy.type === 'Finance' ? 'bg-purple-100 dark:bg-purple-900/30' : 
-                    policy.type === 'IT' ? 'bg-blue-100 dark:bg-blue-900/30' : 
+                  ${policy.category === 'HR' ? 'bg-green-100 dark:bg-green-900/30' : 
+                    policy.category === 'Finance' ? 'bg-purple-100 dark:bg-purple-900/30' : 
+                    policy.category === 'IT' ? 'bg-blue-100 dark:bg-blue-900/30' : 
                     'bg-gray-100 dark:bg-white/10'} 
                   rounded-full p-2`}>
                   <svg xmlns="http://www.w3.org/2000/svg" className={`
                     h-6 w-6 
-                    ${policy.type === 'HR' ? 'text-green-500 dark:text-green-400' : 
-                      policy.type === 'Finance' ? 'text-purple-500 dark:text-purple-400' : 
-                      policy.type === 'IT' ? 'text-blue-500 dark:text-blue-400' : 
+                    ${policy.category === 'HR' ? 'text-green-500 dark:text-green-400' : 
+                      policy.category === 'Finance' ? 'text-purple-500 dark:text-purple-400' : 
+                      policy.category === 'IT' ? 'text-blue-500 dark:text-blue-400' : 
                       'text-gray-500 dark:text-white'}`} 
                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </div>
                 <div>
-                  <p className="text-gray-500 dark:text-gray-400 text-sm">Policy Type</p>
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Category</p>
                   <p className={`
                     font-semibold
-                    ${policy.type === 'HR' ? 'text-green-600 dark:text-green-400' : 
-                      policy.type === 'Finance' ? 'text-purple-600 dark:text-purple-400' : 
-                      policy.type === 'IT' ? 'text-blue-600 dark:text-blue-400' : 
+                    ${policy.category === 'HR' ? 'text-green-600 dark:text-green-400' : 
+                      policy.category === 'Finance' ? 'text-purple-600 dark:text-purple-400' : 
+                      policy.category === 'IT' ? 'text-blue-600 dark:text-blue-400' : 
                       'text-navy-700 dark:text-white'}`}>
-                    {policy.type || 'General'}
+                    {policy.category || 'General'}
                   </p>
                 </div>
               </div>
@@ -169,6 +183,45 @@ const Details = () => {
               <p className="text-gray-600 dark:text-gray-300">
                 {policy.description || 'No description available for this policy.'}
               </p>
+            </div>
+            
+            {/* Policy dates */}
+            <div className="grid grid-cols-2 gap-4 mb-8">
+              {policy.effectiveDate && (
+                <div className="bg-gray-50 dark:bg-navy-700 p-4 rounded-lg">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Effective Date</p>
+                  <p className="font-semibold text-navy-700 dark:text-white">
+                    {new Date(policy.effectiveDate).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+              
+              {policy.expiryDate && (
+                <div className="bg-gray-50 dark:bg-navy-700 p-4 rounded-lg">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Expiry Date</p>
+                  <p className="font-semibold text-navy-700 dark:text-white">
+                    {new Date(policy.expiryDate).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+              
+              {policy.approvalDate && (
+                <div className="bg-gray-50 dark:bg-navy-700 p-4 rounded-lg">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Approval Date</p>
+                  <p className="font-semibold text-navy-700 dark:text-white">
+                    {new Date(policy.approvalDate).toLocaleDateString()}
+                  </p>
+                </div>
+              )}
+              
+              {policy.approvedBy && (
+                <div className="bg-gray-50 dark:bg-navy-700 p-4 rounded-lg">
+                  <p className="text-gray-500 dark:text-gray-400 text-sm">Approved By</p>
+                  <p className="font-semibold text-navy-700 dark:text-white">
+                    {policy.approvedBy}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
           
@@ -202,11 +255,12 @@ const Details = () => {
               </div>
             </div>
             
-            <div className="flex gap-4">
-              <button className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white font-medium py-3 px-4 rounded-lg transition-colors">
-                View Full Policy
-              </button>
-              <button className="w-full bg-white hover:bg-gray-100 dark:bg-navy-700 dark:hover:bg-navy-600 text-navy-700 dark:text-white border border-gray-300 dark:border-white/10 font-medium py-3 px-4 rounded-lg transition-colors">
+            <div className="flex justify-center">
+              <button 
+                onClick={handleDownloadPDF}
+                className="bg-indigo-600 hover:bg-indigo-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white font-medium py-3 px-8 rounded-lg transition-colors"
+                disabled={!policy.pdfUrl}
+              >
                 Download PDF
               </button>
             </div>
@@ -222,4 +276,4 @@ const Details = () => {
   );
 };
 
-export default Details;
+export default PolicyDetails;
