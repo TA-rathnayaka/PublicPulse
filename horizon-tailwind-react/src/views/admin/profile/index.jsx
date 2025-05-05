@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "context/authContext"; // Path may need adjustment
 import { useInstituteData } from "context/InstituteContext"; // Path may need adjustment
+import { useNotifications } from "context/NotificationsContext"; // Import the notifications context
 import { firestore } from "../../../backend/firebase/firebase"; // Path may need adjustment
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
@@ -96,12 +97,44 @@ const Banner = ({
   );
 };
 
+// Notification toggle component using context
+const NotificationToggle = ({ id, label, prefKey }) => {
+  const { notificationPreferences, updateNotificationPreference } = useNotifications();
+  
+  // Get current value from preferences
+  const isEnabled = notificationPreferences[prefKey] ?? false;
+  
+  const handleToggle = () => {
+    updateNotificationPreference(prefKey, !isEnabled);
+  };
+  
+  return (
+    <div className="flex items-center gap-3">
+      <div 
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isEnabled ? 'bg-brand-500' : 'bg-gray-300'}`}
+        onClick={handleToggle}
+      >
+        <span 
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isEnabled ? 'translate-x-6' : 'translate-x-1'}`} 
+        />
+      </div>
+      <label className="text-sm font-medium text-navy-700 dark:text-white cursor-pointer" onClick={handleToggle}>
+        {label}
+      </label>
+    </div>
+  );
+};
+
+
 const ProfilePage = () => {
   // Get user data from auth context
   const { user, userRole, instituteId, loading } = useAuth();
   
   // Get institute data from institute context
   const { instituteData } = useInstituteData();
+  
+  // Get notifications data from notifications context
+  const { loading: notificationsLoading } = useNotifications();
   
   // Profile state
   const [profileData, setProfileData] = useState({
@@ -222,7 +255,7 @@ const ProfilePage = () => {
     }
   };
 
-  if (loading || isLoading) {
+  if (loading || isLoading || notificationsLoading) {
     return <div className="flex justify-center items-center h-screen">Loading profile...</div>;
   }
 
@@ -432,7 +465,8 @@ const ProfilePage = () => {
               <NotificationToggle 
                 key={index} 
                 id={`notification-${index}`} 
-                label={setting} 
+                label={setting.label}
+                prefKey={setting.key}
               />
             ))}
           </div>
@@ -457,35 +491,14 @@ const ProfilePage = () => {
   }
 };
 
-// Notification toggle component
-const NotificationToggle = ({ id, label }) => {
-  const [enabled, setEnabled] = useState(false);
-  
-  return (
-    <div className="flex items-center gap-3">
-      <div 
-        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${enabled ? 'bg-brand-500' : 'bg-gray-300'}`}
-        onClick={() => setEnabled(!enabled)}
-      >
-        <span 
-          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}`} 
-        />
-      </div>
-      <label className="text-sm font-medium text-navy-700 dark:text-white cursor-pointer" onClick={() => setEnabled(!enabled)}>
-        {label}
-      </label>
-    </div>
-  );
-};
-
 // Sample notification settings
 const notificationSettings = [
-  "Email notifications",
-  "Push notifications",
-  "Monthly newsletter",
-  "Product updates",
-  "Security alerts",
-  "Account activity"
+  { key: "emailNotifications", label: "Email notifications" },
+  { key: "pushNotifications", label: "Push notifications" },
+  { key: "monthlyNewsletter", label: "Monthly newsletter" },
+  { key: "productUpdates", label: "Product updates" },
+  { key: "securityAlerts", label: "Security alerts" },
+  { key: "accountActivity", label: "Account activity" }
 ];
 
 export default ProfilePage;

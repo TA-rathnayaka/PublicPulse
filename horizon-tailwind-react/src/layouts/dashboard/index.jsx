@@ -143,12 +143,10 @@ export default function Dashboard(props) {
             <div className="mx-auto mb-auto h-full min-h-[84vh] p-2 md:pr-2">
             
               <Routes>
-                
                 <Route path="/" element={<Marketplace />} />
                 <Route path="manage-users" element={<ManageUsers />} />
                 <Route path="manage-institutes" element={<ManageInstitutes />} />
                 <Route path="Profile" element={<Profile />} />
-                
               </Routes>
               
             </div>

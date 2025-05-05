@@ -11,7 +11,6 @@ export const AuthProvider = ({ children }) => {
   const [instituteIds, setInstituteIds] = useState([]); // Store multiple IDs
   const [instituteNames, setInstituteNames] = useState([]); // Optional: Store multiple names
   const [roleLoading, setRoleLoading] = useState(true);
-
   useEffect(() => {
     const fetchUserData = async () => {
       if (!user) {
