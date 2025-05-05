@@ -1,42 +1,477 @@
-import Banner from "./components/Banner";
-import General from "./components/General";
-import Notification from "./components/Notification";
-import Project from "./components/Project";
-import Storage from "./components/Storage";
-import Upload from "./components/Upload";
+import React, { useState, useEffect } from "react";
+import { useAuth } from "context/authContext"; // Path may need adjustment
+import { useInstituteData } from "context/InstituteContext"; // Path may need adjustment
+import { firestore } from "../../../backend/firebase/firebase"; // Path may need adjustment
+import { doc, updateDoc, getDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { MdModeEditOutline, MdSave, MdCancel, MdFileUpload } from "react-icons/md";
 
-const ProfileOverview = () => {
+// Card component for consistent styling
+const Card = ({ children, extra }) => {
   return (
-    <div className="flex w-full flex-col gap-5">
-      <div className="w-ful mt-3 flex h-fit flex-col gap-5 lg:grid lg:grid-cols-12">
-        <div className="col-span-4 lg:!mb-0">
-          <Banner />
-        </div>
-
-        <div className="col-span-3 lg:!mb-0">
-          <Storage />
-        </div>
-
-        <div className="z-0 col-span-5 lg:!mb-0">
-          <Upload />
-        </div>
-      </div>
-      {/* all project & ... */}
-
-      <div className="grid h-full grid-cols-1 gap-5 lg:!grid-cols-12">
-        <div className="col-span-5 lg:col-span-6 lg:mb-0 3xl:col-span-4">
-          <Project />
-        </div>
-        <div className="col-span-5 lg:col-span-6 lg:mb-0 3xl:col-span-5">
-          <General />
-        </div>
-
-        <div className="col-span-5 lg:col-span-12 lg:mb-0 3xl:!col-span-3">
-          <Notification />
-        </div>
-      </div>
+    <div className={`rounded-xl bg-white p-4 shadow-md dark:bg-navy-700 ${extra}`}>
+      {children}
     </div>
   );
 };
 
-export default ProfileOverview;
+const ProfilePage = () => {
+  // Get user data from auth context
+  const { user, userRole, instituteId, loading } = useAuth();
+  
+  // Get institute data from institute context
+  const { instituteData } = useInstituteData();
+  
+  // Profile state
+  const [profileData, setProfileData] = useState({
+    name: "",
+    position: "",
+    bio: "",
+    education: "",
+    department: "",
+    languages: "",
+    organization: "",
+    birthday: "",
+    avatarUrl: null,
+  });
+  
+  const [isEditing, setIsEditing] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [avatarFile, setAvatarFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      if (!user) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        const profileDocRef = doc(firestore, "userProfiles", user.uid);
+        const profileSnapshot = await getDoc(profileDocRef);
+        
+        if (profileSnapshot.exists()) {
+          setProfileData({ ...profileData, ...profileSnapshot.data() });
+        } else {
+          // If no profile exists yet, set default values from user auth
+          setProfileData({
+            ...profileData,
+            name: user.displayName || "",
+            avatarUrl: user.photoURL || null,
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching profile data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchProfileData();
+  }, [user]);
+
+  // Handle profile update
+  const handleUpdate = async () => {
+    if (!user) return;
+    
+    setIsLoading(true);
+    try {
+      // If avatar file is selected, upload it first
+      if (avatarFile) {
+        await uploadAvatar();
+      }
+      
+      // Update profile in Firestore
+      const profileDocRef = doc(firestore, "userProfiles", user.uid);
+      await updateDoc(profileDocRef, profileData);
+      
+      setIsEditing(false);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Upload avatar to Firebase Storage
+  const uploadAvatar = async () => {
+    const storage = getStorage();
+    const storageRef = ref(storage, `avatars/${user.uid}`);
+    
+    const uploadTask = uploadBytesResumable(storageRef, avatarFile);
+    
+    return new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          setUploadProgress(progress);
+        },
+        (error) => {
+          console.error("Error uploading avatar:", error);
+          reject(error);
+        },
+        async () => {
+          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+          setProfileData({ ...profileData, avatarUrl: downloadURL });
+          resolve(downloadURL);
+        }
+      );
+    });
+  };
+
+  // Handle form input changes
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProfileData({ ...profileData, [name]: value });
+  };
+
+  // Handle avatar file selection
+  const handleAvatarChange = (e) => {
+    if (e.target.files[0]) {
+      setAvatarFile(e.target.files[0]);
+      // Create a temporary URL for preview
+      const reader = new FileReader();
+      reader.onload = () => {
+        setProfileData({ ...profileData, tempAvatarUrl: reader.result });
+      };
+      reader.readAsDataURL(e.target.files[0]);
+    }
+  };
+
+  if (loading || isLoading) {
+    return <div className="flex justify-center items-center h-screen">Loading profile...</div>;
+  }
+
+  if (!user) {
+    return <div className="flex justify-center items-center h-screen">Please log in to view your profile</div>;
+  }
+
+  return (
+    <div className="flex w-full flex-col gap-5 p-4">
+      {/* Profile Header */}
+      <div className="w-full flex flex-col gap-5 lg:grid lg:grid-cols-12">
+        {/* Profile Banner & Avatar */}
+        <div className="col-span-8 lg:mb-0">
+          <Card extra="h-full">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-navy-700 dark:text-white">My Profile</h2>
+              {!isEditing ? (
+                <button 
+                  onClick={() => setIsEditing(true)}
+                  className="flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-600"
+                >
+                  <MdModeEditOutline /> Edit Profile
+                </button>
+              ) : (
+                <div className="flex gap-2">
+                  <button 
+                    onClick={handleUpdate}
+                    className="flex items-center gap-1 text-sm font-medium text-green-500 hover:text-green-600"
+                  >
+                    <MdSave /> Save
+                  </button>
+                  <button 
+                    onClick={() => setIsEditing(false)}
+                    className="flex items-center gap-1 text-sm font-medium text-red-500 hover:text-red-600"
+                  >
+                    <MdCancel /> Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div className="relative flex flex-col md:flex-row items-center gap-6">
+              {/* Avatar */}
+              <div className="relative">
+    {isEditing ? (
+      <label
+        className="h-24 w-24 rounded-full border-2 border-gray-200 dark:border-navy-600 bg-gray-100 dark:bg-navy-800 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
+        title="Click to upload a new profile image"
+      >
+        <input
+          type="file"
+          className="hidden"
+          accept="image/*"
+          onChange={handleAvatarChange}
+        />
+        {(profileData.avatarUrl || profileData.tempAvatarUrl) ? (
+          <img
+            src={profileData.tempAvatarUrl || profileData.avatarUrl}
+            alt="Profile"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center bg-gray-200 dark:bg-navy-700 text-gray-500 dark:text-gray-300">
+            {profileData.name?.charAt(0) || user.email?.charAt(0) || "U"}
+          </div>
+        )}
+      </label>
+    ) : (
+      <div className="h-24 w-24 rounded-full border-2 border-gray-200 dark:border-navy-600 bg-gray-100 dark:bg-navy-800 overflow-hidden">
+        {(profileData.avatarUrl || profileData.tempAvatarUrl) ? (
+          <img
+            src={profileData.tempAvatarUrl || profileData.avatarUrl}
+            alt="Profile"
+            className="h-full w-full object-cover"
+          />
+        ) : (
+          <div className="h-full w-full flex items-center justify-center bg-gray-200 dark:bg-navy-700 text-gray-500 dark:text-gray-300">
+            {profileData.name?.charAt(0) || user.email?.charAt(0) || "U"}
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+
+              {/* Basic Info */}
+              <div className="flex flex-col">
+                {isEditing ? (
+                  <>
+                    <input
+                      name="name"
+                      value={profileData.name}
+                      onChange={handleChange}
+                      placeholder="Your Name"
+                      className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"                    />
+                  
+                  </>
+                ) : (
+                  <>
+                    <h4 className="text-xl font-bold text-navy-700 dark:text-white">
+                      {profileData.name || user.displayName || user.email}
+                    </h4>
+                    <p className="text-base text-gray-600">
+                      {profileData.position || userRole || "No position set"}
+                    </p>
+                    {instituteId && (
+                      <p className="text-sm text-gray-500">
+                        Institute: {instituteData?.name || instituteId}
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </Card>
+        </div>
+
+        {/* Storage Info - Simplified version of your Storage component */}
+        <div className="col-span-4 lg:mb-0">
+          <Card extra="h-full">
+            <h4 className="text-lg font-bold text-navy-700 dark:text-white mb-4">
+              Account Status
+            </h4>
+            
+            <div className="flex flex-col items-center mb-4">
+              <div className="p-4 bg-lightPrimary text-brand-500 rounded-full text-2xl dark:bg-navy-700 dark:text-white">
+                {userRole === "admin" ? "A" : "U"}
+              </div>
+              <p className="mt-2 text-md font-medium">
+                {userRole === "admin" ? "Administrator" : "Regular User"}
+              </p>
+            </div>
+            
+            <div className="mt-4">
+              <p className="text-sm font-medium text-gray-600 mb-1">Account Completion</p>
+              <div className="h-2 w-full bg-lightPrimary rounded-full dark:bg-navy-700">
+                <div 
+                  className="h-full bg-brand-500 rounded-full dark:bg-white" 
+                  style={{ width: `${calculateProfileCompleteness()}%` }}
+                ></div>
+              </div>
+              <p className="text-xs text-gray-500 mt-1 text-right">{calculateProfileCompleteness()}% complete</p>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      {/* General Information */}
+      <div className="w-full mt-5">
+        <Card>
+          <h4 className="text-xl font-bold text-navy-700 dark:text-white mb-4">
+            General Information
+          </h4>
+          
+          {isEditing ? (
+            <div className="mb-4">
+              <label className="block text-sm text-gray-600 mb-1">Bio</label>
+              <textarea
+                name="bio"
+                value={profileData.bio}
+                onChange={handleChange}
+                placeholder="Tell us about yourself"
+                className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
+                rows="4"
+              ></textarea>
+            </div>
+          ) : (
+            <p className="text-base text-gray-600 mb-4">
+              {profileData.bio || "No bio information added yet."}
+            </p>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Education */}
+            <div className="flex flex-col p-3 bg-white rounded-xl shadow-sm dark:bg-navy-700">
+              <p className="text-sm text-gray-600">Education</p>
+              {isEditing ? (
+                <input
+                  name="education"
+                  value={profileData.education}
+                  onChange={handleChange}
+                  placeholder="Your Education"
+                  className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"                />
+              ) : (
+                <p className="text-base font-medium text-navy-700 dark:text-white">
+                  {profileData.education || "Not specified"}
+                </p>
+              )}
+            </div>
+
+            {/* Languages */}
+            <div className="flex flex-col p-3 bg-white rounded-xl shadow-sm dark:bg-navy-700">
+              <p className="text-sm text-gray-600">Languages</p>
+              {isEditing ? (
+                <input
+                  name="languages"
+                  value={profileData.languages}
+                  onChange={handleChange}
+                  placeholder="Languages you speak"
+                  className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
+                />
+              ) : (
+                <p className="text-base font-medium text-navy-700 dark:text-white">
+                  {profileData.languages || "Not specified"}
+                </p>
+              )}
+            </div>
+
+            {/* Department */}
+            <div className="flex flex-col p-3 bg-white rounded-xl shadow-sm dark:bg-navy-700">
+              <p className="text-sm text-gray-600">Department</p>
+              {isEditing ? (
+                <input
+                  name="department"
+                  value={profileData.department}
+                  onChange={handleChange}
+                  placeholder="Your Department"
+                  className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
+                />
+              ) : (
+                <p className="text-base font-medium text-navy-700 dark:text-white">
+                  {profileData.department || "Not specified"}
+                </p>
+              )}
+            </div>
+
+            {/* Organization */}
+            <div className="flex flex-col p-3 bg-white rounded-xl shadow-sm dark:bg-navy-700">
+              <p className="text-sm text-gray-600">Organization</p>
+              {isEditing ? (
+                <input
+                  name="organization"
+                  value={profileData.organization}
+                  onChange={handleChange}
+                  placeholder="Your Organization"
+                  className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
+                />
+              ) : (
+                <p className="text-base font-medium text-navy-700 dark:text-white">
+                  {profileData.organization || instituteData?.name || "Not specified"}
+                </p>
+              )}
+            </div>
+
+            {/* Birthday */}
+            <div className="flex flex-col p-3 bg-white rounded-xl shadow-sm dark:bg-navy-700">
+              <p className="text-sm text-gray-600">Birthday</p>
+              {isEditing ? (
+                <input
+                  name="birthday"
+                  type="date"
+                  value={profileData.birthday}
+                  onChange={handleChange}
+                  className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
+                />
+              ) : (
+                <p className="text-base font-medium text-navy-700 dark:text-white">
+                  {profileData.birthday || "Not specified"}
+                </p>
+              )}
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      {/* Settings/Preferences Section */}
+      <div className="w-full mt-5">
+        <Card>
+          <h4 className="text-xl font-bold text-navy-700 dark:text-white mb-4">
+            Notification Preferences
+          </h4>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {notificationSettings.map((setting, index) => (
+              <NotificationToggle 
+                key={index} 
+                id={`notification-${index}`} 
+                label={setting} 
+              />
+            ))}
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+
+  // Helper function to calculate profile completeness
+  function calculateProfileCompleteness() {
+    const fields = [
+      'name', 'position', 'bio', 'education', 
+      'department', 'languages', 'organization', 'birthday',
+      'avatarUrl'
+    ];
+    
+    const filledFields = fields.filter(field => 
+      profileData[field] && profileData[field].toString().trim() !== ''
+    );
+    
+    return Math.round((filledFields.length / fields.length) * 100);
+  }
+};
+
+// Notification toggle component
+const NotificationToggle = ({ id, label }) => {
+  const [enabled, setEnabled] = useState(false);
+  
+  return (
+    <div className="flex items-center gap-3">
+      <div 
+        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${enabled ? 'bg-brand-500' : 'bg-gray-300'}`}
+        onClick={() => setEnabled(!enabled)}
+      >
+        <span 
+          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${enabled ? 'translate-x-6' : 'translate-x-1'}`} 
+        />
+      </div>
+      <label className="text-sm font-medium text-navy-700 dark:text-white cursor-pointer" onClick={() => setEnabled(!enabled)}>
+        {label}
+      </label>
+    </div>
+  );
+};
+
+// Sample notification settings
+const notificationSettings = [
+  "Email notifications",
+  "Push notifications",
+  "Monthly newsletter",
+  "Product updates",
+  "Security alerts",
+  "Account activity"
+];
+
+export default ProfilePage;
