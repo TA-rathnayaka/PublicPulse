@@ -15,6 +15,87 @@ const Card = ({ children, extra }) => {
   );
 };
 
+// Banner component for profile display
+const Banner = ({ 
+  profileData, 
+  isEditing, 
+  handleAvatarChange,
+  handleChange,
+  userRole 
+}) => {
+  return (
+    <div className="items-center w-full h-full p-4 bg-white rounded-xl shadow-md dark:bg-navy-700">
+      {/* Background and profile */}
+      <div
+        className="relative mt-1 flex h-32 w-full justify-center rounded-xl bg-cover"
+        style={{ backgroundImage: `url('/api/placeholder/1200/240')` }}
+      >
+        <div className="absolute -bottom-12 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-white dark:border-navy-700">
+          {isEditing ? (
+            <label className="h-full w-full rounded-full overflow-hidden cursor-pointer hover:opacity-80 transition-opacity">
+              <input
+                type="file"
+                className="hidden"
+                accept="image/*"
+                onChange={handleAvatarChange}
+              />
+              {(profileData.avatarUrl || profileData.tempAvatarUrl) ? (
+                <img 
+                  className="h-full w-full object-cover rounded-full" 
+                  src={profileData.tempAvatarUrl || profileData.avatarUrl} 
+                  alt="Profile" 
+                />
+              ) : (
+                <div className="h-full w-full flex items-center justify-center bg-gray-200 dark:bg-navy-700 text-gray-500 dark:text-gray-300 rounded-full">
+                  {profileData.name?.charAt(0) || "U"}
+                </div>
+              )}
+            </label>
+          ) : (
+            <>
+              {(profileData.avatarUrl || profileData.tempAvatarUrl) ? (
+                <img 
+                  className="h-full w-full object-cover rounded-full" 
+                  src={profileData.tempAvatarUrl || profileData.avatarUrl} 
+                  alt="Profile" 
+                />
+              ) : (
+                <div className="h-full w-full flex items-center justify-center bg-gray-200 dark:bg-navy-700 text-gray-500 dark:text-gray-300 rounded-full">
+                  {profileData.name?.charAt(0) || "U"}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Name and position */}
+      <div className="mt-16 flex flex-col items-center">
+        {isEditing ? (
+          <input
+            name="name"
+            value={profileData.name || ""}
+            onChange={handleChange}
+            placeholder="Your Name"
+            className="text-xl font-bold text-center text-navy-700 dark:text-white bg-transparent border-b border-gray-300 dark:border-navy-600 focus:outline-none focus:border-brand-500"
+          />
+        ) : (
+          <h4 className="text-xl font-bold text-navy-700 dark:text-white">
+            {profileData.name || "User"}
+          </h4>
+        )}
+        
+        <p className="text-base font-normal text-gray-600">
+          {userRole === "superadmin" ? "Super Admin" : userRole === "admin" ? "Administrator" : userRole || "User"}
+        </p>
+      </div>
+
+      {/* Bottom margin for spacing */}
+      <div className="mb-3"></div>
+    </div>
+  );
+};
+
 const ProfilePage = () => {
   // Get user data from auth context
   const { user, userRole, instituteId, loading } = useAuth();
@@ -153,112 +234,18 @@ const ProfilePage = () => {
     <div className="flex w-full flex-col gap-5 p-4">
       {/* Profile Header */}
       <div className="w-full flex flex-col gap-5 lg:grid lg:grid-cols-12">
-        {/* Profile Banner & Avatar */}
+        {/* Profile Banner (Using the new Banner component) */}
         <div className="col-span-8 lg:mb-0">
-          <Card extra="h-full">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-navy-700 dark:text-white">My Profile</h2>
-              {!isEditing ? (
-                <button 
-                  onClick={() => setIsEditing(true)}
-                  className="flex items-center gap-1 text-sm font-medium text-brand-500 hover:text-brand-600"
-                >
-                  <MdModeEditOutline /> Edit Profile
-                </button>
-              ) : (
-                <div className="flex gap-2">
-                  <button 
-                    onClick={handleUpdate}
-                    className="flex items-center gap-1 text-sm font-medium text-green-500 hover:text-green-600"
-                  >
-                    <MdSave /> Save
-                  </button>
-                  <button 
-                    onClick={() => setIsEditing(false)}
-                    className="flex items-center gap-1 text-sm font-medium text-red-500 hover:text-red-600"
-                  >
-                    <MdCancel /> Cancel
-                  </button>
-                </div>
-              )}
-            </div>
-
-            <div className="relative flex flex-col md:flex-row items-center gap-6">
-              {/* Avatar */}
-              <div className="relative">
-    {isEditing ? (
-      <label
-        className="h-24 w-24 rounded-full border-2 border-gray-200 dark:border-navy-600 bg-gray-100 dark:bg-navy-800 overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
-        title="Click to upload a new profile image"
-      >
-        <input
-          type="file"
-          className="hidden"
-          accept="image/*"
-          onChange={handleAvatarChange}
-        />
-        {(profileData.avatarUrl || profileData.tempAvatarUrl) ? (
-          <img
-            src={profileData.tempAvatarUrl || profileData.avatarUrl}
-            alt="Profile"
-            className="h-full w-full object-cover"
+          <Banner 
+            profileData={profileData}
+            isEditing={isEditing}
+            handleAvatarChange={handleAvatarChange}
+            handleChange={handleChange}
+            userRole={userRole}
           />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center bg-gray-200 dark:bg-navy-700 text-gray-500 dark:text-gray-300">
-            {profileData.name?.charAt(0) || user.email?.charAt(0) || "U"}
-          </div>
-        )}
-      </label>
-    ) : (
-      <div className="h-24 w-24 rounded-full border-2 border-gray-200 dark:border-navy-600 bg-gray-100 dark:bg-navy-800 overflow-hidden">
-        {(profileData.avatarUrl || profileData.tempAvatarUrl) ? (
-          <img
-            src={profileData.tempAvatarUrl || profileData.avatarUrl}
-            alt="Profile"
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <div className="h-full w-full flex items-center justify-center bg-gray-200 dark:bg-navy-700 text-gray-500 dark:text-gray-300">
-            {profileData.name?.charAt(0) || user.email?.charAt(0) || "U"}
-          </div>
-        )}
-      </div>
-    )}
-  </div>
-
-              {/* Basic Info */}
-              <div className="flex flex-col">
-                {isEditing ? (
-                  <>
-                    <input
-                      name="name"
-                      value={profileData.name}
-                      onChange={handleChange}
-                      placeholder="Your Name"
-                      className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"                    />
-                  
-                  </>
-                ) : (
-                  <>
-                    <h4 className="text-xl font-bold text-navy-700 dark:text-white">
-                      {profileData.name || user.displayName || user.email}
-                    </h4>
-                    <p className="text-base text-gray-600">
-                      {profileData.position || userRole || "No position set"}
-                    </p>
-                    {instituteId && (
-                      <p className="text-sm text-gray-500">
-                        Institute: {instituteData?.name || instituteId}
-                      </p>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          </Card>
         </div>
 
-        {/* Storage Info - Simplified version of your Storage component */}
+        {/* Account Status */}
         <div className="col-span-4 lg:mb-0">
           <Card extra="h-full">
             <h4 className="text-lg font-bold text-navy-700 dark:text-white mb-4">
@@ -267,10 +254,10 @@ const ProfilePage = () => {
             
             <div className="flex flex-col items-center mb-4">
               <div className="p-4 bg-lightPrimary text-brand-500 rounded-full text-2xl dark:bg-navy-700 dark:text-white">
-                {userRole === "admin" ? "A" : "U"}
+                {userRole === "superadmin" ? "S" : userRole === "admin" ? "A" : "U"}
               </div>
               <p className="mt-2 text-md font-medium">
-                {userRole === "admin" ? "Administrator" : "Regular User"}
+                {userRole === "super-admin" ? "Super Admin" : userRole === "admin" ? "Administrator" : "Regular User"}
               </p>
             </div>
             
@@ -286,6 +273,33 @@ const ProfilePage = () => {
             </div>
           </Card>
         </div>
+      </div>
+
+      {/* Edit Profile Controls */}
+      <div className="w-full flex justify-end">
+        {!isEditing ? (
+          <button 
+            onClick={() => setIsEditing(true)}
+            className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-white bg-brand-500 rounded-md hover:bg-brand-600 transition-colors"
+          >
+            <MdModeEditOutline /> Edit Profile
+          </button>
+        ) : (
+          <div className="flex gap-2">
+            <button 
+              onClick={() => setIsEditing(false)}
+              className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+            >
+              <MdCancel /> Cancel
+            </button>
+            <button 
+              onClick={handleUpdate}
+              className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 transition-colors"
+            >
+              <MdSave /> Save Changes
+            </button>
+          </div>
+        )}
       </div>
 
       {/* General Information */}
