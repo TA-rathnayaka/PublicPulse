@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import { FaFileAlt } from "react-icons/fa";
 import { useInstituteData } from "context/InstituteContext";
 import { usePolicy } from "context/PolicyContext";
-import { useInstituteData } from "context/InstituteContext";
 
 const PolicyCard = ({ id, extra = "" }) => {
   const navigate = useNavigate();
