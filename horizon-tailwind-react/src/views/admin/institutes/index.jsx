@@ -1,8 +1,208 @@
+// import React, { useState, useEffect } from "react";
+// import { firestore } from "../../../backend/firebase/firebase";
+// import { getDoc, setDoc,collection, getDocs, addDoc, updateDoc, doc, deleteDoc, arrayUnion } from "firebase/firestore";
+// import Card from "components/card";
+// import { useAuthState } from "react-firebase-hooks/auth";
+// import { getAuth } from "firebase/auth";
+
+// const ManageInstitutes = () => {
+//   const [institutes, setInstitutes] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const [newInstitute, setNewInstitute] = useState({
+//     name: "",
+//     location: "",
+//     logo: "",
+//   });
+//   const auth = getAuth();
+//   const user = auth.currentUser;
+
+//   useEffect(() => {
+//     fetchInstitutes();
+//   }, []);
+
+//   const fetchInstitutes = async () => {
+//     try {
+//       const institutesCollection = collection(firestore, "institutes");
+//       const instituteSnapshot = await getDocs(institutesCollection);
+//       const institutesList = instituteSnapshot.docs.map(doc => ({
+//         id: doc.id,
+//         ...doc.data()
+//       }));
+//       setInstitutes(institutesList);
+//       setLoading(false);
+//     } catch (error) {
+//       console.error("Error fetching institutes:", error);
+//       setLoading(false);
+//     }
+//   };
+
+//   const handleAddInstitute = async (e) => {
+//     e.preventDefault();
+//     try {
+//       const institutesCollection = collection(firestore, "institutes");
+//       const docRef = await addDoc(institutesCollection, newInstitute);
+//       const newInstituteId = docRef.id;
+
+//       const adminId = user.uid;
+//       const adminRef = doc(firestore, "admins", adminId);
+
+//       const adminDoc = await getDoc(adminRef);
+
+//       if (adminDoc.exists()) {
+//         // Update existing document
+//         await updateDoc(adminRef, {
+//           institutes: arrayUnion(newInstituteId),
+//         });
+//       } else {
+//         // Create new document with role and initial institute
+//         await setDoc(adminRef, {
+//           role: "admin",
+//           institutes: [newInstituteId],
+//         });
+//       }
+
+//       fetchInstitutes();
+//       setNewInstitute({ name: "", location: "", logo: "" }); // reset form
+//     } catch (error) {
+//       console.error("Error adding institute or updating admin:", error);
+//     }
+//   };
+
+//   const handleUpdateInstitute = async (instituteId, updatedData) => {
+//     try {
+//       const instituteRef = doc(firestore, "institutes", instituteId);
+//       await updateDoc(instituteRef, updatedData);
+//       fetchInstitutes();
+//     } catch (error) {
+//       console.error("Error updating institute:", error);
+//     }
+//   };
+
+//   const handleDeleteInstitute = async (instituteId) => {
+//     if (window.confirm("Are you sure you want to delete this institute?")) {
+//       try {
+//         const instituteRef = doc(firestore, "institutes", instituteId);
+//         await deleteDoc(instituteRef);
+//         fetchInstitutes();
+//       } catch (error) {
+//         console.error("Error deleting institute:", error);
+//       }
+//     }
+//   };
+
+//   if (loading) {
+//     return <div className="text-white">Loading...</div>;
+//   }
+
+//   return (
+//     <div className="mt-3 grid h-full gap-5">
+//       <Card extra="!p-[20px]">
+//         <div className="mb-8">
+//           <h4 className="text-xl font-bold text-navy-700 dark:text-white">
+//             Add New Institute
+//           </h4>
+//         </div>
+
+//         <form onSubmit={handleAddInstitute} className="grid gap-4">
+//           <input
+//             type="text"
+//             placeholder="Institute Name"
+//             value={newInstitute.name}
+//             onChange={(e) => setNewInstitute({...newInstitute, name: e.target.value})}
+//             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+//           />
+//           <input
+//             type="text"
+//             placeholder="Location"
+//             value={newInstitute.location}
+//             onChange={(e) => setNewInstitute({...newInstitute, location: e.target.value})}
+//             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+//           />
+//           <input
+//             type="text"
+//             placeholder="Logo URL"
+//             value={newInstitute.logo}
+//             onChange={(e) => setNewInstitute({...newInstitute, logo: e.target.value})}
+//             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+//           />
+//           <button
+//             type="submit"
+//             className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600"
+//           >
+//             Add Institute
+//           </button>
+//         </form>
+//       </Card>
+
+//       <Card extra="!p-[20px]">
+//         <div className="mb-8">
+//           <h4 className="text-xl font-bold text-navy-700 dark:text-white">
+//             Manage Institutes
+//           </h4>
+//         </div>
+
+//         <div className="overflow-x-auto">
+//           <table className="w-full">
+//             <thead>
+//               <tr className="border-b border-gray-200">
+//                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
+//                   Name
+//                 </th>
+//                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
+//                   Location
+//                 </th>
+//                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
+//                   Actions
+//                 </th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {institutes.map((institute) => (
+//                 <tr key={institute.id} className="border-b border-gray-200">
+//                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
+//                     {institute.name}
+//                   </td>
+//                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
+//                     {institute.location}
+//                   </td>
+//                   <td className="px-6 py-4">
+//                     <button
+//                       onClick={() => handleDeleteInstitute(institute.id)}
+//                       className="mr-2 rounded-lg bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
+//                     >
+//                       Delete
+//                     </button>
+//                     <button
+//                       onClick={() => handleUpdateInstitute(institute.id, { /* updated data */ })}
+//                       className="rounded-lg bg-brand-500 px-3 py-1 text-sm text-white hover:bg-brand-600"
+//                     >
+//                       Edit
+//                     </button>
+//                   </td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </table>
+//         </div>
+//       </Card>
+//     </div>
+//   );
+// };
+
+// export default ManageInstitutes;
 import React, { useState, useEffect } from "react";
 import { firestore } from "../../../backend/firebase/firebase";
-import { getDoc, setDoc,collection, getDocs, addDoc, updateDoc, doc, deleteDoc, arrayUnion } from "firebase/firestore";
-import Card from "components/card";
-import { useAuthState } from "react-firebase-hooks/auth";
+import {
+  getDoc,
+  setDoc,
+  collection,
+  getDocs,
+  addDoc,
+  updateDoc,
+  doc,
+  deleteDoc,
+  arrayUnion,
+} from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 const ManageInstitutes = () => {
@@ -13,6 +213,13 @@ const ManageInstitutes = () => {
     location: "",
     logo: "",
   });
+  const [editingInstitute, setEditingInstitute] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    name: "",
+    location: "",
+    logo: "",
+  });
+  const [showEditModal, setShowEditModal] = useState(false);
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -24,9 +231,9 @@ const ManageInstitutes = () => {
     try {
       const institutesCollection = collection(firestore, "institutes");
       const instituteSnapshot = await getDocs(institutesCollection);
-      const institutesList = instituteSnapshot.docs.map(doc => ({
+      const institutesList = instituteSnapshot.docs.map((doc) => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       }));
       setInstitutes(institutesList);
       setLoading(false);
@@ -42,37 +249,55 @@ const ManageInstitutes = () => {
       const institutesCollection = collection(firestore, "institutes");
       const docRef = await addDoc(institutesCollection, newInstitute);
       const newInstituteId = docRef.id;
-  
+
       const adminId = user.uid;
       const adminRef = doc(firestore, "admins", adminId);
-  
+
       const adminDoc = await getDoc(adminRef);
-  
+
       if (adminDoc.exists()) {
-        // Update existing document
         await updateDoc(adminRef, {
           institutes: arrayUnion(newInstituteId),
         });
       } else {
-        // Create new document with role and initial institute
         await setDoc(adminRef, {
           role: "admin",
           institutes: [newInstituteId],
         });
       }
-  
+
       fetchInstitutes();
-      setNewInstitute({ name: "", location: "", logo: "" }); // reset form
+      setNewInstitute({ name: "", location: "", logo: "" });
     } catch (error) {
       console.error("Error adding institute or updating admin:", error);
     }
   };
-  
 
-  const handleUpdateInstitute = async (instituteId, updatedData) => {
+  const handleEditClick = (institute) => {
+    setEditingInstitute(institute.id);
+    setEditFormData({
+      name: institute.name,
+      location: institute.location,
+      logo: institute.logo || "",
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditFormChange = (e) => {
+    const { name, value } = e.target;
+    setEditFormData({
+      ...editFormData,
+      [name]: value,
+    });
+  };
+
+  const handleUpdateInstitute = async (e) => {
+    e.preventDefault();
     try {
-      const instituteRef = doc(firestore, "institutes", instituteId);
-      await updateDoc(instituteRef, updatedData);
+      const instituteRef = doc(firestore, "institutes", editingInstitute);
+      await updateDoc(instituteRef, editFormData);
+
+      setShowEditModal(false);
       fetchInstitutes();
     } catch (error) {
       console.error("Error updating institute:", error);
@@ -82,8 +307,23 @@ const ManageInstitutes = () => {
   const handleDeleteInstitute = async (instituteId) => {
     if (window.confirm("Are you sure you want to delete this institute?")) {
       try {
+        // First remove from admins
+        const adminId = user.uid;
+        const adminRef = doc(firestore, "admins", adminId);
+
+        const adminDoc = await getDoc(adminRef);
+        if (adminDoc.exists()) {
+          await updateDoc(adminRef, {
+            institutes: adminDoc
+              .data()
+              .institutes.filter((id) => id !== instituteId),
+          });
+        }
+
+        // Then delete the institute
         const instituteRef = doc(firestore, "institutes", instituteId);
         await deleteDoc(instituteRef);
+
         fetchInstitutes();
       } catch (error) {
         console.error("Error deleting institute:", error);
@@ -97,7 +337,8 @@ const ManageInstitutes = () => {
 
   return (
     <div className="mt-3 grid h-full gap-5">
-      <Card extra="!p-[20px]">
+      {/* Add Institute Card */}
+      <div className="rounded-[20px] bg-white p-[20px] shadow-md dark:bg-navy-800">
         <div className="mb-8">
           <h4 className="text-xl font-bold text-navy-700 dark:text-white">
             Add New Institute
@@ -109,21 +350,29 @@ const ManageInstitutes = () => {
             type="text"
             placeholder="Institute Name"
             value={newInstitute.name}
-            onChange={(e) => setNewInstitute({...newInstitute, name: e.target.value})}
+            onChange={(e) =>
+              setNewInstitute({ ...newInstitute, name: e.target.value })
+            }
             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+            required
           />
           <input
             type="text"
             placeholder="Location"
             value={newInstitute.location}
-            onChange={(e) => setNewInstitute({...newInstitute, location: e.target.value})}
+            onChange={(e) =>
+              setNewInstitute({ ...newInstitute, location: e.target.value })
+            }
             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+            required
           />
           <input
             type="text"
             placeholder="Logo URL"
             value={newInstitute.logo}
-            onChange={(e) => setNewInstitute({...newInstitute, logo: e.target.value})}
+            onChange={(e) =>
+              setNewInstitute({ ...newInstitute, logo: e.target.value })
+            }
             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
           />
           <button
@@ -133,9 +382,10 @@ const ManageInstitutes = () => {
             Add Institute
           </button>
         </form>
-      </Card>
+      </div>
 
-      <Card extra="!p-[20px]">
+      {/* Manage Institutes Card */}
+      <div className="rounded-[20px] bg-white p-[20px] shadow-md dark:bg-navy-800">
         <div className="mb-8">
           <h4 className="text-xl font-bold text-navy-700 dark:text-white">
             Manage Institutes
@@ -153,6 +403,9 @@ const ManageInstitutes = () => {
                   Location
                 </th>
                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
+                  Logo
+                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
                   Actions
                 </th>
               </tr>
@@ -166,18 +419,29 @@ const ManageInstitutes = () => {
                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
                     {institute.location}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
+                    {institute.logo ? (
+                      <img
+                        src={institute.logo}
+                        alt="Institute Logo"
+                        className="h-10 w-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      "No logo"
+                    )}
+                  </td>
+                  <td className="flex space-x-2 px-6 py-4">
                     <button
-                      onClick={() => handleDeleteInstitute(institute.id)}
-                      className="mr-2 rounded-lg bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                    <button
-                      onClick={() => handleUpdateInstitute(institute.id, { /* updated data */ })}
-                      className="rounded-lg bg-brand-500 px-3 py-1 text-sm text-white hover:bg-brand-600"
+                      onClick={() => handleEditClick(institute)}
+                      className="rounded-lg bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
                     >
                       Edit
+                    </button>
+                    <button
+                      onClick={() => handleDeleteInstitute(institute.id)}
+                      className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
+                    >
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -185,9 +449,84 @@ const ManageInstitutes = () => {
             </tbody>
           </table>
         </div>
-      </Card>
+      </div>
+
+      {/* Edit Modal - Centered on Full Screen with Blurred Background */}
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Blurred Backdrop */}
+          <div
+            className="bg-black absolute inset-0 bg-opacity-50 backdrop-blur-sm"
+            onClick={() => setShowEditModal(false)}
+          ></div>
+
+          {/* Centered Modal Content */}
+          <div className="relative z-50 mx-4 w-full max-w-md">
+            <div className="rounded-lg bg-white p-6 shadow-xl dark:bg-navy-800">
+              <h3 className="mb-4 text-xl font-bold text-navy-700 dark:text-white">
+                Edit Institute
+              </h3>
+              <form onSubmit={handleUpdateInstitute} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Institute Name
+                  </label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={editFormData.name}
+                    onChange={handleEditFormChange}
+                    className="mt-1 w-full rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Location
+                  </label>
+                  <input
+                    type="text"
+                    name="location"
+                    value={editFormData.location}
+                    onChange={handleEditFormChange}
+                    className="mt-1 w-full rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                    Logo URL
+                  </label>
+                  <input
+                    type="text"
+                    name="logo"
+                    value={editFormData.logo}
+                    onChange={handleEditFormChange}
+                    className="mt-1 w-full rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+                  />
+                </div>
+                <div className="mt-6 flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditModal(false)}
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-white"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600"
+                  >
+                    Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
 
-export default ManageInstitutes; 
+export default ManageInstitutes;
