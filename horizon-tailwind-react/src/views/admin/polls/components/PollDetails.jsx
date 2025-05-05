@@ -1,19 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import General from "./General";
 import { usePoll } from "context/PollContext";
-import { AiOutlineConsoleSql } from "react-icons/ai";
+import { FaTrash } from "react-icons/fa";
 
 const PollDetails = () => {
-  
-  const { getPollById } = usePoll();
-  const {pollId} = useParams();
-  console.log("pollId from useParams:", pollId);
-  
-
-const [poll, setPoll] = useState(null);
-
+  const { getPollById, deletePoll } = usePoll();
+  const { pollId } = useParams();
+  const [poll, setPoll] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [options, setOptions] = useState([]);
+  const [totalVotes, setTotalVotes] = useState(0);
   
   // Last updated calculation
   const [lastUpdated, setLastUpdated] = useState({
@@ -22,27 +19,39 @@ const [poll, setPoll] = useState(null);
     minutes: 0
   });
   
-  // Fetch poll data if not passed via location state
+  // Fetch poll data
   useEffect(() => {
     const fetchPoll = async () => {
-      if ( pollId) {
+      if (pollId) {
         setLoading(true);
         try {
           const fetchedPoll = await getPollById(pollId);
           setPoll(fetchedPoll);
+          
+          // Example options with vote counts - in a real app, these would come from your database
+          // Here we're creating sample data for demonstration
+          if (fetchedPoll) {
+            const sampleOptions = fetchedPoll.options.map((optId, index) => ({
+              id: optId,
+              text: `Option ${index + 1}`,
+              voteCount: Math.floor(Math.random() * 25) + 1 // Random vote count for demo
+            }));
+            
+            const votesSum = sampleOptions.reduce((sum, opt) => sum + opt.voteCount, 0);
+            
+            setOptions(sampleOptions);
+            setTotalVotes(votesSum);
+          }
         } catch (error) {
           console.error("Error fetching poll:", error);
         } finally {
           setLoading(false);
         }
       }
-      else{
-        console.log("pollId error")
-      }
     };
     
     fetchPoll();
-  }, [pollId]);
+  }, [pollId, getPollById]);
   
   // Calculate last updated time
   useEffect(() => {
@@ -58,6 +67,19 @@ const [poll, setPoll] = useState(null);
       setLastUpdated({ days, hours, minutes });
     }
   }, [poll]);
+  
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this poll?")) {
+      try {
+        await deletePoll(pollId);
+        // Redirect to polls list page after deletion
+        window.location.href = "/polls";
+      } catch (error) {
+        console.error("Error deleting poll:", error);
+        alert("Failed to delete poll. Please try again.");
+      }
+    }
+  };
   
   if (loading) {
     return (
@@ -157,6 +179,37 @@ const [poll, setPoll] = useState(null);
                 {poll.description || 'No description available for this poll.'}
               </p>
             </div>
+            
+            {/* Poll Options with Progress Bars */}
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-navy-700 dark:text-white mb-4">
+                Poll Results ({totalVotes} votes)
+              </h3>
+              
+              <div className="space-y-4">
+                {options.map((option) => {
+                  const percentage = totalVotes > 0 ? Math.round((option.voteCount / totalVotes) * 100) : 0;
+                  
+                  return (
+                    <div key={option.id} className="space-y-1">
+                      <div className="flex justify-between">
+                        <span className="text-gray-700 dark:text-gray-300">{option.text}</span>
+                        <span className="text-gray-700 dark:text-gray-300">{percentage}%</span>
+                      </div>
+                      <div className="w-full bg-gray-200 dark:bg-navy-700 rounded-full h-3">
+                        <div 
+                          className="bg-indigo-500 h-3 rounded-full" 
+                          style={{ width: `${percentage}%` }}
+                        ></div>
+                      </div>
+                      <div className="text-xs text-gray-500 dark:text-gray-400">
+                        {option.voteCount} votes
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
           
           {/* Poll Status Section */}
@@ -189,12 +242,12 @@ const [poll, setPoll] = useState(null);
               </div>
             </div>
             
-            <div className="flex gap-4">
-              <button className="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white font-medium py-3 px-4 rounded-lg transition-colors">
-                Vote Now
-              </button>
-              <button className="w-full bg-white hover:bg-gray-100 dark:bg-navy-700 dark:hover:bg-navy-600 text-navy-700 dark:text-white border border-gray-300 dark:border-white/10 font-medium py-3 px-4 rounded-lg transition-colors">
-                Share Poll
+            <div className="flex justify-center">
+              <button 
+                onClick={handleDelete}
+                className="bg-red-500 hover:bg-red-600 text-white font-medium py-3 px-8 rounded-lg transition-colors flex items-center"
+              >
+                <FaTrash className="mr-2" /> Delete Poll
               </button>
             </div>
           </div>

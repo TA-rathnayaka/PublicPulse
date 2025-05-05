@@ -77,7 +77,7 @@ const Banner = ({
             value={profileData.name || ""}
             onChange={handleChange}
             placeholder="Your Name"
-            className="text-xl font-bold text-center text-navy-700 dark:text-white bg-transparent border-b border-gray-300 dark:border-navy-600 focus:outline-none focus:border-brand-500"
+            className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"  
           />
         ) : (
           <h4 className="text-xl font-bold text-navy-700 dark:text-white">

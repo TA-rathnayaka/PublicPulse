@@ -7,7 +7,7 @@ import PolicyCreate from "views/admin/policies/components/PolicyCreate";
 import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
 import SignIn from "views/auth/SignIn";
-import Details from 'views/admin/policies/components/Details';
+import PolicyDetails from 'views/admin/policies/components/PolicyDetails';
 import PolicyHistory from 'views/admin/policies/components/PolicyHistory';
 import PollHistory from 'views/admin/polls/components/PollHistory';
 import PollDetails from 'views/admin/polls/components/PollDetails';
@@ -81,7 +81,7 @@ const routes = [
     layout: "/admin",
     path: "policy/:policyId",
     icon: <MdPolicy className="h-6 w-6" />,
-    component: <Details />, 
+    component: <PolicyDetails />, 
     hidden: true
   },
   {

@@ -3,12 +3,12 @@ import React from "react";
 import Card from "components/card";
 import { useNavigate } from "react-router-dom";
 import { FaFileAlt } from "react-icons/fa";
-import { useAuth } from "context/authContext";
+import { useInstituteData } from "context/InstituteContext";
 import { usePolicy } from "context/PolicyContext";
 
 const PolicyCard = ({ id, extra = "" }) => {
   const navigate = useNavigate();
-  const { instituteId } = useAuth();
+  const { instituteId } = useInstituteData();
   const { policyCache, handleDelete, getPolicyById } = usePolicy();
   
   // Get policy data from cache or fetch if not available

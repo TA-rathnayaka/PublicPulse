@@ -25,6 +25,7 @@ export const PollProvider = ({ children, instituteId }) => {
   const [polls, setPolls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
   const storage = getStorage();
   const user = getAuth().currentUser;
 
@@ -54,24 +55,17 @@ export const PollProvider = ({ children, instituteId }) => {
   // Get a single poll by ID
   const getPollById = async (pollId) => {
     try {
-      setLoading(true);
       const pollRef = doc(firestore, "polls", pollId);
       const pollSnap = await getDoc(pollRef);
       
       if (pollSnap.exists()) {
-        return {
-          id: pollSnap.id,
-          ...pollSnap.data()
-        };
-      } else {
-        throw new Error("Poll not found");
+        return { id: pollSnap.id, ...pollSnap.data() };
       }
+      throw new Error("Poll not found");
     } catch (err) {
       setError(err.message);
       console.error("Error fetching poll:", err);
       return null;
-    } finally {
-      setLoading(false);
     }
   };
 
