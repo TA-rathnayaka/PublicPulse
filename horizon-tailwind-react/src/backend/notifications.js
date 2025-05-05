@@ -1,60 +1,75 @@
-import { collection, addDoc ,getDocs,query, where,doc,updateDoc} from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  query,
+  where,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
 import { firestore } from "./firebase/firebase";
 
-
+// Fetch notifications for a user
 export const fetchNotifications = async (userId) => {
   try {
     if (!userId) {
       throw new Error("User ID is required to fetch notifications.");
     }
 
-    // Define the Firestore query to get notifications for the specific user
     const notificationsQuery = query(
       collection(firestore, "notifications"),
       where("userId", "==", userId)
     );
 
-    // Execute the query and retrieve the documents
     const querySnapshot = await getDocs(notificationsQuery);
 
-    // Map the documents into an array of notification objects
     const notifications = querySnapshot.docs.map((doc) => ({
-      id: doc.id, // Include document ID for updates or deletions
-      ...doc.data(), // Include the notification data
+      id: doc.id,
+      ...doc.data(),
     }));
 
     console.log("Notifications fetched successfully:", notifications);
-    return notifications; // Return the fetched notifications
+    return notifications;
   } catch (error) {
     console.error("Error fetching notifications:", error);
     throw new Error(`Failed to fetch notifications: ${error.message}`);
   }
 };
 
-export const sendNotifications = async ({ message, target, type, metadata }) => {
-
+// Send notifications to one or more users
+export const sendNotifications = async ({
+  message,
+  target,
+  type,
+  metadata,
+  instituteId,
+  photoURL,
+  pollId,
+}) => {
   try {
-    if (target === "all") {
-      // Retrieve all users from Firestore
-      const usersSnapshot = await getDocs(collection(firestore, "users"));
-      const allUsers = usersSnapshot.docs.map(doc => doc.id); // Assuming the document ID is the userId
+    const notificationPayload = {
+      message,
+      type,
+      metadata,
+      instituteId,
+      photoURL,
+      pollId,
+    };
 
-      // Send notification to all users
+    if (target === "all") {
+      const usersSnapshot = await getDocs(collection(firestore, "users"));
+      const allUsers = usersSnapshot.docs.map((doc) => doc.id);
+
       for (const userId of allUsers) {
-        await createNotification({ message, userId, type, metadata });
+        await createNotification({ ...notificationPayload, userId });
       }
       console.log("Notifications sent to all users.");
     } else {
-      // Send notification to a specific user or group based on the target
-      if (Array.isArray(target)) {
-        for (const userId of target) {
-          await createNotification({ message, userId, type, metadata });
-        }
-        console.log("Notifications sent to specific users.");
-      } else {
-        await createNotification({ message, userId: target, type, metadata });
-        console.log("Notification sent to a single user.");
+      const targets = Array.isArray(target) ? target : [target];
+      for (const userId of targets) {
+        await createNotification({ ...notificationPayload, userId });
       }
+      console.log("Notifications sent to target(s).");
     }
   } catch (error) {
     console.error("Error sending notifications:", error);
@@ -62,27 +77,30 @@ export const sendNotifications = async ({ message, target, type, metadata }) => 
   }
 };
 
-
-
-export const createNotification = async ({ message, userId, type, metadata }) => {
-  // Enhanced validation
-  if (!message?.trim()) {
-    throw new Error("Notification message is required and cannot be empty");
-  }
-  if (!userId) {
-    throw new Error("User ID is required");
-  }
-  if (!type?.trim()) {
-    throw new Error("Notification type is required");
-  }
+// Create a single notification document
+export const createNotification = async ({
+  message,
+  userId,
+  type,
+  metadata,
+  instituteId,
+  photoURL,
+  pollId,
+}) => {
+  if (!message?.trim()) throw new Error("Notification message is required");
+  if (!userId) throw new Error("User ID is required");
+  if (!type?.trim()) throw new Error("Notification type is required");
 
   const notification = {
     message: message.trim(),
-    userId, // Including userId
+    userId,
     type: type.trim(),
     metadata: metadata || {},
+    instituteId: instituteId || null,
+    photoURL: photoURL || null,
+    pollId: pollId || null,
     createdAt: new Date(),
-    status: 'pending' // Add status to track notification state
+    status: "pending",
   };
 
   try {
@@ -97,32 +115,28 @@ export const createNotification = async ({ message, userId, type, metadata }) =>
 
     console.log("Notification created successfully:", notificationRef.id);
     return notificationRef.id;
-
   } catch (error) {
     console.error("Error creating notification:", error);
     throw new Error(`Failed to create notification: ${error.message}`);
   }
 };
 
+// Mark notification as read
 export const markNotificationAsRead = async (notificationId) => {
   try {
     if (!notificationId) {
       throw new Error("Notification ID is required to update status.");
     }
 
-    // Reference to the specific notification document
     const notificationRef = doc(firestore, "notifications", notificationId);
-
-    // Update the status field to 'read'
     await updateDoc(notificationRef, {
       status: "read",
     });
 
     console.log(`Notification ${notificationId} marked as read.`);
-    return true; // Return success flag
+    return true;
   } catch (error) {
     console.error("Error updating notification status:", error);
     throw new Error(`Failed to update notification status: ${error.message}`);
   }
 };
-

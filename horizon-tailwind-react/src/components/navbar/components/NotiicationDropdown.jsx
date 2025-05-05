@@ -9,6 +9,7 @@ const NotificationDropdown = () => {
   const { notifications, markAsRead } = useNotifications();
   const navigate = useNavigate();
   
+  console.log("notifications:", notifications);
 
   const unreadCount = notifications.filter((n) => n.status === "pending").length;
 
@@ -17,8 +18,8 @@ const NotificationDropdown = () => {
 
     const route =
       notif.type === "polls"
-        ? `admin/${notif.instituteId}/polls/${notif.pollId}`
-        : `admin/${notif.instituteId}/policies/${notif.policyId}`;
+        ? `${notif.instituteId}/polls/${notif.pollId}`
+        : `${notif.instituteId}/policies/${notif.policyId}`;
 
     navigate(route);
   };

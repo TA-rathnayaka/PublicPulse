@@ -149,10 +149,12 @@ export const PollProvider = ({ children, instituteId }) => {
             message: `A new poll was added: ${pollData.title}`,
             target: "all",
             type: "polls",
+            instituteId: instituteId,
+            photoURL: pollData.photoURL,
+            pollId: pollRef.id,
             metadata: { 
-              pollId: pollRef.id,
               title: pollData.title.trim(),
-              photoUrl: user?.photoURL,
+              userId: user?.uid,
             },
           });
         } catch (notificationError) {
