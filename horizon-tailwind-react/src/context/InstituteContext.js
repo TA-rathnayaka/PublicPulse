@@ -4,9 +4,12 @@ import { doc, getDoc } from "firebase/firestore";
 
 const InstituteContext = createContext();
 
-export const InstituteProvider = ({ instituteId, children }) => {
+export const InstituteProvider = ({ children }) => {
+  const [instituteId, setInstituteId] = useState(null);
   const [instituteData, setInstituteData] = useState(null);
-  console.log("im on use Institute. instituteId: ", instituteId);
+  
+  console.log("InstituteContext - instituteId:", instituteId);
+  
   useEffect(() => {
     const fetchInstituteData = async () => {
       try {
@@ -31,12 +34,11 @@ export const InstituteProvider = ({ instituteId, children }) => {
   }, [instituteId]); 
 
   return (
-    <InstituteContext.Provider value={{instituteData,instituteId}}>
+    <InstituteContext.Provider value={{instituteData, instituteId, setInstituteId}}>
       {children}
     </InstituteContext.Provider>
   );
 };
-
 
 export const useInstituteData = () => {
   return useContext(InstituteContext);

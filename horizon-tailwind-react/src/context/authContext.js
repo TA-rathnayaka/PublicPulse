@@ -1,15 +1,15 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, firestore } from "../backend/firebase/firebase";
-import { useAuthState } from "react-firebase-hooks/auth"; // Firebase Hook
+import { useAuthState } from "react-firebase-hooks/auth";
 import { doc, getDoc } from "firebase/firestore";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, loading] = useAuthState(auth); // Use Firebase's built-in hook
+  const [user, loading] = useAuthState(auth);
   const [userRole, setUserRole] = useState(null);
-  const [instituteId, setInstituteId] = useState(null);
-  const [instituteName, setInstituteName] = useState(null);
+  const [instituteIds, setInstituteIds] = useState([]); // Store multiple IDs
+  const [instituteNames, setInstituteNames] = useState([]); // Optional: Store multiple names
   const [roleLoading, setRoleLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const AuthProvider = ({ children }) => {
       try {
         const adminDocRef = doc(firestore, "admins", user.uid);
         console.log("Fetching admin data for UID:", user.uid);
-        
+
         const adminDocSnapshot = await getDoc(adminDocRef);
         if (!adminDocSnapshot.exists()) {
           console.warn("Admin document not found");
@@ -32,12 +32,14 @@ export const AuthProvider = ({ children }) => {
 
         const adminData = adminDocSnapshot.data();
         setUserRole(adminData.role);
-        setInstituteId(adminData.instituteId);
 
-        if (adminData.instituteId) {
-          await fetchInstituteName(adminData.instituteId);
+        const ids = adminData.institutes || []; // Array of institute IDs
+        setInstituteIds(ids);
+
+        if (ids.length > 0) {
+          await fetchInstituteNames(ids);
         } else {
-          setInstituteName(null);
+          setInstituteNames([]);
         }
       } catch (error) {
         console.error("Failed to fetch admin or institute data:", error);
@@ -48,33 +50,41 @@ export const AuthProvider = ({ children }) => {
     };
 
     fetchUserData();
-  }, [user]); // Runs when `user` changes
+  }, [user]);
 
-  const fetchInstituteName = async (instituteId) => {
+  const fetchInstituteNames = async (ids) => {
     try {
-      const instituteDocRef = doc(firestore, "institutes", instituteId);
-      const instituteDocSnapshot = await getDoc(instituteDocRef);
-
-      if (instituteDocSnapshot.exists()) {
-        setInstituteName(instituteDocSnapshot.data().name);
-      } else {
-        console.warn("Institute document not found");
-        setInstituteName(null);
-      }
+      const names = await Promise.all(
+        ids.map(async (id) => {
+          const docRef = doc(firestore, "institutes", id);
+          const snapshot = await getDoc(docRef);
+          return snapshot.exists() ? snapshot.data().name : null;
+        })
+      );
+      setInstituteNames(names.filter(Boolean)); // Remove nulls
     } catch (error) {
-      console.error("Error fetching institute name:", error);
-      setInstituteName(null);
+      console.error("Error fetching institute names:", error);
+      setInstituteNames([]);
     }
   };
 
   const resetUserData = () => {
     setUserRole(null);
-    setInstituteId(null);
-    setInstituteName(null);
+    setInstituteIds([]);
+    setInstituteNames([]);
   };
 
   return (
-    <AuthContext.Provider value={{ user, userRole, instituteId, instituteName, loading, roleLoading }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        userRole,
+        instituteIds,
+        instituteNames,
+        loading,
+        roleLoading,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

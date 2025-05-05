@@ -8,6 +8,7 @@ import ManageInstitutes from "views/admin/institutes";
 import { MdHome, MdPerson, MdBusiness, MdMan } from "react-icons/md";
 import { useAuth } from "../../context/authContext";
 import Profile from "views/admin/profile";
+import { InstituteProvider } from "context/InstituteContext";
 
 export default function Dashboard(props) {
   const { ...rest } = props;
@@ -140,12 +141,16 @@ export default function Dashboard(props) {
               {...rest}
             />
             <div className="mx-auto mb-auto h-full min-h-[84vh] p-2 md:pr-2">
+            
               <Routes>
+                
                 <Route path="/" element={<Marketplace />} />
                 <Route path="manage-users" element={<ManageUsers />} />
                 <Route path="manage-institutes" element={<ManageInstitutes />} />
                 <Route path="Profile" element={<Profile />} />
+                
               </Routes>
+              
             </div>
             <div className="p-3">
               <Footer />

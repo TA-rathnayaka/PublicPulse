@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
-import { InstituteProvider } from "../../context/InstituteContext";
+import { InstituteProvider, useInstituteData } from "../../context/InstituteContext";
 import Navbar from "components/navbar";
 import Sidebar from "components/sidebar";
 import Footer from "components/footer/Footer";
@@ -13,7 +13,7 @@ import { PollProvider } from "context/PollContext";
 export default function Admin(props) {
   const { ...rest } = props;
   const location = useLocation();
-  const { instituteId } = useAuth();
+  const { instituteId } = useInstituteData();
   const [open, setOpen] = useState(true);
   const [currentRoute, setCurrentRoute] = useState("Dashboard");
 
@@ -77,14 +77,11 @@ export default function Admin(props) {
       if (prop.layout === "/admin") {
         return (
           <Route
-            key={key}
-            path={`/${instituteId}/${prop.path}`}
-            element={
-              <InstituteProvider instituteId={instituteId}>
-                {prop.component}
-              </InstituteProvider>
-            }
-          />
+  key={key}
+  path={`/${instituteId}/${prop.path}`}
+  element={prop.component}  // ❌ remove <InstituteProvider> here
+/>
+
         );
       }
       return null;
@@ -94,7 +91,7 @@ export default function Admin(props) {
   document.documentElement.dir = "ltr";
 
   return (
-    <InstituteProvider instituteId={instituteId}>
+    
      <PolicyProvider instituteId={instituteId}>
       <PollProvider instituteId={instituteId}>
       <div className="flex h-full w-full">
@@ -127,6 +124,6 @@ export default function Admin(props) {
       </div>
       </PollProvider>
       </PolicyProvider>
-    </InstituteProvider>
+    
   );
 }

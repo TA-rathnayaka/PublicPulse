@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/authContext";
+import { useInstituteData } from "context/InstituteContext"; // Import the context
 import Banner from "./components/Banner";
 import NftCard from "../../../components/card/NftCard";
 import TopCreatorTable from "./components/TableTopCreators";
@@ -8,42 +9,68 @@ import HistoryCard from "./components/HistoryCard";
 import tableDataTopCreators from "views/admin/marketplace/variables/tableDataTopCreators.json";
 import { tableColumnsTopCreators } from "views/admin/marketplace/variables/tableColumnsTopCreators";
 import { firestore } from "../../../backend/firebase/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 
 const Marketplace = () => {
   const navigate = useNavigate();
   const { user, userRole, instituteId } = useAuth();
-  const [institute, setInstitute] = useState(null);
+  const { setInstituteId } = useInstituteData(); // Get the setter from context
+  const [institutes, setInstitutes] = useState([]);
+  const [loadingInstitutes, setLoadingInstitutes] = useState(true);
 
   useEffect(() => {
-    if (instituteId) {
-      fetchInstitutes();
-    }
-  }, [user, instituteId]);
+    if (!user) return;
 
-  const fetchInstitutes = async () => {
-    if (!instituteId) {
-      console.log("No instituteId available");
-      return;
+    if (userRole === "super-admin") {
+      fetchAllInstitutes();
+    } else if (instituteId) {
+      fetchSingleInstitute(instituteId);
     }
+  }, [user, userRole, instituteId]);
 
+  const fetchSingleInstitute = async (id) => {
     try {
-      const instituteRef = doc(firestore, "institutes", instituteId);
-      const instituteSnap = await getDoc(instituteRef);
-
-      if (instituteSnap.exists()) {
-        setInstitute(instituteSnap.data());
+      const ref = doc(firestore, "institutes", id);
+      const snapshot = await getDoc(ref);
+      if (snapshot.exists()) {
+        setInstitutes([{ id: snapshot.id, ...snapshot.data() }]);
       } else {
-        setInstitute({});
+        setInstitutes([]);
       }
-    } catch (error) {
-      console.error("Error fetching institute:", error);
+    } catch (err) {
+      console.error("Error fetching institute:", err);
+      setInstitutes([]);
+    } finally {
+      setLoadingInstitutes(false);
     }
   };
 
-  if (!user) {
-    return null;
-  }
+  const fetchAllInstitutes = async () => {
+    try {
+      const colRef = collection(firestore, "institutes");
+      const snapshot = await getDocs(colRef);
+      const allInstitutes = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setInstitutes(allInstitutes);
+    } catch (err) {
+      console.error("Error fetching all institutes:", err);
+      setInstitutes([]);
+    } finally {
+      setLoadingInstitutes(false);
+    }
+  };
+
+  // Handle card click - update context and navigate
+  const handleInstituteClick = (id) => {
+    // Update the InstituteContext with the selected instituteId
+    setInstituteId(id);
+    // Navigate to the institute page
+    navigate(`/admin/${id}/default`);
+  };
+
+  if (!user) return null;
 
   return (
     <div className="mt-3 grid h-full grid-cols-1 gap-5 xl:grid-cols-2 2xl:grid-cols-3">
@@ -54,33 +81,37 @@ const Marketplace = () => {
         <div className="mt-5">
           <div className="mb-4 flex flex-col justify-between px-4 md:flex-row md:items-center">
             <h4 className="ml-1 text-2xl font-bold text-navy-700 dark:text-white">
-              Your Institutes
+              {userRole === "super-admin" ? "All Institutes" : "Your Institute"}
             </h4>
           </div>
 
           <div className="z-20 grid grid-cols-1 gap-5 md:grid-cols-3">
-            {institute && institute.name ? (
-              <NftCard
-                onClick={() => navigate(`/admin/${instituteId}/default`)}
-                key={institute.id}
-                name={institute.name}
-                author={institute.location || "Location not specified"}
-                bidders={[]}
-                image={institute.logo}
-                currentBid=""
-                download="#"
-              />
+            {loadingInstitutes ? (
+              <div className="flex h-full w-full items-center justify-center rounded-xl bg-white p-4 dark:bg-navy-800">
+                <p className="text-lg text-gray-600 dark:text-white">Loading...</p>
+              </div>
+            ) : institutes.length > 0 ? (
+              institutes.map((inst) => (
+                <NftCard
+                  onClick={() => handleInstituteClick(inst.id)}
+                  key={inst.id}
+                  name={inst.name}
+                  author={inst.location || "Location not specified"}
+                  bidders={[]}
+                  image={inst.logo}
+                  currentBid=""
+                  download="#"
+                />
+              ))
             ) : (
               <div className="flex h-full w-full items-center justify-center rounded-xl bg-white p-4 dark:bg-navy-800">
-                <p className="text-lg text-gray-600 dark:text-white">
-                  No institutes found
-                </p>
+                <p className="text-lg text-gray-600 dark:text-white">No institutes found</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* Statistics Section */}
+        {/* Statistics Section for Super Admin */}
         {userRole === "super-admin" && (
           <div className="mt-5">
             <div className="mb-4">
@@ -93,13 +124,13 @@ const Marketplace = () => {
                 <h5 className="mb-2 text-lg font-semibold text-navy-700 dark:text-white">
                   Total Users
                 </h5>
-                {/* Add your statistics here */}
+                {/* Add user stats here */}
               </div>
               <div className="rounded-xl bg-white p-4 dark:bg-navy-800">
                 <h5 className="mb-2 text-lg font-semibold text-navy-700 dark:text-white">
                   Total Institutes
                 </h5>
-                {/* Add your statistics here */}
+                <p className="text-md text-navy-600 dark:text-white">{institutes.length}</p>
               </div>
             </div>
           </div>
