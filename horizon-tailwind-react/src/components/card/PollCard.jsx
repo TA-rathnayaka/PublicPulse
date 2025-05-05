@@ -2,12 +2,12 @@ import React from "react";
 import Card from "components/card";
 import { IoRemove } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "context/authContext";
+import { useInstituteData } from "context/InstituteContext";
 import { usePoll } from "context/PollContext";
 
 const PollCard = ({ id, extra = "" }) => {
   const navigate = useNavigate();
-  const { instituteId } = useAuth();
+  const { instituteId } = useInstituteData();
   const { polls, deletePoll } = usePoll();
   
   // Find the poll from context using id

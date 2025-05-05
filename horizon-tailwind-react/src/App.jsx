@@ -8,10 +8,14 @@ import Dashboard from "layouts/dashboard";
 import { AuthProvider } from "context/authContext";
 import Landing from "layouts/landing/index";
 import InstitutionRegistration from "layouts/register/index"
+import { InstituteProvider } from "context/InstituteContext";
+import { NotificationsProvider } from "context/NotificationsContext";
 
 const App = () => {
   return (
     <AuthProvider>
+      <InstituteProvider>
+        <NotificationsProvider>
     <Routes>
       
       <Route path="auth/*" element={<AuthLayout />} />
@@ -23,6 +27,8 @@ const App = () => {
 
       
     </Routes>
+    </NotificationsProvider>
+    </InstituteProvider>
     </AuthProvider>
   );
 };

@@ -4,9 +4,20 @@ import { doc, getDoc } from "firebase/firestore";
 
 const InstituteContext = createContext();
 
-export const InstituteProvider = ({ instituteId, children }) => {
+export const InstituteProvider = ({ children }) => {
+  const [instituteId, setInstituteIdState] = useState(() => {
+    // Get from localStorage initially
+    return localStorage.getItem("instituteId") || null;
+  });
   const [instituteData, setInstituteData] = useState(null);
-  console.log("im on use Institute. instituteId: ", instituteId);
+
+  // Keep localStorage in sync when instituteId changes
+  useEffect(() => {
+    if (instituteId) {
+      localStorage.setItem("instituteId", instituteId);
+    }
+  }, [instituteId]);
+
   useEffect(() => {
     const fetchInstituteData = async () => {
       try {
@@ -28,15 +39,24 @@ export const InstituteProvider = ({ instituteId, children }) => {
     if (instituteId) {
       fetchInstituteData();
     }
-  }, [instituteId]); 
+  }, [instituteId]);
+
+  // Wrap setter to also persist
+  const setInstituteId = (id) => {
+    setInstituteIdState(id);
+    if (id) {
+      localStorage.setItem("instituteId", id);
+    } else {
+      localStorage.removeItem("instituteId");
+    }
+  };
 
   return (
-    <InstituteContext.Provider value={{instituteData,instituteId}}>
+    <InstituteContext.Provider value={{ instituteData, instituteId, setInstituteId }}>
       {children}
     </InstituteContext.Provider>
   );
 };
-
 
 export const useInstituteData = () => {
   return useContext(InstituteContext);
