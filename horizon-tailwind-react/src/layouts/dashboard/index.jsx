@@ -61,7 +61,7 @@ export default function Dashboard(props) {
       title: "Manage Institutes",
       icon: <MdBusiness className="h-6 w-6" />,
       path: "/dashboard/manage-institutes",
-      showForRole: "super-admin",
+      showAlways: true,
     },
     {
       title: "Profile",

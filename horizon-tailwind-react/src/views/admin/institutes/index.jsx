@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { firestore } from "../../../backend/firebase/firebase";
+import React, { useState, useEffect, useRef } from "react";
+import { firestore, storage } from "../../../backend/firebase/firebase";
 import {
   getDoc,
   setDoc,
@@ -12,17 +12,16 @@ import {
   arrayUnion,
 } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { useAuth } from "context/authContext";
+import { MdFileUpload } from "react-icons/md";
+import { Upload, PlusCircle, Trash2 } from 'lucide-react';
 
-const DeleteConfirmationModal = ({
-  isOpen,
-  onClose,
-  onConfirm,
-  instituteName,
-}) => {
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, instituteName }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="bg-black fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
       <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-navy-800">
         <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
           Confirm Deletion
@@ -59,30 +58,56 @@ const ManageInstitutes = () => {
     location: "",
     logo: "",
   });
+  const [newLogoFile, setNewLogoFile] = useState(null);
+  const [newImagePreview, setNewImagePreview] = useState(null);
   const [editingInstitute, setEditingInstitute] = useState(null);
   const [editFormData, setEditFormData] = useState({
     name: "",
     location: "",
     logo: "",
   });
+  const [editLogoFile, setEditLogoFile] = useState(null);
+  const [editImagePreview, setEditImagePreview] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState(null);
+  const { role, instituteIds } = useAuth();
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [itemToDelete, setItemToDelete] = useState({ id: null, name: "" });
   const auth = getAuth();
   const user = auth.currentUser;
+  const isAdmin = role === "super-admin";
+
+  // Refs for file inputs
+  const newFileInputRef = useRef(null);
+  const editFileInputRef = useRef(null);
 
   useEffect(() => {
     fetchInstitutes();
-  }, []);
+  }, [isAdmin, instituteIds]);
 
   const fetchInstitutes = async () => {
     try {
+      let institutesList = [];
       const institutesCollection = collection(firestore, "institutes");
-      const instituteSnapshot = await getDocs(institutesCollection);
-      const institutesList = instituteSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+
+      if (isAdmin) {
+        const instituteSnapshot = await getDocs(institutesCollection);
+        institutesList = instituteSnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+      } else if (instituteIds && instituteIds.length > 0) {
+        for (const id of instituteIds) {
+          const instituteDoc = await getDoc(doc(firestore, "institutes", id));
+          if (instituteDoc.exists()) {
+            institutesList.push({
+              id: instituteDoc.id,
+              ...instituteDoc.data(),
+            });
+          }
+        }
+      }
+
       setInstitutes(institutesList);
       setLoading(false);
     } catch (error) {
@@ -91,16 +116,64 @@ const ManageInstitutes = () => {
     }
   };
 
+  const uploadLogo = async (file, instituteId) => {
+    if (!file) return null;
+
+    try {
+      const storageRef = ref(storage, `institutes/${instituteId}/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading logo:", error);
+      throw error;
+    }
+  };
+
+  const handleNewImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setNewLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setEditLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleAddInstitute = async (e) => {
     e.preventDefault();
+    setUploadProgress("Uploading...");
     try {
       const institutesCollection = collection(firestore, "institutes");
-      const docRef = await addDoc(institutesCollection, newInstitute);
+      const docRef = await addDoc(institutesCollection, {
+        name: newInstitute.name,
+        location: newInstitute.location,
+        logo: "",
+      });
       const newInstituteId = docRef.id;
+
+      let logoUrl = "";
+      if (newLogoFile) {
+        logoUrl = await uploadLogo(newLogoFile, newInstituteId);
+        await updateDoc(doc(firestore, "institutes", newInstituteId), { logo: logoUrl });
+      }
 
       const adminId = user.uid;
       const adminRef = doc(firestore, "admins", adminId);
-
       const adminDoc = await getDoc(adminRef);
 
       if (adminDoc.exists()) {
@@ -116,8 +189,12 @@ const ManageInstitutes = () => {
 
       fetchInstitutes();
       setNewInstitute({ name: "", location: "", logo: "" });
+      setNewLogoFile(null);
+      setNewImagePreview(null);
+      if (newFileInputRef.current) newFileInputRef.current.value = "";
     } catch (error) {
-      console.error("Error adding institute or updating admin:", error);
+      console.error("Error adding institute or uploading logo:", error);
+      setUploadProgress(null);
     }
   };
 
@@ -128,6 +205,8 @@ const ManageInstitutes = () => {
       location: institute.location,
       logo: institute.logo || "",
     });
+    setEditLogoFile(null);
+    setEditImagePreview(institute.logo || null); // Show existing logo as preview
     setShowEditModal(true);
   };
 
@@ -141,14 +220,26 @@ const ManageInstitutes = () => {
 
   const handleUpdateInstitute = async (e) => {
     e.preventDefault();
+    setUploadProgress("Uploading...");
     try {
       const instituteRef = doc(firestore, "institutes", editingInstitute);
-      await updateDoc(instituteRef, editFormData);
+      let updatedData = { ...editFormData };
 
+      if (editLogoFile) {
+        const logoUrl = await uploadLogo(editLogoFile, editingInstitute);
+        updatedData.logo = logoUrl;
+      } else if (!editImagePreview) {
+        updatedData.logo = ""; // Clear logo if removed
+      }
+
+      await updateDoc(instituteRef, updatedData);
       setShowEditModal(false);
+      setUploadProgress(null);
       fetchInstitutes();
+      if (editFileInputRef.current) editFileInputRef.current.value = "";
     } catch (error) {
       console.error("Error updating institute:", error);
+      setUploadProgress(null);
     }
   };
 
@@ -159,20 +250,15 @@ const ManageInstitutes = () => {
 
   const handleConfirmDelete = async () => {
     try {
-      // First remove from admins
       const adminId = user.uid;
       const adminRef = doc(firestore, "admins", adminId);
-
       const adminDoc = await getDoc(adminRef);
       if (adminDoc.exists()) {
         await updateDoc(adminRef, {
-          institutes: adminDoc
-            .data()
-            .institutes.filter((id) => id !== itemToDelete.id),
+          institutes: adminDoc.data().institutes.filter((id) => id !== itemToDelete.id),
         });
       }
 
-      // Then delete the institute
       const instituteRef = doc(firestore, "institutes", itemToDelete.id);
       await deleteDoc(instituteRef);
 
@@ -189,7 +275,7 @@ const ManageInstitutes = () => {
 
   return (
     <div className="mt-3 grid h-full gap-5">
-      {/* Add Institute Card */}
+      {/* Add New Institute Card */}
       <div className="rounded-[20px] bg-white p-[20px] shadow-md dark:bg-navy-800">
         <div className="mb-8">
           <h4 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -218,18 +304,58 @@ const ManageInstitutes = () => {
             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
             required
           />
-          <input
-            type="text"
-            placeholder="Logo URL"
-            value={newInstitute.logo}
-            onChange={(e) =>
-              setNewInstitute({ ...newInstitute, logo: e.target.value })
-            }
-            className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
-          />
+          <div className="flex flex-col items-start justify-center rounded-2xl bg-white bg-clip-border px-3 py-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
+            <p className="text-lg font-medium text-navy-700 dark:text-white mb-4">Institute Logo</p>
+            {newImagePreview ? (
+              <div className="mb-4 w-full">
+                <img
+                  src={newImagePreview}
+                  alt="Logo preview"
+                  className="w-full h-auto rounded-md max-h-48 object-contain border dark:border-gray-600"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setNewLogoFile(null);
+                    setNewImagePreview(null);
+                    if (newFileInputRef.current) newFileInputRef.current.value = "";
+                  }}
+                  className="mt-2 flex items-center text-red-600 dark:text-red-400 text-sm"
+                >
+                  <Trash2 className="w-4 h-4 mr-1" /> Remove image
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 bg-white dark:bg-navy-800 w-full">
+                <div className="mb-4">
+                  <MdFileUpload className="w-12 h-12 text-navy-600 dark:text-navy-400" />
+                </div>
+                <p className="text-gray-700 dark:text-white mb-1">
+                  Drop your image here, or
+                  <label className="text-navy-600 dark:text-navy-400 font-medium cursor-pointer ml-1">
+                    browse
+                    <input
+                      type="file"
+                      accept="image/*"
+                      ref={newFileInputRef}
+                      onChange={handleNewImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  1600 x 1200 (4:3) recommended. PNG, JPG, and GIF files are allowed
+                </p>
+              </div>
+            )}
+          </div>
+          {uploadProgress && (
+            <p className="text-sm text-gray-600 dark:text-gray-300">{uploadProgress}</p>
+          )}
           <button
             type="submit"
             className="rounded-lg bg-brand-500 px-4 py-2 text-white transition-colors hover:bg-brand-600"
+            disabled={uploadProgress}
           >
             Add Institute
           </button>
@@ -240,74 +366,80 @@ const ManageInstitutes = () => {
       <div className="rounded-[20px] bg-white p-[20px] shadow-md dark:bg-navy-800">
         <div className="mb-8">
           <h4 className="text-xl font-bold text-navy-700 dark:text-white">
-            Manage Institutes
+            {isAdmin ? "Manage Institutes" : "Your Institutes"}
           </h4>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-                  Location
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-                  Logo
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {institutes.map((institute) => (
-                <tr key={institute.id} className="border-b border-gray-200">
-                  <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-                    {institute.name}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-                    {institute.location}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-                    {institute.logo ? (
-                      <img
-                        src={institute.logo}
-                        alt="Institute Logo"
-                        className="h-10 w-10 rounded-full object-cover"
-                      />
-                    ) : (
-                      "No logo"
-                    )}
-                  </td>
-                  <td className="flex space-x-2 px-6 py-4">
-                    <button
-                      onClick={() => handleEditClick(institute)}
-                      className="rounded-lg bg-blue-500 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-600"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteClick(institute)}
-                      className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white transition-colors hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
-                  </td>
+        {institutes.length === 0 ? (
+          <div className="text-center text-gray-600 dark:text-gray-300">
+            No institutes found.
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200">
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
+                    Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
+                    Location
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
+                    Logo
+                  </th>
+                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
+                    Actions
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {institutes.map((institute) => (
+                  <tr key={institute.id} className="border-b border-gray-200">
+                    <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
+                      {institute.name}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
+                      {institute.location}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
+                      {institute.logo ? (
+                        <img
+                          src={institute.logo}
+                          alt="Institute Logo"
+                          className="h-10 w-10 rounded-full object-cover"
+                        />
+                      ) : (
+                        "No logo"
+                      )}
+                    </td>
+                    <td className="flex space-x-2 px-6 py-4">
+                      <button
+                        onClick={() => handleEditClick(institute)}
+                        className="rounded-lg bg-blue-500 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-600"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteClick(institute)}
+                        className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white transition-colors hover:bg-red-600"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Edit Modal */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
-            className="bg-black absolute inset-0 bg-opacity-50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
             onClick={() => setShowEditModal(false)}
           ></div>
 
@@ -343,18 +475,54 @@ const ManageInstitutes = () => {
                     required
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Logo URL
-                  </label>
-                  <input
-                    type="text"
-                    name="logo"
-                    value={editFormData.logo}
-                    onChange={handleEditFormChange}
-                    className="mt-1 w-full rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
-                  />
+                <div className="flex flex-col items-start justify-center rounded-2xl bg-white bg-clip-border px-3 py-4 shadow-3xl shadow-shadow-500 dark:!bg-navy-700 dark:shadow-none">
+                  <p className="text-lg font-medium text-navy-700 dark:text-white mb-4">Institute Logo</p>
+                  {editImagePreview ? (
+                    <div className="mb-4 w-full">
+                      <img
+                        src={editImagePreview}
+                        alt="Logo preview"
+                        className="w-full h-auto rounded-md max-h-48 object-contain border dark:border-gray-600"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setEditLogoFile(null);
+                          setEditImagePreview(null);
+                          if (editFileInputRef.current) editFileInputRef.current.value = "";
+                        }}
+                        className="mt-2 flex items-center text-red-600 dark:text-red-400 text-sm"
+                      >
+                        <Trash2 className="w-4 h-4 mr-1" /> Remove image
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-8 bg-white dark:bg-navy-800 w-full">
+                      <div className="mb-4">
+                        <MdFileUpload className="w-12 h-12 text-navy-600 dark:text-navy-400" />
+                      </div>
+                      <p className="text-gray-700 dark:text-white mb-1">
+                        Drop your image here, or
+                        <label className="text-navy-600 dark:text-navy-400 font-medium cursor-pointer ml-1">
+                          browse
+                          <input
+                            type="file"
+                            accept="image/*"
+                            ref={editFileInputRef}
+                            onChange={handleEditImageUpload}
+                            className="hidden"
+                          />
+                        </label>
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        1600 x 1200 (4:3) recommended. PNG, JPG, and GIF files are allowed
+                      </p>
+                    </div>
+                  )}
                 </div>
+                {uploadProgress && (
+                  <p className="text-sm text-gray-600 dark:text-gray-300">{uploadProgress}</p>
+                )}
                 <div className="mt-6 flex justify-end space-x-3">
                   <button
                     type="button"
@@ -366,6 +534,7 @@ const ManageInstitutes = () => {
                   <button
                     type="submit"
                     className="rounded-lg bg-brand-500 px-4 py-2 text-white transition-colors hover:bg-brand-600"
+                    disabled={uploadProgress}
                   >
                     Save Changes
                   </button>
