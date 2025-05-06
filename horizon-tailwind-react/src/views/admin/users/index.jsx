@@ -1,11 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { firestore } from "../../../backend/firebase/firebase";
-import { collection, getDocs, updateDoc, doc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  setDoc,
+  doc,
+  deleteDoc,
+  getDoc,
+} from "firebase/firestore";
 import Card from "components/card";
 import axios from "axios";
+import { SearchContext } from "context/SearchContext"; // Adjust the path to your actual context
+
 const ManageUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { searchText } = useContext(SearchContext);
 
   useEffect(() => {
     fetchUsers();
@@ -13,8 +23,8 @@ const ManageUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/users`); // Make sure your backend exposes this route
-      setUsers(response.data); // Assuming the response is an array of users
+      const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/api/users`);
+      setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
@@ -22,29 +32,44 @@ const ManageUsers = () => {
     }
   };
 
-  const handleRoleChange = async (userId, newRole) => {
+  const makeSuperAdmin = async (userId, userData) => {
     try {
-      const userRef = doc(firestore, "users", userId);
-      await updateDoc(userRef, {
-        role: newRole
-      });
-      fetchUsers(); // Refresh the list
+      const adminRef = doc(firestore, "admin", userId);
+      const adminSnap = await getDoc(adminRef);
+
+      if (!adminSnap.exists()) {
+        await setDoc(adminRef, {
+          ...userData,
+          role: "super-admin",
+        });
+        alert("User promoted to Super Admin!");
+      } else {
+        alert("User is already a Super Admin.");
+      }
     } catch (error) {
-      console.error("Error updating user role:", error);
+      console.error("Error making user super admin:", error);
     }
   };
 
   const handleDeleteUser = async (userId) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
       try {
-        const userRef = doc(firestore, "users", userId);
-        await deleteDoc(userRef);
-        fetchUsers(); // Refresh the list
+        await axios.delete(`${process.env.REACT_APP_BASE_URL}/api/users/${userId}`);
+        fetchUsers(); // Refresh the user list
       } catch (error) {
         console.error("Error deleting user:", error);
       }
     }
   };
+
+  const filteredUsers = users.filter((user) =>
+    (user.username || "")
+      .toLowerCase()
+      .includes(searchText.toLowerCase()) ||
+    (user.email || "")
+      .toLowerCase()
+      .includes(searchText.toLowerCase())
+  );
 
   if (loading) {
     return <div className="text-white">Loading...</div>;
@@ -63,22 +88,13 @@ const ManageUsers = () => {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-                  Name
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-                  Email
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-                  Role
-                </th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-                  Actions
-                </th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">Name</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">Email</th>
+                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">Actions</th>
               </tr>
             </thead>
             <tbody>
-              {users.map((user) => (
+              {filteredUsers.map((user) => (
                 <tr key={user.id} className="border-b border-gray-200">
                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
                     {user.username || "N/A"}
@@ -86,18 +102,13 @@ const ManageUsers = () => {
                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
                     {user.email || "N/A"}
                   </td>
-                  <td className="px-6 py-4">
-                    <select
-                      value={user.role}
-                      onChange={(e) => handleRoleChange(user.id, e.target.value)}
-                      className="rounded-lg border border-gray-300 bg-white px-2 py-1 text-sm dark:bg-navy-700 dark:text-white"
+                  <td className="px-6 py-4 flex gap-2">
+                    <button
+                      onClick={() => makeSuperAdmin(user.id, user)}
+                      className="rounded-lg bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
                     >
-                      <option value="user">User</option>
-                      <option value="admin">Admin</option>
-                      <option value="super-admin">Super Admin</option>
-                    </select>
-                  </td>
-                  <td className="px-6 py-4">
+                      Make Super Admin
+                    </button>
                     <button
                       onClick={() => handleDeleteUser(user.id)}
                       className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
@@ -115,4 +126,4 @@ const ManageUsers = () => {
   );
 };
 
-export default ManageUsers; 
+export default ManageUsers;

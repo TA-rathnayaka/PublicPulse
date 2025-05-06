@@ -1,22 +1,17 @@
-import React from "react";
+import React, {useContext} from "react";
 import Dropdown from "components/dropdown";
 import { FiAlignJustify } from "react-icons/fi";
 import { Link, useNavigate } from "react-router-dom";
-import navbarimage from "assets/img/layout/Navbar.png";
-import { BsArrowBarUp } from "react-icons/bs";
 import { FiSearch } from "react-icons/fi";
 import { RiMoonFill, RiSunFill } from "react-icons/ri";
-import {
-  IoMdNotificationsOutline,
-  IoMdInformationCircleOutline,
-} from "react-icons/io";
 import avatar from "assets/img/avatars/avatar4.png";
 import { auth } from "services/firebaseConfig";
-import { useAuth } from "context/authContext";
 import { useAuthState } from "react-firebase-hooks/auth";
 import NotificationDropdown from "./components/NotiicationDropdown";
+import { SearchContext } from "context/SearchContext";
 
 const Navbar = (props) => {
+  const { searchText, setSearchText } = useContext(SearchContext);
   const { onOpenSidenav, brandText } = props;
   const [darkmode, setDarkmode] = React.useState(false);
   const [user, loading, error] = useAuthState(auth);
@@ -61,6 +56,8 @@ const Navbar = (props) => {
           <input
             type="text"
             placeholder="Search..."
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
             class="block h-full w-full rounded-full bg-lightPrimary text-sm font-medium text-navy-700 outline-none placeholder:!text-gray-400 dark:bg-navy-900 dark:text-white dark:placeholder:!text-white sm:w-fit"
           />
         </div>
@@ -75,7 +72,7 @@ const Navbar = (props) => {
           
         />
         {/* start Horizon PRO */}
-        <Dropdown
+        {/* <Dropdown
           button={
             <p className="cursor-pointer">
               <IoMdInformationCircleOutline className="h-4 w-4 text-gray-600 dark:text-white" />
@@ -116,7 +113,7 @@ const Navbar = (props) => {
           }
           classNames={"py-2 top-6 -left-[250px] md:-left-[330px] w-max"}
           animation="origin-[75%_0%] md:origin-top-right transition-all duration-300 ease-in-out"
-        />
+        /> */}
         <div
           className="cursor-pointer text-gray-600"
           onClick={() => {

@@ -7,28 +7,29 @@ import Marketplace from "views/admin/marketplace";
 import Dashboard from "layouts/dashboard";
 import { AuthProvider } from "context/authContext";
 import Landing from "layouts/landing/index";
-import InstitutionRegistration from "layouts/register/index"
+import InstitutionRegistration from "layouts/register/index";
 import { InstituteProvider } from "context/InstituteContext";
-import { NotificationsProvider } from "context/NotificationsContext";
+import { NotificationsProvider } from "context/NotificationsContext"
+import { SearchProvider } from "context/SearchContext";
 
 const App = () => {
   return (
     <AuthProvider>
       <InstituteProvider>
         <NotificationsProvider>
-    <Routes>
-      
-      <Route path="auth/*" element={<AuthLayout />} />
-      <Route path="admin/*" element={<AdminLayout />} />
-      <Route path="rtl/*" element={<RtlLayout />} />
-      <Route path="/" element={<Landing/>} />
-      <Route path="register/" element={<InstitutionRegistration />} />
-      <Route path="dashboard/*" element={<Dashboard />} />
+          <SearchProvider>
+            <Routes>
+              <Route path="auth/*" element={<AuthLayout />} />
 
-      
-    </Routes>
-    </NotificationsProvider>
-    </InstituteProvider>
+              <Route path="admin/*" element={<AdminLayout />} />
+              <Route path="dashboard/*" element={<Dashboard />} />
+
+              <Route path="/" element={<Landing />} />
+              <Route path="register/" element={<InstitutionRegistration />} />
+            </Routes>
+          </SearchProvider>
+        </NotificationsProvider>
+      </InstituteProvider>
     </AuthProvider>
   );
 };
