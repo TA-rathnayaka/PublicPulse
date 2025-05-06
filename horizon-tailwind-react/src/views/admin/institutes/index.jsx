@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { firestore } from "../../../backend/firebase/firebase";
-import { storage } from "../../../backend/firebase/firebase";
 import {
   getDoc,
   setDoc,
@@ -12,15 +11,45 @@ import {
   deleteDoc,
   arrayUnion,
 } from "firebase/firestore";
-import { 
-  ref, 
-  uploadBytes, 
-  getDownloadURL, 
-  deleteObject 
-} from "firebase/storage";
 import { getAuth } from "firebase/auth";
-import { MdFileUpload } from "react-icons/md";
-import Card from "components/card";
+
+const DeleteConfirmationModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  instituteName,
+}) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="bg-black fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-sm">
+      <div className="mx-4 w-full max-w-md rounded-lg bg-white p-6 shadow-xl dark:bg-navy-800">
+        <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
+          Confirm Deletion
+        </h3>
+        <p className="mb-6 text-gray-600 dark:text-gray-300">
+          Are you sure you want to delete{" "}
+          <span className="font-medium">"{instituteName}"</span>? This action
+          cannot be undone.
+        </p>
+        <div className="flex justify-end space-x-3">
+          <button
+            onClick={onClose}
+            className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-navy-700"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="rounded-lg bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ManageInstitutes = () => {
   const [institutes, setInstitutes] = useState([]);
@@ -28,21 +57,17 @@ const ManageInstitutes = () => {
   const [newInstitute, setNewInstitute] = useState({
     name: "",
     location: "",
+    logo: "",
   });
-  const [logoFile, setLogoFile] = useState(null);
-  const [logoPreview, setLogoPreview] = useState(null);
   const [editingInstitute, setEditingInstitute] = useState(null);
   const [editFormData, setEditFormData] = useState({
     name: "",
     location: "",
     logo: "",
   });
-  const [editLogoFile, setEditLogoFile] = useState(null);
-  const [editLogoPreview, setEditLogoPreview] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [uploadingLogo, setUploadingLogo] = useState(false);
-  const fileInputRef = useRef(null);
-  const editFileInputRef = useRef(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState({ id: null, name: "" });
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -66,70 +91,16 @@ const ManageInstitutes = () => {
     }
   };
 
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setLogoFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setLogoPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleEditLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setEditLogoFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setEditLogoPreview(reader.result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const uploadLogo = async (file, instituteId) => {
-    if (!file) return null;
-    
-    try {
-      setUploadingLogo(true);
-      const storageRef = ref(storage, `institutes/${instituteId}/${file.name}`);
-      await uploadBytes(storageRef, file);
-      const downloadURL = await getDownloadURL(storageRef);
-      setUploadingLogo(false);
-      return downloadURL;
-    } catch (error) {
-      console.error("Error uploading logo:", error);
-      setUploadingLogo(false);
-      return null;
-    }
-  };
-
   const handleAddInstitute = async (e) => {
     e.preventDefault();
     try {
-      // First create the institute document to get an ID
       const institutesCollection = collection(firestore, "institutes");
-      const instituteData = { ...newInstitute };
-      
-      // Add the institute to get its ID
-      const docRef = await addDoc(institutesCollection, instituteData);
+      const docRef = await addDoc(institutesCollection, newInstitute);
       const newInstituteId = docRef.id;
-      
-      // Upload logo if there is one
-      if (logoFile) {
-        const logoURL = await uploadLogo(logoFile, newInstituteId);
-        if (logoURL) {
-          // Update the institute with the logo URL
-          await updateDoc(docRef, { logo: logoURL });
-        }
-      }
 
-      // Update admin's institutes list
       const adminId = user.uid;
       const adminRef = doc(firestore, "admins", adminId);
+
       const adminDoc = await getDoc(adminRef);
 
       if (adminDoc.exists()) {
@@ -143,17 +114,8 @@ const ManageInstitutes = () => {
         });
       }
 
-      // Reset form and refetch institutes
-      setNewInstitute({ name: "", location: "" });
-      setLogoFile(null);
-      setLogoPreview(null);
-      
-      // Reset the file input
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      
       fetchInstitutes();
+      setNewInstitute({ name: "", location: "", logo: "" });
     } catch (error) {
       console.error("Error adding institute or updating admin:", error);
     }
@@ -166,8 +128,6 @@ const ManageInstitutes = () => {
       location: institute.location,
       logo: institute.logo || "",
     });
-    setEditLogoPreview(institute.logo || null);
-    setEditLogoFile(null);
     setShowEditModal(true);
   };
 
@@ -183,32 +143,8 @@ const ManageInstitutes = () => {
     e.preventDefault();
     try {
       const instituteRef = doc(firestore, "institutes", editingInstitute);
-      
-      // If there's a new logo file, upload it
-      if (editLogoFile) {
-        const logoURL = await uploadLogo(editLogoFile, editingInstitute);
-        if (logoURL) {
-          setEditFormData({
-            ...editFormData,
-            logo: logoURL,
-          });
-          await updateDoc(instituteRef, {
-            ...editFormData, 
-            logo: logoURL
-          });
-        } else {
-          await updateDoc(instituteRef, editFormData);
-        }
-      } else {
-        await updateDoc(instituteRef, editFormData);
-      }
+      await updateDoc(instituteRef, editFormData);
 
-      // Reset the file input
-      if (editFileInputRef.current) {
-        editFileInputRef.current.value = '';
-      }
-      
-      setEditLogoFile(null);
       setShowEditModal(false);
       fetchInstitutes();
     } catch (error) {
@@ -216,54 +152,34 @@ const ManageInstitutes = () => {
     }
   };
 
-  const handleDeleteInstitute = async (instituteId) => {
-    if (window.confirm("Are you sure you want to delete this institute?")) {
-      try {
-        // First get the institute to see if it has a logo
-        const instituteRef = doc(firestore, "institutes", instituteId);
-        const instituteSnap = await getDoc(instituteRef);
-        
-        if (instituteSnap.exists()) {
-          const institute = instituteSnap.data();
-          
-          // Delete logo from storage if it exists
-          if (institute.logo) {
-            try {
-              // Extract the path from the URL to create a reference
-              const url = new URL(institute.logo);
-              const pathMatch = url.pathname.match(/\/o\/(.+?)(\?|$)/);
-              
-              if (pathMatch && pathMatch[1]) {
-                const decodedPath = decodeURIComponent(pathMatch[1]);
-                const storageRef = ref(storage, decodedPath);
-                await deleteObject(storageRef);
-              }
-            } catch (error) {
-              console.error("Error deleting logo file:", error);
-              // Continue with deletion even if logo deletion fails
-            }
-          }
-        }
-        
-        // Remove institute from admin's list
-        const adminId = user.uid;
-        const adminRef = doc(firestore, "admins", adminId);
+  const handleDeleteClick = (institute) => {
+    setItemToDelete({ id: institute.id, name: institute.name });
+    setShowDeleteModal(true);
+  };
 
-        const adminDoc = await getDoc(adminRef);
-        if (adminDoc.exists()) {
-          await updateDoc(adminRef, {
-            institutes: adminDoc
-              .data()
-              .institutes.filter((id) => id !== instituteId),
-          });
-        }
+  const handleConfirmDelete = async () => {
+    try {
+      // First remove from admins
+      const adminId = user.uid;
+      const adminRef = doc(firestore, "admins", adminId);
 
-        // Delete the institute document
-        await deleteDoc(instituteRef);
-        fetchInstitutes();
-      } catch (error) {
-        console.error("Error deleting institute:", error);
+      const adminDoc = await getDoc(adminRef);
+      if (adminDoc.exists()) {
+        await updateDoc(adminRef, {
+          institutes: adminDoc
+            .data()
+            .institutes.filter((id) => id !== itemToDelete.id),
+        });
       }
+
+      // Then delete the institute
+      const instituteRef = doc(firestore, "institutes", itemToDelete.id);
+      await deleteDoc(instituteRef);
+
+      fetchInstitutes();
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Error deleting institute:", error);
     }
   };
 
@@ -302,58 +218,20 @@ const ManageInstitutes = () => {
             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
             required
           />
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Institute Logo
-            </label>
-            <Card className="w-full rounded-[20px] bg-white bg-clip-border p-3 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none">
-              <div className="h-full w-full rounded-xl bg-lightPrimary dark:!bg-navy-700">
-                <input
-                  type="file"
-                  id="logo-upload"
-                  accept="image/*"
-                  onChange={handleLogoChange}
-                  className="hidden"
-                  ref={fileInputRef}
-                />
-                <label 
-                  htmlFor="logo-upload" 
-                  className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-[2px] border-dashed border-gray-200 py-3 dark:!border-navy-700"
-                >
-                  {logoPreview ? (
-                    <div className="flex flex-col items-center">
-                      <img 
-                        src={logoPreview} 
-                        alt="Logo Preview" 
-                        className="h-20 w-20 rounded-lg object-cover"
-                      />
-                      <p className="mt-2 text-xs font-medium text-gray-600">
-                        Click to change image
-                      </p>
-                    </div>
-                  ) : (
-                    <>
-                      <MdFileUpload className="text-[40px] text-brand-500 dark:text-white" />
-                      <h4 className="text-sm font-bold text-brand-500 dark:text-white">
-                        Upload Logo
-                      </h4>
-                      <p className="mt-1 text-xs font-medium text-gray-600">
-                        PNG, JPG and GIF files are allowed
-                      </p>
-                    </>
-                  )}
-                </label>
-              </div>
-            </Card>
-          </div>
-          
+          <input
+            type="text"
+            placeholder="Logo URL"
+            value={newInstitute.logo}
+            onChange={(e) =>
+              setNewInstitute({ ...newInstitute, logo: e.target.value })
+            }
+            className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+          />
           <button
             type="submit"
-            disabled={uploadingLogo}
-            className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 disabled:bg-gray-400"
+            className="rounded-lg bg-brand-500 px-4 py-2 text-white transition-colors hover:bg-brand-600"
           >
-            {uploadingLogo ? "Uploading..." : "Add Institute"}
+            Add Institute
           </button>
         </form>
       </div>
@@ -407,13 +285,13 @@ const ManageInstitutes = () => {
                   <td className="flex space-x-2 px-6 py-4">
                     <button
                       onClick={() => handleEditClick(institute)}
-                      className="rounded-lg bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
+                      className="rounded-lg bg-blue-500 px-3 py-1 text-sm text-white transition-colors hover:bg-blue-600"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDeleteInstitute(institute.id)}
-                      className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
+                      onClick={() => handleDeleteClick(institute)}
+                      className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white transition-colors hover:bg-red-600"
                     >
                       Delete
                     </button>
@@ -425,16 +303,14 @@ const ManageInstitutes = () => {
         </div>
       </div>
 
-      {/* Edit Modal - Centered on Full Screen with Blurred Background */}
+      {/* Edit Modal */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Blurred Backdrop */}
           <div
-            className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
+            className="bg-black absolute inset-0 bg-opacity-50 backdrop-blur-sm"
             onClick={() => setShowEditModal(false)}
           ></div>
 
-          {/* Centered Modal Content */}
           <div className="relative z-50 mx-4 w-full max-w-md">
             <div className="rounded-lg bg-white p-6 shadow-xl dark:bg-navy-800">
               <h3 className="mb-4 text-xl font-bold text-navy-700 dark:text-white">
@@ -469,62 +345,29 @@ const ManageInstitutes = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Institute Logo
+                    Logo URL
                   </label>
-                  <Card className="mt-1 w-full rounded-[20px] bg-white bg-clip-border p-3 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none">
-                    <div className="h-full w-full rounded-xl bg-lightPrimary dark:!bg-navy-700">
-                      <input
-                        type="file"
-                        id="edit-logo-upload"
-                        accept="image/*"
-                        onChange={handleEditLogoChange}
-                        className="hidden"
-                        ref={editFileInputRef}
-                      />
-                      <label 
-                        htmlFor="edit-logo-upload" 
-                        className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-[2px] border-dashed border-gray-200 py-3 dark:!border-navy-700"
-                      >
-                        {editLogoPreview ? (
-                          <div className="flex flex-col items-center">
-                            <img 
-                              src={editLogoPreview} 
-                              alt="Logo Preview" 
-                              className="h-20 w-20 rounded-lg object-cover"
-                            />
-                            <p className="mt-2 text-xs font-medium text-gray-600">
-                              Click to change image
-                            </p>
-                          </div>
-                        ) : (
-                          <>
-                            <MdFileUpload className="text-[40px] text-brand-500 dark:text-white" />
-                            <h4 className="text-sm font-bold text-brand-500 dark:text-white">
-                              Upload Logo
-                            </h4>
-                            <p className="mt-1 text-xs font-medium text-gray-600">
-                              PNG, JPG and GIF files are allowed
-                            </p>
-                          </>
-                        )}
-                      </label>
-                    </div>
-                  </Card>
+                  <input
+                    type="text"
+                    name="logo"
+                    value={editFormData.logo}
+                    onChange={handleEditFormChange}
+                    className="mt-1 w-full rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
+                  />
                 </div>
                 <div className="mt-6 flex justify-end space-x-3">
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-white"
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-100 dark:text-white dark:hover:bg-navy-700"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    disabled={uploadingLogo}
-                    className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 disabled:bg-gray-400"
+                    className="rounded-lg bg-brand-500 px-4 py-2 text-white transition-colors hover:bg-brand-600"
                   >
-                    {uploadingLogo ? "Uploading..." : "Save Changes"}
+                    Save Changes
                   </button>
                 </div>
               </form>
@@ -532,6 +375,14 @@ const ManageInstitutes = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        instituteName={itemToDelete.name}
+      />
     </div>
   );
 };
