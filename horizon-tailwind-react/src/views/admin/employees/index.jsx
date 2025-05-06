@@ -213,7 +213,44 @@ const ManageEmployees = () => {
   );
 
   if (loading) {
-    return <div className="text-white">Loading...</div>;
+    return <div className="mt-3 grid h-full">
+    <div className="rounded-xl shadow-md !p-6 bg-white dark:bg-navy-800">
+      <div className="overflow-x-auto">
+        <table className="w-full table-auto">
+          <thead>
+            <tr className="border-b border-navy-700 dark:border-white">
+              <th className="px-6 py-3 text-left text-sm font-semibold text-navy-700 dark:text-white">Name</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-navy-700 dark:text-white">Email</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-navy-700 dark:text-white">Status</th>
+              <th className="px-6 py-3 text-left text-sm font-semibold text-navy-700 dark:text-white">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...Array(5)].map((_, i) => (
+              <tr
+                key={i}
+                className="border-b border-navy-700 dark:border-white animate-pulse"
+              >
+                <td className="px-6 py-4">
+                  <div className="h-4 w-24 rounded bg-gray-200 dark:bg-white/20"></div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="h-4 w-36 rounded bg-gray-200 dark:bg-white/20"></div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="h-4 w-20 rounded bg-gray-200 dark:bg-white/20"></div>
+                </td>
+                <td className="px-6 py-4 flex gap-2">
+                  <div className="h-8 w-20 rounded bg-gray-200 dark:bg-white/20"></div>
+                  <div className="h-8 w-20 rounded bg-gray-200 dark:bg-white/20"></div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>;
   }
 
   if (!instituteId) {

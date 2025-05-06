@@ -72,5 +72,80 @@ const downloadPollCSV = async (req, res) => {
     res.status(500).json({ error: "Failed to generate CSV" });
   }
 };
+const downloadPolicyCSV = async (req, res) => {
+  try {
+    const { policyId } = req.params;
 
-module.exports = { downloadPollCSV };
+    // Fetch policy
+    const policyDoc = await firestore.collection("policies").doc(policyId).get();
+    if (!policyDoc.exists) return res.status(404).json({ error: "Policy not found" });
+
+    const policyData = policyDoc.data();
+    const policyTitle = policyData.title || policyData.name || "Untitled Policy";
+
+    // Fetch comments for this policy (based on group_id)
+    const commentsSnapshot = await firestore
+      .collection("comments")
+      .where("group_id", "==", policyId)
+      .get();
+
+    if (commentsSnapshot.empty) {
+      return res.status(404).json({ error: "No comments found for this policy" });
+    }
+
+    const comments = commentsSnapshot.docs.map((doc) => doc.data());
+
+    // Define base CSV fields
+    let allFields = new Set(["Policy Title", "Comment Text", "Display Name", "User ID", "Created At"]);
+
+    // Add any extra dynamic fields in comments (e.g., instituteId)
+    comments.forEach((comment) => {
+      Object.keys(comment).forEach((key) => {
+        if (!["text", "display_name", "user_id", "createdAt", "group_id"].includes(key)) {
+          allFields.add(key);
+        }
+      });
+    });
+
+    const csvFields = Array.from(allFields);
+
+    // Prepare CSV rows
+    const csvData = comments.map((comment) => {
+      const row = {
+        "Policy Title": policyTitle,
+        "Comment Text": comment.text || "",
+        "Display Name": comment.display_name || "",
+        "User ID": comment.user_id || "",
+        "Created At": comment.createdAt
+          ? new Date(comment.createdAt.toDate()).toLocaleString("en-US", { timeZone: "Asia/Colombo" })
+          : "N/A",
+      };
+
+      csvFields.forEach((field) => {
+        if (!(field in row) && comment[field]) {
+          row[field] = comment[field];
+        }
+      });
+
+      return row;
+    });
+
+    // Convert to CSV
+    const csvParser = new Parser({ fields: csvFields });
+    const csv = csvParser.parse(csvData);
+
+    // File path
+    const filePath = path.join(__dirname, `${policyId}_comments.csv`);
+    fs.writeFileSync(filePath, csv);
+
+    // Send and clean
+    res.download(filePath, `${policyId}_comments.csv`, () => {
+      fs.unlinkSync(filePath);
+    });
+  } catch (error) {
+    console.error("Error generating policy CSV:", error);
+    res.status(500).json({ error: "Failed to generate policy CSV" });
+  }
+};
+
+module.exports = { downloadPollCSV, downloadPolicyCSV };

@@ -1,26 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdBarChart, MdDelete, MdFileDownload } from "react-icons/md";
 import axios from "axios";
+import { useInstituteData } from "context/InstituteContext";
+import { firestore } from "backend/firebase/firebase";
+import { getDocs, collection, query, where } from "firebase/firestore";
 
 const PoliciesTable = () => {
   const [downloadError, setDownloadError] = useState(null);
   const [downloadLoading, setDownloadLoading] = useState(false);
-
-  // Replace this with actual API-fetched data
-  const policiesData = [
-    {
-      id: 1,
-      name: "Work from Home Policy",
-      description: "Guidelines for remote work arrangements",
-      status: "active"
-    },
-    {
-      id: 2,
-      name: "Leave Policy",
-      description: "Rules and regulations for employee leaves",
-      status: "active"
-    }
-  ];
+  const [policiesData, setPoliciesData] = useState([]);
+  
+  // Fetching instituteId from context
+  const { instituteId } = useInstituteData();
+  
+  // Fetch policies based on instituteId
+  useEffect(() => {
+    const loadPolicies = async () => {
+      const data = await fetchPolicies(instituteId);
+      setPoliciesData(data);
+    };
+    loadPolicies();
+  }, [instituteId]);
+  
+  const fetchPolicies = async (instituteId) => {
+    const q = query(
+      collection(firestore, "policies"),
+      where("instituteId", "==", instituteId)
+    );
+    const querySnapshot = await getDocs(q);
+    const policiesData = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    return policiesData;
+  };
 
   const trimText = (text, maxLength = 30) => {
     if (!text) return '';
@@ -34,9 +47,9 @@ const PoliciesTable = () => {
 
       const apiBaseUrl = process.env.REACT_APP_API_URL || '';
       const apiUrl = `${apiBaseUrl}/api/export/policy/${policyId}`;
-      
+
       console.log("Requesting download from:", apiUrl);
-      
+
       const response = await axios.get(apiUrl, { 
         responseType: "blob" 
       });
@@ -52,36 +65,6 @@ const PoliciesTable = () => {
     } catch (error) {
       console.error("Error downloading policy:", error);
       setDownloadError(error.message || "Failed to download policy data");
-    } finally {
-      setDownloadLoading(false);
-    }
-  };
-
-  const handleDownloadAll = async () => {
-    try {
-      setDownloadError(null);
-      setDownloadLoading(true);
-
-      const apiBaseUrl = process.env.REACT_APP_API_URL || '';
-      const apiUrl = `${apiBaseUrl}/api/export/policies`;
-      
-      console.log("Requesting download from:", apiUrl);
-      
-      const response = await axios.get(apiUrl, { 
-        responseType: "blob" 
-      });
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", "all_policies.csv");
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Error downloading all policies:", error);
-      setDownloadError(error.message || "Failed to download all policies");
     } finally {
       setDownloadLoading(false);
     }
@@ -107,17 +90,6 @@ const PoliciesTable = () => {
         </div>
       )}
       
-      <div className="mb-4 flex justify-end">
-        <button
-          onClick={handleDownloadAll}
-          className="flex items-center rounded-lg bg-brand-500 px-4 py-2 text-sm text-white transition hover:bg-brand-600"
-          disabled={downloadLoading}
-        >
-          <MdFileDownload className="mr-2" />
-          Export All Policies
-        </button>
-      </div>
-      
       {/* Large screen table view */}
       <div className="hidden md:block overflow-x-auto rounded-xl bg-white p-4 shadow-md dark:bg-navy-800">
         <table className="w-full min-w-full table-auto">
@@ -136,8 +108,8 @@ const PoliciesTable = () => {
                 className="border-b border-gray-100 transition hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-navy-700"
               >
                 <td className="px-4 py-3 text-sm font-medium text-navy-700 dark:text-white max-w-xs">
-                  <div className="truncate" title={policy.name}>
-                    {trimText(policy.name, 40)}
+                  <div className="truncate" title={policy.title}>
+                    {trimText(policy.title, 40)}
                   </div>
                 </td>
                 <td className="px-4 py-3 text-sm text-navy-600 dark:text-gray-200 max-w-xs">
@@ -158,11 +130,11 @@ const PoliciesTable = () => {
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center space-x-2">
-                  <button 
-                className="p-2 text-brand-500 hover:text-brand-600 hover:bg-gray-100 rounded"
-                title="View Analytics"
-              >
-                <MdBarChart size={20} />
+                    <button 
+                      className="p-2 text-brand-500 hover:text-brand-600 hover:bg-gray-100 rounded"
+                      title="View Analytics"
+                    >
+                      <MdBarChart size={20} />
                     </button>
                     <button
                       onClick={() => handleDelete(policy.id)}
@@ -170,6 +142,14 @@ const PoliciesTable = () => {
                       title="Delete Policy"
                     >
                       <MdDelete size={18} />
+                    </button>
+                    <button
+                      onClick={() => handleDownload(policy.id)}
+                      className="p-2 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded"
+                      title="Download Policy"
+                      disabled={downloadLoading}
+                    >
+                      <MdFileDownload size={18} />
                     </button>
                   </div>
                 </td>
@@ -203,7 +183,7 @@ const PoliciesTable = () => {
             </div>
             
             <div className="flex justify-end space-x-2 border-t pt-2">
-            <button 
+              <button 
                 className="p-2 text-brand-500 hover:text-brand-600 hover:bg-gray-100 rounded"
                 title="View Analytics"
               >
@@ -215,6 +195,14 @@ const PoliciesTable = () => {
                 title="Delete Policy"
               >
                 <MdDelete size={20} />
+              </button>
+              <button 
+                onClick={() => handleDownload(policy.id)}
+                className="p-2 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded"
+                title="Download Policy"
+                disabled={downloadLoading}
+              >
+                <MdFileDownload size={20} />
               </button>
             </div>
           </div>

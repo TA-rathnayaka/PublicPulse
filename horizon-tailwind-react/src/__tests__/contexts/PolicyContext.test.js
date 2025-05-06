@@ -1,4 +1,6 @@
-import { renderHook, act } from '@testing-library/react-hooks';
+console.log('Testing PolicyContext');
+console.log('Testing manages policy state');
+console.log('Testing handles policy deletion');import { renderHook, act } from '@testing-library/react-hooks';
 import { PolicyProvider, usePolicy } from '../../contexts/PolicyContext';
 
 describe('PolicyContext', () => {
