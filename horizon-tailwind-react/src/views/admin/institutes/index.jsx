@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { firestore } from "../../../backend/firebase/firebase";
+import { storage } from "../../../backend/firebase/firebase";
 import {
   getDoc,
   setDoc,
@@ -11,7 +12,15 @@ import {
   deleteDoc,
   arrayUnion,
 } from "firebase/firestore";
+import { 
+  ref, 
+  uploadBytes, 
+  getDownloadURL, 
+  deleteObject 
+} from "firebase/storage";
 import { getAuth } from "firebase/auth";
+import { MdFileUpload } from "react-icons/md";
+import Card from "components/card";
 
 const ManageInstitutes = () => {
   const [institutes, setInstitutes] = useState([]);
@@ -19,15 +28,21 @@ const ManageInstitutes = () => {
   const [newInstitute, setNewInstitute] = useState({
     name: "",
     location: "",
-    logo: "",
   });
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
   const [editingInstitute, setEditingInstitute] = useState(null);
   const [editFormData, setEditFormData] = useState({
     name: "",
     location: "",
     logo: "",
   });
+  const [editLogoFile, setEditLogoFile] = useState(null);
+  const [editLogoPreview, setEditLogoPreview] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const fileInputRef = useRef(null);
+  const editFileInputRef = useRef(null);
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -51,16 +66,70 @@ const ManageInstitutes = () => {
     }
   };
 
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleEditLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setEditLogoFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setEditLogoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const uploadLogo = async (file, instituteId) => {
+    if (!file) return null;
+    
+    try {
+      setUploadingLogo(true);
+      const storageRef = ref(storage, `institutes/${instituteId}/${file.name}`);
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+      setUploadingLogo(false);
+      return downloadURL;
+    } catch (error) {
+      console.error("Error uploading logo:", error);
+      setUploadingLogo(false);
+      return null;
+    }
+  };
+
   const handleAddInstitute = async (e) => {
     e.preventDefault();
     try {
+      // First create the institute document to get an ID
       const institutesCollection = collection(firestore, "institutes");
-      const docRef = await addDoc(institutesCollection, newInstitute);
+      const instituteData = { ...newInstitute };
+      
+      // Add the institute to get its ID
+      const docRef = await addDoc(institutesCollection, instituteData);
       const newInstituteId = docRef.id;
+      
+      // Upload logo if there is one
+      if (logoFile) {
+        const logoURL = await uploadLogo(logoFile, newInstituteId);
+        if (logoURL) {
+          // Update the institute with the logo URL
+          await updateDoc(docRef, { logo: logoURL });
+        }
+      }
 
+      // Update admin's institutes list
       const adminId = user.uid;
       const adminRef = doc(firestore, "admins", adminId);
-
       const adminDoc = await getDoc(adminRef);
 
       if (adminDoc.exists()) {
@@ -74,8 +143,17 @@ const ManageInstitutes = () => {
         });
       }
 
+      // Reset form and refetch institutes
+      setNewInstitute({ name: "", location: "" });
+      setLogoFile(null);
+      setLogoPreview(null);
+      
+      // Reset the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+      
       fetchInstitutes();
-      setNewInstitute({ name: "", location: "", logo: "" });
     } catch (error) {
       console.error("Error adding institute or updating admin:", error);
     }
@@ -88,6 +166,8 @@ const ManageInstitutes = () => {
       location: institute.location,
       logo: institute.logo || "",
     });
+    setEditLogoPreview(institute.logo || null);
+    setEditLogoFile(null);
     setShowEditModal(true);
   };
 
@@ -103,8 +183,32 @@ const ManageInstitutes = () => {
     e.preventDefault();
     try {
       const instituteRef = doc(firestore, "institutes", editingInstitute);
-      await updateDoc(instituteRef, editFormData);
+      
+      // If there's a new logo file, upload it
+      if (editLogoFile) {
+        const logoURL = await uploadLogo(editLogoFile, editingInstitute);
+        if (logoURL) {
+          setEditFormData({
+            ...editFormData,
+            logo: logoURL,
+          });
+          await updateDoc(instituteRef, {
+            ...editFormData, 
+            logo: logoURL
+          });
+        } else {
+          await updateDoc(instituteRef, editFormData);
+        }
+      } else {
+        await updateDoc(instituteRef, editFormData);
+      }
 
+      // Reset the file input
+      if (editFileInputRef.current) {
+        editFileInputRef.current.value = '';
+      }
+      
+      setEditLogoFile(null);
       setShowEditModal(false);
       fetchInstitutes();
     } catch (error) {
@@ -115,7 +219,33 @@ const ManageInstitutes = () => {
   const handleDeleteInstitute = async (instituteId) => {
     if (window.confirm("Are you sure you want to delete this institute?")) {
       try {
-        // First remove from admins
+        // First get the institute to see if it has a logo
+        const instituteRef = doc(firestore, "institutes", instituteId);
+        const instituteSnap = await getDoc(instituteRef);
+        
+        if (instituteSnap.exists()) {
+          const institute = instituteSnap.data();
+          
+          // Delete logo from storage if it exists
+          if (institute.logo) {
+            try {
+              // Extract the path from the URL to create a reference
+              const url = new URL(institute.logo);
+              const pathMatch = url.pathname.match(/\/o\/(.+?)(\?|$)/);
+              
+              if (pathMatch && pathMatch[1]) {
+                const decodedPath = decodeURIComponent(pathMatch[1]);
+                const storageRef = ref(storage, decodedPath);
+                await deleteObject(storageRef);
+              }
+            } catch (error) {
+              console.error("Error deleting logo file:", error);
+              // Continue with deletion even if logo deletion fails
+            }
+          }
+        }
+        
+        // Remove institute from admin's list
         const adminId = user.uid;
         const adminRef = doc(firestore, "admins", adminId);
 
@@ -128,10 +258,8 @@ const ManageInstitutes = () => {
           });
         }
 
-        // Then delete the institute
-        const instituteRef = doc(firestore, "institutes", instituteId);
+        // Delete the institute document
         await deleteDoc(instituteRef);
-
         fetchInstitutes();
       } catch (error) {
         console.error("Error deleting institute:", error);
@@ -174,20 +302,58 @@ const ManageInstitutes = () => {
             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
             required
           />
-          <input
-            type="text"
-            placeholder="Logo URL"
-            value={newInstitute.logo}
-            onChange={(e) =>
-              setNewInstitute({ ...newInstitute, logo: e.target.value })
-            }
-            className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
-          />
+          
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Institute Logo
+            </label>
+            <Card className="w-full rounded-[20px] bg-white bg-clip-border p-3 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none">
+              <div className="h-full w-full rounded-xl bg-lightPrimary dark:!bg-navy-700">
+                <input
+                  type="file"
+                  id="logo-upload"
+                  accept="image/*"
+                  onChange={handleLogoChange}
+                  className="hidden"
+                  ref={fileInputRef}
+                />
+                <label 
+                  htmlFor="logo-upload" 
+                  className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-[2px] border-dashed border-gray-200 py-3 dark:!border-navy-700"
+                >
+                  {logoPreview ? (
+                    <div className="flex flex-col items-center">
+                      <img 
+                        src={logoPreview} 
+                        alt="Logo Preview" 
+                        className="h-20 w-20 rounded-lg object-cover"
+                      />
+                      <p className="mt-2 text-xs font-medium text-gray-600">
+                        Click to change image
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <MdFileUpload className="text-[40px] text-brand-500 dark:text-white" />
+                      <h4 className="text-sm font-bold text-brand-500 dark:text-white">
+                        Upload Logo
+                      </h4>
+                      <p className="mt-1 text-xs font-medium text-gray-600">
+                        PNG, JPG and GIF files are allowed
+                      </p>
+                    </>
+                  )}
+                </label>
+              </div>
+            </Card>
+          </div>
+          
           <button
             type="submit"
-            className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600"
+            disabled={uploadingLogo}
+            className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 disabled:bg-gray-400"
           >
-            Add Institute
+            {uploadingLogo ? "Uploading..." : "Add Institute"}
           </button>
         </form>
       </div>
@@ -264,7 +430,7 @@ const ManageInstitutes = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           {/* Blurred Backdrop */}
           <div
-            className="bg-black absolute inset-0 bg-opacity-50 backdrop-blur-sm"
+            className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
             onClick={() => setShowEditModal(false)}
           ></div>
 
@@ -303,15 +469,47 @@ const ManageInstitutes = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Logo URL
+                    Institute Logo
                   </label>
-                  <input
-                    type="text"
-                    name="logo"
-                    value={editFormData.logo}
-                    onChange={handleEditFormChange}
-                    className="mt-1 w-full rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
-                  />
+                  <Card className="mt-1 w-full rounded-[20px] bg-white bg-clip-border p-3 font-dm shadow-3xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none">
+                    <div className="h-full w-full rounded-xl bg-lightPrimary dark:!bg-navy-700">
+                      <input
+                        type="file"
+                        id="edit-logo-upload"
+                        accept="image/*"
+                        onChange={handleEditLogoChange}
+                        className="hidden"
+                        ref={editFileInputRef}
+                      />
+                      <label 
+                        htmlFor="edit-logo-upload" 
+                        className="flex h-32 w-full cursor-pointer flex-col items-center justify-center rounded-xl border-[2px] border-dashed border-gray-200 py-3 dark:!border-navy-700"
+                      >
+                        {editLogoPreview ? (
+                          <div className="flex flex-col items-center">
+                            <img 
+                              src={editLogoPreview} 
+                              alt="Logo Preview" 
+                              className="h-20 w-20 rounded-lg object-cover"
+                            />
+                            <p className="mt-2 text-xs font-medium text-gray-600">
+                              Click to change image
+                            </p>
+                          </div>
+                        ) : (
+                          <>
+                            <MdFileUpload className="text-[40px] text-brand-500 dark:text-white" />
+                            <h4 className="text-sm font-bold text-brand-500 dark:text-white">
+                              Upload Logo
+                            </h4>
+                            <p className="mt-1 text-xs font-medium text-gray-600">
+                              PNG, JPG and GIF files are allowed
+                            </p>
+                          </>
+                        )}
+                      </label>
+                    </div>
+                  </Card>
                 </div>
                 <div className="mt-6 flex justify-end space-x-3">
                   <button
@@ -323,9 +521,10 @@ const ManageInstitutes = () => {
                   </button>
                   <button
                     type="submit"
-                    className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600"
+                    disabled={uploadingLogo}
+                    className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 disabled:bg-gray-400"
                   >
-                    Save Changes
+                    {uploadingLogo ? "Uploading..." : "Save Changes"}
                   </button>
                 </div>
               </form>

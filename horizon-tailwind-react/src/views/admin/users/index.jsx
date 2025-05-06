@@ -78,11 +78,7 @@ const ManageUsers = () => {
   return (
     <div className="mt-3 grid h-full">
       <Card extra="!p-[20px]">
-        <div className="mb-8">
-          <h4 className="text-xl font-bold text-navy-700 dark:text-white">
-            Manage Users
-          </h4>
-        </div>
+        
 
         <div className="overflow-x-auto">
           <table className="w-full">
