@@ -4,7 +4,6 @@ import Policies from "views/admin/policies";
 import Polls from "views/admin/polls";
 import PollCreate from "views/admin/polls/components/PollCreate";
 import PolicyCreate from "views/admin/policies/components/PolicyCreate";
-import Profile from "views/admin/profile";
 import DataTables from "views/admin/tables";
 import SignIn from "views/auth/SignIn";
 import PolicyDetails from 'views/admin/policies/components/PolicyDetails';
@@ -25,7 +24,11 @@ import {
   MdHowToVote,
   MdPolicy,
   MdExitToApp,
+  MdPeople,
 } from "react-icons/md";
+import ManageEmployees from "views/admin/employees";
+import SignUp from "views/auth/SignUp";
+import ForgotPassword from "views/auth/ForgotPassword";
 
 
 
@@ -59,6 +62,31 @@ const routes = [
     icon: <MdLock className="h-6 w-6" />,
     component: <SignIn />,
     hidden: true
+  },
+  {
+    name: "Sign Up",
+    layout: "/auth",
+    path: "sign-up",
+    icon: <MdLock className="h-6 w-6" />,
+    component: <SignUp />,
+    hidden: true
+  },
+  {
+    name: "Forgot Password",
+    layout: "/auth",
+    path: "forgot-password",
+    icon: <MdLock className="h-6 w-6" />,
+    component: <ForgotPassword />,
+    hidden: true
+  },
+  {
+    name: "Manage Employees",
+    layout: "/admin",
+    path: "manage-employees",
+    icon: <MdPeople className="h-6 w-6" />,
+    component: <ManageEmployees/>,
+ 
+    
   },
 
   {
@@ -119,6 +147,7 @@ const routes = [
     hidden: true
     
   },
+  
   {
     name: "Policy",
     layout: "/admin",
