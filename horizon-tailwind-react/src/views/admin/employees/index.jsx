@@ -222,89 +222,79 @@ const ManageEmployees = () => {
 
   return (
     <div className="mt-3 grid h-full">
-      <Card extra="!p-[20px]">
-        <div className="mb-4">
-          <h4 className="text-xl font-bold text-navy-700 dark:text-white">
-            Manage Institute Employees
-          </h4>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
-            Manage employees associated with this institute
-          </p>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="border-b border-gray-200">
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">Name</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">Email</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">Status</th>
-                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">Actions</th>
+  <Card extra="rounded-xl shadow-md !p-6 bg-white dark:bg-navy-800">
+    <div className="overflow-x-auto">
+      <table className="w-full table-auto">
+        <thead>
+          <tr className="border-b border-navy-700 dark:border-white">
+            <th className="px-6 py-3 text-left text-sm font-semibold text-navy-700 dark:text-white">Name</th>
+            <th className="px-6 py-3 text-left text-sm font-semibold text-navy-700 dark:text-white">Email</th>
+            <th className="px-6 py-3 text-left text-sm font-semibold text-navy-700 dark:text-white">Status</th>
+            <th className="px-6 py-3 text-left text-sm font-semibold text-navy-700 dark:text-white">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredEmployees.length > 0 ? (
+            filteredEmployees.map((employee) => (
+              <tr
+                key={employee.id}
+                className="border-b border-navy-700 dark:border-white hover:bg-gray-50 dark:hover:bg-navy-700 transition-colors"
+              >
+                <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">{employee.username || "N/A"}</td>
+                <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">{employee.email || "N/A"}</td>
+                <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
+                  <span className="rounded-md border border-navy-700 dark:border-white px-2 py-0.5 text-xs">
+                    {employee.isSuperAdmin
+                      ? "Super Admin"
+                      : employee.isAdmin
+                      ? "Admin"
+                      : "Employee"}
+                  </span>
+                </td>
+                <td className="px-6 py-4 flex flex-wrap gap-2">
+                  {!employee.isAdmin && !employee.isSuperAdmin && (
+                    <button
+                      onClick={() => makeAdmin(employee.id, employee)}
+                      className="rounded-md border border-navy-700 px-3 py-1 text-sm text-navy-700 hover:bg-navy-100 dark:border-white dark:text-white dark:hover:bg-white/10"
+                    >
+                      Make Admin
+                    </button>
+                  )}
+                  {employee.isAdmin && !employee.isSuperAdmin && (
+                    <button
+                      onClick={() => removeAdmin(employee.id)}
+                      className="rounded-md border border-navy-700 px-3 py-1 text-sm text-navy-700 hover:bg-navy-100 dark:border-white dark:text-white dark:hover:bg-white/10"
+                    >
+                      Remove Admin
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDeleteEmployee(employee.id)}
+                    className="rounded-md border border-navy-700 px-3 py-1 text-sm text-navy-700 hover:bg-navy-100 dark:border-white dark:text-white dark:hover:bg-white/10"
+                  >
+                    Remove
+                  </button>
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {filteredEmployees.length > 0 ? (
-                filteredEmployees.map((employee) => (
-                  <tr key={employee.id} className="border-b border-gray-200">
-                    <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-                      {employee.username || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-                      {employee.email || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-                      {employee.isSuperAdmin ? (
-                        <span className="rounded-full bg-purple-100 px-2 py-1 text-xs font-medium text-purple-800">
-                          Super Admin
-                        </span>
-                      ) : employee.isAdmin ? (
-                        <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800">
-                          Admin
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-gray-100 px-2 py-1 text-xs font-medium text-gray-800">
-                          Employee
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-6 py-4 flex gap-2">
-                      {!employee.isAdmin && !employee.isSuperAdmin && (
-                        <button
-                          onClick={() => makeAdmin(employee.id, employee)}
-                          className="rounded-lg bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
-                        >
-                          Make Admin
-                        </button>
-                      )}
-                      {employee.isAdmin && !employee.isSuperAdmin && (
-                        <button
-                          onClick={() => removeAdmin(employee.id)}
-                          className="rounded-lg bg-yellow-500 px-3 py-1 text-sm text-white hover:bg-yellow-600"
-                        >
-                          Remove Admin
-                        </button>
-                      )}
-                      <button
-                        onClick={() => handleDeleteEmployee(employee.id)}
-                        className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="4" className="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
-                    No employees found for this institute.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+            ))
+          ) : (
+            <tr>
+              <td
+                colSpan="4"
+                className="px-6 py-4 text-center text-sm text-navy-500 dark:text-white/50"
+              >
+                No employees found for this institute.
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </table>
     </div>
+  </Card>
+</div>
+
+
+
   );
 };
 
