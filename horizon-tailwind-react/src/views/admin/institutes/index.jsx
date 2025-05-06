@@ -1,209 +1,39 @@
-// import React, { useState, useEffect } from "react";
-// import { firestore } from "../../../backend/firebase/firebase";
-// import { getDoc, setDoc,collection, getDocs, addDoc, updateDoc, doc, deleteDoc, arrayUnion } from "firebase/firestore";
-// import Card from "components/card";
-// import { useAuthState } from "react-firebase-hooks/auth";
-// import { getAuth } from "firebase/auth";
 
-// const ManageInstitutes = () => {
-//   const [institutes, setInstitutes] = useState([]);
-//   const [loading, setLoading] = useState(true);
-//   const [newInstitute, setNewInstitute] = useState({
-//     name: "",
-//     location: "",
-//     logo: "",
-//   });
-//   const auth = getAuth();
-//   const user = auth.currentUser;
-
-//   useEffect(() => {
-//     fetchInstitutes();
-//   }, []);
-
-//   const fetchInstitutes = async () => {
-//     try {
-//       const institutesCollection = collection(firestore, "institutes");
-//       const instituteSnapshot = await getDocs(institutesCollection);
-//       const institutesList = instituteSnapshot.docs.map(doc => ({
-//         id: doc.id,
-//         ...doc.data()
-//       }));
-//       setInstitutes(institutesList);
-//       setLoading(false);
-//     } catch (error) {
-//       console.error("Error fetching institutes:", error);
-//       setLoading(false);
-//     }
-//   };
-
-//   const handleAddInstitute = async (e) => {
-//     e.preventDefault();
-//     try {
-//       const institutesCollection = collection(firestore, "institutes");
-//       const docRef = await addDoc(institutesCollection, newInstitute);
-//       const newInstituteId = docRef.id;
-
-//       const adminId = user.uid;
-//       const adminRef = doc(firestore, "admins", adminId);
-
-//       const adminDoc = await getDoc(adminRef);
-
-//       if (adminDoc.exists()) {
-//         // Update existing document
-//         await updateDoc(adminRef, {
-//           institutes: arrayUnion(newInstituteId),
-//         });
-//       } else {
-//         // Create new document with role and initial institute
-//         await setDoc(adminRef, {
-//           role: "admin",
-//           institutes: [newInstituteId],
-//         });
-//       }
-
-//       fetchInstitutes();
-//       setNewInstitute({ name: "", location: "", logo: "" }); // reset form
-//     } catch (error) {
-//       console.error("Error adding institute or updating admin:", error);
-//     }
-//   };
-
-//   const handleUpdateInstitute = async (instituteId, updatedData) => {
-//     try {
-//       const instituteRef = doc(firestore, "institutes", instituteId);
-//       await updateDoc(instituteRef, updatedData);
-//       fetchInstitutes();
-//     } catch (error) {
-//       console.error("Error updating institute:", error);
-//     }
-//   };
-
-//   const handleDeleteInstitute = async (instituteId) => {
-//     if (window.confirm("Are you sure you want to delete this institute?")) {
-//       try {
-//         const instituteRef = doc(firestore, "institutes", instituteId);
-//         await deleteDoc(instituteRef);
-//         fetchInstitutes();
-//       } catch (error) {
-//         console.error("Error deleting institute:", error);
-//       }
-//     }
-//   };
-
-//   if (loading) {
-//     return <div className="text-white">Loading...</div>;
-//   }
-
-//   return (
-//     <div className="mt-3 grid h-full gap-5">
-//       <Card extra="!p-[20px]">
-//         <div className="mb-8">
-//           <h4 className="text-xl font-bold text-navy-700 dark:text-white">
-//             Add New Institute
-//           </h4>
-//         </div>
-
-//         <form onSubmit={handleAddInstitute} className="grid gap-4">
-//           <input
-//             type="text"
-//             placeholder="Institute Name"
-//             value={newInstitute.name}
-//             onChange={(e) => setNewInstitute({...newInstitute, name: e.target.value})}
-//             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
-//           />
-//           <input
-//             type="text"
-//             placeholder="Location"
-//             value={newInstitute.location}
-//             onChange={(e) => setNewInstitute({...newInstitute, location: e.target.value})}
-//             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
-//           />
-//           <input
-//             type="text"
-//             placeholder="Logo URL"
-//             value={newInstitute.logo}
-//             onChange={(e) => setNewInstitute({...newInstitute, logo: e.target.value})}
-//             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
-//           />
-//           <button
-//             type="submit"
-//             className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600"
-//           >
-//             Add Institute
-//           </button>
-//         </form>
-//       </Card>
-
-//       <Card extra="!p-[20px]">
-//         <div className="mb-8">
-//           <h4 className="text-xl font-bold text-navy-700 dark:text-white">
-//             Manage Institutes
-//           </h4>
-//         </div>
-
-//         <div className="overflow-x-auto">
-//           <table className="w-full">
-//             <thead>
-//               <tr className="border-b border-gray-200">
-//                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-//                   Name
-//                 </th>
-//                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-//                   Location
-//                 </th>
-//                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-600 dark:text-white">
-//                   Actions
-//                 </th>
-//               </tr>
-//             </thead>
-//             <tbody>
-//               {institutes.map((institute) => (
-//                 <tr key={institute.id} className="border-b border-gray-200">
-//                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-//                     {institute.name}
-//                   </td>
-//                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
-//                     {institute.location}
-//                   </td>
-//                   <td className="px-6 py-4">
-//                     <button
-//                       onClick={() => handleDeleteInstitute(institute.id)}
-//                       className="mr-2 rounded-lg bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
-//                     >
-//                       Delete
-//                     </button>
-//                     <button
-//                       onClick={() => handleUpdateInstitute(institute.id, { /* updated data */ })}
-//                       className="rounded-lg bg-brand-500 px-3 py-1 text-sm text-white hover:bg-brand-600"
-//                     >
-//                       Edit
-//                     </button>
-//                   </td>
-//                 </tr>
-//               ))}
-//             </tbody>
-//           </table>
-//         </div>
-//       </Card>
-//     </div>
-//   );
-// };
-
-// export default ManageInstitutes;
 import React, { useState, useEffect } from "react";
 import { firestore } from "../../../backend/firebase/firebase";
-import {
-  getDoc,
-  setDoc,
-  collection,
-  getDocs,
-  addDoc,
-  updateDoc,
-  doc,
-  deleteDoc,
-  arrayUnion,
-} from "firebase/firestore";
+import { getDoc, setDoc, collection, getDocs, addDoc, updateDoc, doc, deleteDoc, arrayUnion } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+
+const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, instituteName }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+      <div className="bg-white dark:bg-navy-800 rounded-lg p-6 max-w-md w-full mx-4 shadow-xl">
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+          Confirm Deletion
+        </h3>
+        <p className="text-gray-600 dark:text-gray-300 mb-6">
+          Are you sure you want to delete <span className="font-medium">"{instituteName}"</span>? This action cannot be undone.
+        </p>
+        <div className="flex justify-end space-x-3">
+          <button
+            onClick={onClose}
+            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-navy-700 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-4 py-2 rounded-lg bg-red-500 text-white hover:bg-red-600 transition-colors"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const ManageInstitutes = () => {
   const [institutes, setInstitutes] = useState([]);
@@ -220,6 +50,8 @@ const ManageInstitutes = () => {
     logo: "",
   });
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState({ id: null, name: "" });
   const auth = getAuth();
   const user = auth.currentUser;
 
@@ -231,9 +63,9 @@ const ManageInstitutes = () => {
     try {
       const institutesCollection = collection(firestore, "institutes");
       const instituteSnapshot = await getDocs(institutesCollection);
-      const institutesList = instituteSnapshot.docs.map((doc) => ({
+      const institutesList = instituteSnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data(),
+        ...doc.data()
       }));
       setInstitutes(institutesList);
       setLoading(false);
@@ -249,12 +81,12 @@ const ManageInstitutes = () => {
       const institutesCollection = collection(firestore, "institutes");
       const docRef = await addDoc(institutesCollection, newInstitute);
       const newInstituteId = docRef.id;
-
+  
       const adminId = user.uid;
       const adminRef = doc(firestore, "admins", adminId);
-
+  
       const adminDoc = await getDoc(adminRef);
-
+  
       if (adminDoc.exists()) {
         await updateDoc(adminRef, {
           institutes: arrayUnion(newInstituteId),
@@ -265,7 +97,7 @@ const ManageInstitutes = () => {
           institutes: [newInstituteId],
         });
       }
-
+  
       fetchInstitutes();
       setNewInstitute({ name: "", location: "", logo: "" });
     } catch (error) {
@@ -296,7 +128,7 @@ const ManageInstitutes = () => {
     try {
       const instituteRef = doc(firestore, "institutes", editingInstitute);
       await updateDoc(instituteRef, editFormData);
-
+      
       setShowEditModal(false);
       fetchInstitutes();
     } catch (error) {
@@ -304,30 +136,32 @@ const ManageInstitutes = () => {
     }
   };
 
-  const handleDeleteInstitute = async (instituteId) => {
-    if (window.confirm("Are you sure you want to delete this institute?")) {
-      try {
-        // First remove from admins
-        const adminId = user.uid;
-        const adminRef = doc(firestore, "admins", adminId);
+  const handleDeleteClick = (institute) => {
+    setItemToDelete({ id: institute.id, name: institute.name });
+    setShowDeleteModal(true);
+  };
 
-        const adminDoc = await getDoc(adminRef);
-        if (adminDoc.exists()) {
-          await updateDoc(adminRef, {
-            institutes: adminDoc
-              .data()
-              .institutes.filter((id) => id !== instituteId),
-          });
-        }
-
-        // Then delete the institute
-        const instituteRef = doc(firestore, "institutes", instituteId);
-        await deleteDoc(instituteRef);
-
-        fetchInstitutes();
-      } catch (error) {
-        console.error("Error deleting institute:", error);
+  const handleConfirmDelete = async () => {
+    try {
+      // First remove from admins
+      const adminId = user.uid;
+      const adminRef = doc(firestore, "admins", adminId);
+      
+      const adminDoc = await getDoc(adminRef);
+      if (adminDoc.exists()) {
+        await updateDoc(adminRef, {
+          institutes: adminDoc.data().institutes.filter(id => id !== itemToDelete.id)
+        });
       }
+
+      // Then delete the institute
+      const instituteRef = doc(firestore, "institutes", itemToDelete.id);
+      await deleteDoc(instituteRef);
+      
+      fetchInstitutes();
+      setShowDeleteModal(false);
+    } catch (error) {
+      console.error("Error deleting institute:", error);
     }
   };
 
@@ -350,9 +184,7 @@ const ManageInstitutes = () => {
             type="text"
             placeholder="Institute Name"
             value={newInstitute.name}
-            onChange={(e) =>
-              setNewInstitute({ ...newInstitute, name: e.target.value })
-            }
+            onChange={(e) => setNewInstitute({...newInstitute, name: e.target.value})}
             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
             required
           />
@@ -360,9 +192,7 @@ const ManageInstitutes = () => {
             type="text"
             placeholder="Location"
             value={newInstitute.location}
-            onChange={(e) =>
-              setNewInstitute({ ...newInstitute, location: e.target.value })
-            }
+            onChange={(e) => setNewInstitute({...newInstitute, location: e.target.value})}
             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
             required
           />
@@ -370,14 +200,12 @@ const ManageInstitutes = () => {
             type="text"
             placeholder="Logo URL"
             value={newInstitute.logo}
-            onChange={(e) =>
-              setNewInstitute({ ...newInstitute, logo: e.target.value })
-            }
+            onChange={(e) => setNewInstitute({...newInstitute, logo: e.target.value})}
             className="rounded-lg border border-gray-300 p-2 dark:bg-navy-700 dark:text-white"
           />
           <button
             type="submit"
-            className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600"
+            className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 transition-colors"
           >
             Add Institute
           </button>
@@ -421,9 +249,9 @@ const ManageInstitutes = () => {
                   </td>
                   <td className="px-6 py-4 text-sm text-navy-700 dark:text-white">
                     {institute.logo ? (
-                      <img
-                        src={institute.logo}
-                        alt="Institute Logo"
+                      <img 
+                        src={institute.logo} 
+                        alt="Institute Logo" 
                         className="h-10 w-10 rounded-full object-cover"
                       />
                     ) : (
@@ -433,13 +261,13 @@ const ManageInstitutes = () => {
                   <td className="flex space-x-2 px-6 py-4">
                     <button
                       onClick={() => handleEditClick(institute)}
-                      className="rounded-lg bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600"
+                      className="rounded-lg bg-blue-500 px-3 py-1 text-sm text-white hover:bg-blue-600 transition-colors"
                     >
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDeleteInstitute(institute.id)}
-                      className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600"
+                      onClick={() => handleDeleteClick(institute)}
+                      className="rounded-lg bg-red-500 px-3 py-1 text-sm text-white hover:bg-red-600 transition-colors"
                     >
                       Delete
                     </button>
@@ -451,17 +279,15 @@ const ManageInstitutes = () => {
         </div>
       </div>
 
-      {/* Edit Modal - Centered on Full Screen with Blurred Background */}
+      {/* Edit Modal */}
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          {/* Blurred Backdrop */}
-          <div
-            className="bg-black absolute inset-0 bg-opacity-50 backdrop-blur-sm"
+          <div 
+            className="absolute inset-0 bg-black bg-opacity-50 backdrop-blur-sm"
             onClick={() => setShowEditModal(false)}
           ></div>
-
-          {/* Centered Modal Content */}
-          <div className="relative z-50 mx-4 w-full max-w-md">
+          
+          <div className="relative z-50 w-full max-w-md mx-4">
             <div className="rounded-lg bg-white p-6 shadow-xl dark:bg-navy-800">
               <h3 className="mb-4 text-xl font-bold text-navy-700 dark:text-white">
                 Edit Institute
@@ -509,13 +335,13 @@ const ManageInstitutes = () => {
                   <button
                     type="button"
                     onClick={() => setShowEditModal(false)}
-                    className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-white"
+                    className="rounded-lg border border-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-100 dark:text-white dark:hover:bg-navy-700 transition-colors"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600"
+                    className="rounded-lg bg-brand-500 px-4 py-2 text-white hover:bg-brand-600 transition-colors"
                   >
                     Save Changes
                   </button>
@@ -525,6 +351,14 @@ const ManageInstitutes = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        instituteName={itemToDelete.name}
+      />
     </div>
   );
 };
