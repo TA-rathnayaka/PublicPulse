@@ -13,7 +13,7 @@ const HistoryCard = ({ HistoryData = [] }) => {
   const handleCardClick = (policyId) => {     
     // The policy is already cached from previous fetches or
     // will be fetched via the Details component using getPolicyById
-    navigate(`/admin/${instituteId}/policy/${policyId}`);
+    navigate(`/admin/${instituteId}/policies/${policyId}`);
   };      
   
   const handleSeeAll = () => {     

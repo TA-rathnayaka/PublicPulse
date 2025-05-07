@@ -52,22 +52,38 @@ export const PollProvider = ({ children, instituteId }) => {
     }
   };
 
-  // Get a single poll by ID
-  const getPollById = async (pollId) => {
-    try {
-      const pollRef = doc(firestore, "polls", pollId);
-      const pollSnap = await getDoc(pollRef);
-      
-      if (pollSnap.exists()) {
-        return { id: pollSnap.id, ...pollSnap.data() };
-      }
+  
+
+const getPollById = async (pollId) => {
+  try {
+    // Get the poll document
+    const pollRef = doc(firestore, "polls", pollId);
+    const pollSnap = await getDoc(pollRef);
+
+    if (!pollSnap.exists()) {
       throw new Error("Poll not found");
-    } catch (err) {
-      setError(err.message);
-      console.error("Error fetching poll:", err);
-      return null;
     }
-  };
+
+    // Get options from the top-level 'options' collection where pollId matches
+    const optionsQuery = query(collection(firestore, "options"), where("pollId", "==", pollId));
+    const optionsSnap = await getDocs(optionsQuery);
+
+    const options = optionsSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    return {
+      id: pollSnap.id,
+      ...pollSnap.data(),
+      options
+    };
+  } catch (err) {
+    console.error("Error fetching poll:", err);
+    return null;
+  }
+};
+
 
   // Upload poll image if available
   const uploadPollImage = async (imageFile) => {

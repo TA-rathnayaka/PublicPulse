@@ -47,7 +47,7 @@ export default function Hero() {
           <div className="flex items-center justify-center">
             <div className="relative w-full aspect-video overflow-hidden rounded-xl bg-gradient-to-br from-brand-500/20 to-brand-500/5 p-1 dark:from-brand-400/20 dark:to-brand-400/5">
               <img
-                src="/api/placeholder/1280/720"
+                src="https://www.justinmind.com/wp-content/uploads/2018/12/6-best-practices-for-Dashboard-Design-Justinmind-header.png"
                 alt="PublicPulse Dashboard Preview"
                 className="rounded-lg object-cover w-full h-full"
               />

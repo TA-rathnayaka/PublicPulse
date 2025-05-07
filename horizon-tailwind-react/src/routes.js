@@ -107,7 +107,7 @@ const routes = [
   {
     name: "Policy Details",
     layout: "/admin",
-    path: "policy/:policyId",
+    path: "policies/:policyId",
     icon: <MdPolicy className="h-6 w-6" />,
     component: <PolicyDetails />, 
     hidden: true
