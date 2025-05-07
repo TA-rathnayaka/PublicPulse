@@ -5,8 +5,10 @@ import { useNotifications } from "context/NotificationsContext"; // Import the n
 import { firestore } from "../../../backend/firebase/firebase"; // Path may need adjustment
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { updateProfile } from "firebase/auth"; // Import updateProfile from firebase/auth
 import { MdModeEditOutline, MdSave, MdCancel, MdFileUpload } from "react-icons/md";
 import banner from "assets/img/profile/banner.png";
+
 // Card component for consistent styling
 const Card = ({ children, extra }) => {
   return (
@@ -153,6 +155,7 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [avatarFile, setAvatarFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadError, setUploadError] = useState(null);
 
   // Fetch user profile data
   useEffect(() => {
@@ -191,26 +194,69 @@ const ProfilePage = () => {
     if (!user) return;
     
     setIsLoading(true);
+    setUploadError(null);
+    
     try {
+      let updatedProfileData = { ...profileData };
+      
+      // Firebase Auth updates
+      const authUpdates = {};
+      
       // If avatar file is selected, upload it first
       if (avatarFile) {
-        await uploadAvatar();
+        const downloadURL = await uploadAvatar();
+        updatedProfileData.avatarUrl = downloadURL;
+        
+        // Add photoURL to auth updates
+        authUpdates.photoURL = downloadURL;
+      }
+      
+      // If name has changed, add to auth updates
+      if (profileData.name && profileData.name !== user.displayName) {
+        updatedProfileData.name = profileData.name.trim();
+        authUpdates.displayName = profileData.name.trim();
+      }
+      
+      // Apply Firebase Auth updates if needed
+      if (Object.keys(authUpdates).length > 0) {
+        try {
+          await updateProfile(user, authUpdates);
+          console.log("Firebase Auth profile updated successfully:", authUpdates);
+        } catch (authError) {
+          console.error("Error updating Firebase Auth profile:", authError);
+          setUploadError("Failed to update user authentication profile");
+          // Continue with Firestore update even if Auth update fails
+        }
       }
       
       // Update profile in Firestore
       const profileDocRef = doc(firestore, "userProfiles", user.uid);
-      await updateDoc(profileDocRef, profileData);
+      await updateDoc(profileDocRef, updatedProfileData);
+      
+      // Update local state with the finalized data
+      setProfileData(updatedProfileData);
+      
+      // Remove temporary avatar URL and file reference
+      if (avatarFile) {
+        setAvatarFile(null);
+        setProfileData(prev => ({ ...prev, tempAvatarUrl: null }));
+      }
       
       setIsEditing(false);
     } catch (error) {
       console.error("Error updating profile:", error);
+      setUploadError("Failed to update profile");
     } finally {
       setIsLoading(false);
+      setUploadProgress(0);
     }
   };
 
   // Upload avatar to Firebase Storage
   const uploadAvatar = async () => {
+    if (!avatarFile) return null;
+    
+    setUploadError(null);
     const storage = getStorage();
     const storageRef = ref(storage, `avatars/${user.uid}`);
     
@@ -225,12 +271,18 @@ const ProfilePage = () => {
         },
         (error) => {
           console.error("Error uploading avatar:", error);
+          setUploadError("Failed to upload image");
           reject(error);
         },
         async () => {
-          const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
-          setProfileData({ ...profileData, avatarUrl: downloadURL });
-          resolve(downloadURL);
+          try {
+            const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+            resolve(downloadURL);
+          } catch (error) {
+            console.error("Error getting download URL:", error);
+            setUploadError("Failed to get image URL");
+            reject(error);
+          }
         }
       );
     });
@@ -244,14 +296,29 @@ const ProfilePage = () => {
 
   // Handle avatar file selection
   const handleAvatarChange = (e) => {
-    if (e.target.files[0]) {
-      setAvatarFile(e.target.files[0]);
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type and size
+      if (!file.type.match('image.*')) {
+        setUploadError("Please select an image file");
+        return;
+      }
+      
+      // 5MB max file size
+      if (file.size > 5 * 1024 * 1024) {
+        setUploadError("Image size should be less than 5MB");
+        return;
+      }
+      
+      setAvatarFile(file);
+      setUploadError(null);
+      
       // Create a temporary URL for preview
       const reader = new FileReader();
       reader.onload = () => {
-        setProfileData({ ...profileData, tempAvatarUrl: reader.result });
+        setProfileData(prev => ({ ...prev, tempAvatarUrl: reader.result }));
       };
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(file);
     }
   };
 
@@ -308,6 +375,23 @@ const ProfilePage = () => {
         </div>
       </div>
 
+      {/* Upload Progress & Error Display */}
+      {(uploadProgress > 0 && uploadProgress < 100) && (
+        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mt-2">
+          <div 
+            className="bg-blue-600 h-2.5 rounded-full" 
+            style={{ width: `${uploadProgress}%` }}
+          ></div>
+          <p className="text-xs text-gray-500 mt-1">Uploading image: {Math.round(uploadProgress)}%</p>
+        </div>
+      )}
+      
+      {uploadError && (
+        <div className="w-full p-2 bg-red-100 text-red-700 rounded-md">
+          {uploadError}
+        </div>
+      )}
+
       {/* Edit Profile Controls */}
       <div className="w-full flex justify-end">
         {!isEditing ? (
@@ -320,16 +404,23 @@ const ProfilePage = () => {
         ) : (
           <div className="flex gap-2">
             <button 
-              onClick={() => setIsEditing(false)}
+              onClick={() => {
+                setIsEditing(false);
+                setAvatarFile(null);
+                setProfileData(prev => ({ ...prev, tempAvatarUrl: null }));
+                setUploadError(null);
+              }}
               className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-200 rounded-md hover:bg-gray-300 transition-colors"
+              disabled={isLoading}
             >
               <MdCancel /> Cancel
             </button>
             <button 
               onClick={handleUpdate}
               className="flex items-center gap-1 px-4 py-2 text-sm font-medium text-white bg-green-500 rounded-md hover:bg-green-600 transition-colors"
+              disabled={isLoading}
             >
-              <MdSave /> Save Changes
+              {isLoading ? 'Saving...' : <><MdSave /> Save Changes</>}
             </button>
           </div>
         )}
@@ -347,7 +438,7 @@ const ProfilePage = () => {
               <label className="block text-sm text-gray-600 mb-1">Bio</label>
               <textarea
                 name="bio"
-                value={profileData.bio}
+                value={profileData.bio || ""}
                 onChange={handleChange}
                 placeholder="Tell us about yourself"
                 className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
@@ -367,7 +458,7 @@ const ProfilePage = () => {
               {isEditing ? (
                 <input
                   name="education"
-                  value={profileData.education}
+                  value={profileData.education || ""}
                   onChange={handleChange}
                   placeholder="Your Education"
                   className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"                />
@@ -384,7 +475,7 @@ const ProfilePage = () => {
               {isEditing ? (
                 <input
                   name="languages"
-                  value={profileData.languages}
+                  value={profileData.languages || ""}
                   onChange={handleChange}
                   placeholder="Languages you speak"
                   className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
@@ -402,7 +493,7 @@ const ProfilePage = () => {
               {isEditing ? (
                 <input
                   name="department"
-                  value={profileData.department}
+                  value={profileData.department || ""}
                   onChange={handleChange}
                   placeholder="Your Department"
                   className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
@@ -420,7 +511,7 @@ const ProfilePage = () => {
               {isEditing ? (
                 <input
                   name="organization"
-                  value={profileData.organization}
+                  value={profileData.organization || ""}
                   onChange={handleChange}
                   placeholder="Your Organization"
                   className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
@@ -439,7 +530,7 @@ const ProfilePage = () => {
                 <input
                   name="birthday"
                   type="date"
-                  value={profileData.birthday}
+                  value={profileData.birthday || ""}
                   onChange={handleChange}
                   className="w-full p-2 bg-white dark:bg-navy-800 text-navy-700 dark:text-white border border-gray-300 dark:border-navy-600 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-colors"
                 />
