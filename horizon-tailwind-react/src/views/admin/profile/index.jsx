@@ -6,7 +6,7 @@ import { firestore } from "../../../backend/firebase/firebase"; // Path may need
 import { doc, updateDoc, getDoc } from "firebase/firestore";
 import { getStorage, ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
 import { MdModeEditOutline, MdSave, MdCancel, MdFileUpload } from "react-icons/md";
-
+import banner from "assets/img/profile/banner.png";
 // Card component for consistent styling
 const Card = ({ children, extra }) => {
   return (
@@ -29,7 +29,7 @@ const Banner = ({
       {/* Background and profile */}
       <div
         className="relative mt-1 flex h-32 w-full justify-center rounded-xl bg-cover"
-        style={{ backgroundImage: `url('/api/placeholder/1200/240')` }}
+        style={{ backgroundImage: `url(${banner})` }}
       >
         <div className="absolute -bottom-12 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-white dark:border-navy-700">
           {isEditing ? (

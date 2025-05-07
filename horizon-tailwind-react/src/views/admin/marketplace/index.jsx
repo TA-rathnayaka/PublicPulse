@@ -135,19 +135,7 @@ const Marketplace = () => {
         )}
       </div>
 
-      {/* Right Column: Super Admin Tables */}
-      <div className="col-span-1 h-full w-full rounded-xl 2xl:col-span-1">
-        {userRole === "super-admin" && (
-          <>
-            <TopCreatorTable
-              extra="mb-5"
-              tableData={tableDataTopCreators}
-              columnsData={tableColumnsTopCreators}
-            />
-            <HistoryCard />
-          </>
-        )}
-      </div>
+      
     </div>
   );
 };

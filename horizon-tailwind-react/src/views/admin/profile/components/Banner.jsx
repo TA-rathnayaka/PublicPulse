@@ -1,17 +1,20 @@
 import React from "react";
-
+import banner from 'assets/img/profile/banner.png'
 const Banner = ({ 
   profileData,
   isEditing, 
   handleAvatarChange,
   userRole
 }) => {
+  console.log("Banner image path:", banner);
   return (
+    
     <div className="items-center w-full h-full p-4 bg-white rounded-xl shadow-md dark:bg-navy-700">
       {/* Background and profile */}
       <div
         className="relative mt-1 flex h-32 w-full justify-center rounded-xl bg-cover"
-        style={{ backgroundImage: `url('/api/placeholder/1200/240')` }}
+        style={{ backgroundImage: `url(${banner})`, backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}
+
       >
         <div className="absolute -bottom-12 flex h-24 w-24 items-center justify-center rounded-full border-4 border-white bg-white dark:border-navy-700">
           {isEditing ? (
@@ -83,7 +86,7 @@ const Banner = ({
         )}
       </div>
 
-      {/* Stats */}
+      {/* Stats
       <div className="mt-6 mb-3 flex gap-4 md:gap-14 justify-center">
         <div className="flex flex-col items-center justify-center">
           <p className="text-2xl font-bold text-navy-700 dark:text-white">17</p>
@@ -101,7 +104,7 @@ const Banner = ({
           </p>
           <p className="text-sm font-normal text-gray-600">Tasks</p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
   
