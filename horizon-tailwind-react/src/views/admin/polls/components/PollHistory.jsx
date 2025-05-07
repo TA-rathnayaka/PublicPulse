@@ -3,10 +3,11 @@ import PollCard from "components/card/PollCard";
 import Card from "components/card";
 import { usePoll } from "context/PollContext";
 import { useAuth } from "context/authContext";
+import { useInstituteData } from "context/InstituteContext";
 
 const PollHistory = () => {
   const { polls, loading, error, getAllPolls } = usePoll();
-  const { instituteId } = useAuth();
+  const { instituteId } = useInstituteData();
 
   useEffect(() => {
     let isMounted = true;

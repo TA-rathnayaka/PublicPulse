@@ -3,10 +3,11 @@ import Card from "components/card";
 import { useNavigate } from "react-router-dom"; 
 import { useAuth } from "context/authContext";
 import { usePolicy } from "context/PolicyContext";
+import { useInstituteData } from "context/InstituteContext";
 
 const HistoryCard = ({ HistoryData = [] }) => {   
   const navigate = useNavigate();   
-  const { instituteId } = useAuth();
+  const { instituteId } = useInstituteData();
   const { policyCache } = usePolicy();  // Access the policy cache
       
   const handleCardClick = (policyId) => {     

@@ -4,10 +4,11 @@ import { MdHistory } from "react-icons/md";
 import Card from "components/card";
 import { usePolicy } from "context/PolicyContext";
 import { useAuth } from "context/authContext";
+import { useInstituteData } from "context/InstituteContext";
 
 const PolicyHistory = () => {
   const { policies, loading, error, refreshPolicies, policyCache } = usePolicy();
-  const { instituteId } = useAuth();
+  const { instituteId } = useInstituteData();
 
   // This dependency array might cause refreshPolicies to be called too often
   // Let's fix the dependency issue by using useCallback in a real implementation

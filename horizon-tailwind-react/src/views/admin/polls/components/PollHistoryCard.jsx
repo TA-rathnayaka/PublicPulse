@@ -3,10 +3,11 @@ import Card from "components/card";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "context/authContext";
 import { usePoll } from "context/PollContext";
+import { useInstituteData } from "context/InstituteContext";
 
 const PollHistoryCard = ({ historyData = [] }) => {
     const navigate = useNavigate();
-    const { instituteId } = useAuth();
+    const { instituteId } = useInstituteData();
 
     
     const handleCardClick = (pollId) => {
