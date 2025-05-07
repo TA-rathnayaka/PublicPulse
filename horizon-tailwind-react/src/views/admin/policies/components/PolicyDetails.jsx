@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import General from "./General";
+import PolicyComments from "./PolicyComments";
 import { usePolicy } from "context/PolicyContext";
 
 const PolicyDetails = () => {
@@ -268,9 +269,14 @@ const PolicyDetails = () => {
         </div>
       </div>
       
-      {/* General Component as a full-width row below */}
-      <div className="w-full mt-6 px-4 pb-6">
+      {/* General Component */}
+      <div className="w-full mt-6 px-4">
         <General />
+      </div>
+      
+      {/* Comments Section */}
+      <div className="w-full mt-6 px-4 pb-6">
+        <PolicyComments />
       </div>
     </div>
   );
