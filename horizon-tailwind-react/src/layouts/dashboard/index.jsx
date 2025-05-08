@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate, Navigate } from "react-router-dom";
 import Navbar from "components/navbar";
 import Footer from "components/footer/Footer";
 import Marketplace from "views/admin/marketplace";
@@ -11,10 +11,12 @@ import Profile from "views/admin/profile";
 import { InstituteProvider } from "context/InstituteContext";
 
 export default function Dashboard(props) {
+  const { user } = useAuth();
   const { ...rest } = props;
   const [open, setOpen] = React.useState(true);
   const location = useLocation();
   const navigate = useNavigate();
+  
   const { userRole } = useAuth();
 
   React.useEffect(() => {
@@ -76,7 +78,9 @@ export default function Dashboard(props) {
   };
 
   document.documentElement.dir = "ltr";
-
+  if (!user) {
+      return <Navigate to="/auth/sign-in" replace />;
+    }
   return (
     <div className="flex h-full w-full">
       {/* Sidebar */}

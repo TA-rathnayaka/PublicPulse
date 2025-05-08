@@ -11,6 +11,7 @@ import { PollProvider } from "context/PollContext";
 
 
 export default function Admin(props) {
+  const { user } = useAuth();
   const { ...rest } = props;
   const location = useLocation();
   const { instituteId } = useInstituteData();
@@ -89,7 +90,9 @@ export default function Admin(props) {
   };
 
   document.documentElement.dir = "ltr";
-
+  if (!user) {
+    return <Navigate to="/auth/sign-in" replace />;
+  }
   return (
     
      <PolicyProvider instituteId={instituteId}>

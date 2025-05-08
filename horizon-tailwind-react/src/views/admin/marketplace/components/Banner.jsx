@@ -16,15 +16,10 @@ const Banner1 = () => {
         </p>
 
         <div className="mt-[36px] flex items-center justify-between gap-4 sm:justify-start 2xl:gap-10">
-          <button className="text-black linear rounded-xl bg-white px-4 py-2 text-center text-base font-medium transition duration-200 hover:!bg-white/80 active:!bg-white/70">
-            Get Started
+          <button onClick={navigator.navigate('manage-institutes')} className="text-black linear rounded-xl bg-white px-4 py-2 text-center text-base font-medium transition duration-200 hover:!bg-white/80 active:!bg-white/70">
+            Create an institute
           </button>
-          <button
-            href=" "
-            className="text-base font-medium text-lightPrimary hover:text-lightPrimary 2xl:ml-2"
-          >
-            Learn More
-          </button>
+          
         </div>
       </div>
     </div>
