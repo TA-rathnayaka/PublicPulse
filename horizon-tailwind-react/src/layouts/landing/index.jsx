@@ -89,6 +89,7 @@ export default function LandingPage() {
           Sign in
         </button>
         <button 
+        onClick={() => navigate("/auth/sign-up")}
         className="px-4 py-2 rounded-full font-medium transition-colors bg-brand-500 text-white hover:bg-gray-200 dark:bg-brand-400 dark:hover:bg-navy-700"
       >
         Sign up
