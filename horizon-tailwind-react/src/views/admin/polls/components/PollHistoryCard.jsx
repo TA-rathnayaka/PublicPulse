@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import Card from "components/card";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +14,7 @@ const PollHistoryCard = ({ historyData = [] }) => {
     
     const handleCardClick = (pollId) => {
         // Navigate to poll details page
-        navigate(`/admin/${instituteId}/poll/${pollId}`);
+        navigate(`/admin/${instituteId}/polls/${pollId}`);
     };
     
     const handleSeeAll = () => {
