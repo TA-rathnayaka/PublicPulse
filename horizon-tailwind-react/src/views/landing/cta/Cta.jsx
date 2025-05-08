@@ -28,7 +28,7 @@ export default function Cta() {
                   if (user) {
                     navigate("/dashboard");
                   } else {
-                    navigate("/auth/signup");
+                    navigate("/auth/sign-up");
                   }
                 }}
               >
