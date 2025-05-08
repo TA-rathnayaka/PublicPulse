@@ -25,3 +25,5 @@ describe('DarkModeContext', () => {
     expect(result.current.darkMode).toBe(true);
   });
 });
+
+//this is a comment
