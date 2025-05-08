@@ -26,6 +26,7 @@ const App = () => {
 
               <Route path="/" element={<Landing />} />
               <Route path="register/" element={<InstitutionRegistration />} />
+              
             </Routes>
           </SearchProvider>
         </NotificationsProvider>

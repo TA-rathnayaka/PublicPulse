@@ -1,7 +1,9 @@
 
 import banner from "assets/img/dashboards/banner.png"
+import { useNavigate } from "react-router-dom";
 
 const Banner1 = () => {
+  const navigate = useNavigate()
   return (
     <div
       className="flex w-full flex-col rounded-[20px] bg-cover px-[30px] py-[30px] md:px-[64px] md:py-[56px]"
@@ -16,7 +18,7 @@ const Banner1 = () => {
         </p>
 
         <div className="mt-[36px] flex items-center justify-between gap-4 sm:justify-start 2xl:gap-10">
-          <button onClick={navigator.navigate('manage-institutes')} className="text-black linear rounded-xl bg-white px-4 py-2 text-center text-base font-medium transition duration-200 hover:!bg-white/80 active:!bg-white/70">
+          <button onClick={()=>navigate('manage-institutes')} className="text-black linear rounded-xl bg-white px-4 py-2 text-center text-base font-medium transition duration-200 hover:!bg-white/80 active:!bg-white/70">
             Create an institute
           </button>
           
